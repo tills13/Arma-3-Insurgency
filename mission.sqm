@@ -1,0 +1,327 @@
+version=12;
+class Mission
+{
+	addOns[]=
+	{
+		"a3_map_altis",
+		"A3_Characters_F_BLUFOR",
+		"A3_Air_F_Heli_Light_01",
+		"A3_Structures_F_Mil_Flags",
+		"A3_Soft_F_EPC_Truck_03",
+		"A3_Air_F_EPB_Heli_Light_03",
+		"A3_Characters_F_OPFOR"
+	};
+	addOnsAuto[]=
+	{
+		"A3_Characters_F_BLUFOR",
+		"A3_Characters_F_OPFOR",
+		"A3_Air_F_Heli_Light_01",
+		"A3_Structures_F_Mil_Flags",
+		"A3_Soft_F_EPC_Truck_03",
+		"A3_Air_F_EPB_Heli_Light_03",
+		"a3_map_altis"
+	};
+	randomSeed=9788479;
+	class Intel
+	{
+		resistanceWest=0;
+		startWeather=0.1;
+		startFog=0.5;
+		startWind=0.099999994;
+		startRain=0.22999999;
+		startWaves=0.39999998;
+		forecastWeather=0.1;
+		forecastFog=0.5;
+		forecastWind=0.099999994;
+		forecastWaves=0.39999998;
+		forecastRain=0.25;
+		forecastLightnings=0.099999994;
+		rainForced=1;
+		wavesForced=1;
+		year=2035;
+		month=6;
+		day=24;
+		hour=12;
+		minute=20;
+		startFogDecay=0.013;
+		forecastFogDecay=0.013;
+	};
+	class Groups
+	{
+		items=5;
+		class Item0
+		{
+			side="WEST";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={3069.9448,10.820868,18272.795};
+					azimut=35.297199;
+					id=0;
+					side="WEST";
+					vehicle="B_Soldier_SL_F";
+					player="PLAY CDG";
+					leader=1;
+					rank="SERGEANT";
+					skill=0.5;
+					ammo=0;
+				};
+			};
+		};
+		class Item1
+		{
+			side="WEST";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={3086.5835,10.182323,18252.822};
+					azimut=35.297199;
+					id=1;
+					side="WEST";
+					vehicle="B_Soldier_SL_F";
+					player="PLAY CDG";
+					leader=1;
+					rank="SERGEANT";
+					skill=0.5;
+					ammo=0;
+				};
+			};
+		};
+		class Item2
+		{
+			side="WEST";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={3082.7026,10.772558,18267.244};
+					azimut=35.297199;
+					id=2;
+					side="WEST";
+					vehicle="B_Soldier_SL_F";
+					player="PLAYER COMMANDER";
+					leader=1;
+					rank="SERGEANT";
+					skill=0.5;
+				};
+			};
+		};
+		class Item3
+		{
+			side="WEST";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={3073.8315,10.524131,18256.15};
+					azimut=35.297199;
+					id=3;
+					side="WEST";
+					vehicle="B_Soldier_SL_F";
+					player="PLAY CDG";
+					leader=1;
+					rank="SERGEANT";
+					skill=0.5;
+					ammo=0;
+				};
+			};
+		};
+		class Item4
+		{
+			side="EAST";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={3086.9084,10.50408,18274.059};
+					azimut=-139.06033;
+					id=4;
+					side="EAST";
+					vehicle="O_Soldier_F";
+					leader=1;
+					rank="SERGEANT";
+					skill=0.5;
+					ammo=0;
+					init="_handle = this execVM ""scripts\insurgency\modules\enemyScript\deathListener.sqf"";";
+				};
+			};
+		};
+	};
+	class Vehicles
+	{
+		items=6;
+		class Item0
+		{
+			position[]={3092.6389,10.372372,18269.531};
+			azimut=-52.8027;
+			special="NONE";
+			id=5;
+			side="EMPTY";
+			vehicle="B_Heli_Light_01_F";
+			leader=1;
+			lock="UNLOCKED";
+			skill=0.60000002;
+			text="AHQ";
+			init="this addAction[""Virtual Ammobox"", ""VAS\open.sqf""]; this addAction[""Teleport to Base"", ""scripts\teleport.sqf"", [player, mFlag]];";
+		};
+		class Item1
+		{
+			position[]={3082.1428,10.740735,18273.324};
+			azimut=-52.8027;
+			special="NONE";
+			id=6;
+			side="EMPTY";
+			vehicle="Flag_US_F";
+			leader=1;
+			lock="UNLOCKED";
+			skill=0.60000002;
+			text="mFlag";
+			init="_handle = this execVM ""scripts\recruitmenu.sqf"";";
+		};
+		class Item2
+		{
+			position[]={3074.0002,10.595993,18279.367};
+			azimut=38.983002;
+			special="NONE";
+			id=7;
+			side="EMPTY";
+			vehicle="O_Truck_03_device_F";
+			leader=1;
+			lock="UNLOCKED";
+			skill=0.60000002;
+			text="MHQ_Device";
+			init="this addAction[""Satelite View"", player execVM ""scripts\cctv\feedInit.sqf""]; null = [this, 1000] execVM ""scripts\cas\addAction.sqf""";
+		};
+		class Item3
+		{
+			position[]={3089.7476,10.294095,18281.551};
+			azimut=-53.045101;
+			special="NONE";
+			id=8;
+			side="EMPTY";
+			vehicle="O_Truck_03_covered_F";
+			leader=1;
+			lock="UNLOCKED";
+			skill=0.60000002;
+			text="MHQ";
+			init="this addAction[""Virtual Ammobox"", ""VAS\open.sqf""]; this addAction[""Teleport to Base"", ""scripts\teleport.sqf"", [player, mFlag]];";
+		};
+		class Item4
+		{
+			position[]={26778.732,22.136076,24614.938};
+			azimut=135.12477;
+			id=9;
+			side="EMPTY";
+			vehicle="I_Heli_light_03_unarmed_F";
+			skill=0.60000002;
+		};
+		class Item5
+		{
+			position[]={26798.75,21.83786,24635.541};
+			azimut=135.125;
+			id=10;
+			side="EMPTY";
+			vehicle="I_Heli_light_03_unarmed_F";
+			skill=0.60000002;
+			text="ha";
+			init="_res = [this] execVM ""scripts\vehiclerespawn.sqf"";";
+		};
+	};
+};
+class Intro
+{
+	addOns[]=
+	{
+		"a3_map_altis"
+	};
+	addOnsAuto[]=
+	{
+		"a3_map_altis"
+	};
+	randomSeed=11539342;
+	class Intel
+	{
+		timeOfChanges=1800.0002;
+		startWeather=0.30000001;
+		startWind=0.1;
+		startWaves=0.1;
+		forecastWeather=0.30000001;
+		forecastWind=0.1;
+		forecastWaves=0.1;
+		forecastLightnings=0.1;
+		year=2035;
+		month=6;
+		day=24;
+		hour=12;
+		minute=0;
+		startFogDecay=0.013;
+		forecastFogDecay=0.013;
+	};
+};
+class OutroWin
+{
+	addOns[]=
+	{
+		"a3_map_altis"
+	};
+	addOnsAuto[]=
+	{
+		"a3_map_altis"
+	};
+	randomSeed=12617883;
+	class Intel
+	{
+		timeOfChanges=1800.0002;
+		startWeather=0.30000001;
+		startWind=0.1;
+		startWaves=0.1;
+		forecastWeather=0.30000001;
+		forecastWind=0.1;
+		forecastWaves=0.1;
+		forecastLightnings=0.1;
+		year=2035;
+		month=6;
+		day=24;
+		hour=12;
+		minute=0;
+		startFogDecay=0.013;
+		forecastFogDecay=0.013;
+	};
+};
+class OutroLoose
+{
+	addOns[]=
+	{
+		"a3_map_altis"
+	};
+	addOnsAuto[]=
+	{
+		"a3_map_altis"
+	};
+	randomSeed=13817476;
+	class Intel
+	{
+		timeOfChanges=1800.0002;
+		startWeather=0.30000001;
+		startWind=0.1;
+		startWaves=0.1;
+		forecastWeather=0.30000001;
+		forecastWind=0.1;
+		forecastWaves=0.1;
+		forecastLightnings=0.1;
+		year=2035;
+		month=6;
+		day=24;
+		hour=12;
+		minute=0;
+		startFogDecay=0.013;
+		forecastFogDecay=0.013;
+	};
+};

@@ -1,0 +1,66 @@
+onLoadName = "Altis Insurgency";
+author = "dolan";
+OnLoadMission = "Virtual Ammobox System";
+respawn = BASE;
+respawndelay = 10;
+disabledAI = true;
+enableDebugConsole = 2;
+
+#include "VAS\menu.hpp"
+
+class Params {	
+	class EmtpyLine1 {
+		title = ":: Game Settings";
+		values[]={0,0};
+		texts[]={ "",""};
+		default = 0;			
+	};
+	
+    class cachesLimit {
+		title = "Total number of caches";
+		values[] = {2, 4, 6, 8, 10, 12, 14, 16};
+		texts[] = {"Two", "Four", "Six", "Eight", "Ten", "Twelve", "Fourteen", "Sixteen"};
+		default = 6;
+	};
+	
+	class intelItems {
+		title = "Number of static intel items (per town)";
+		values[] = {1, 2, 3, 4, 5, 6, 7, 8};
+		texts[] = {"One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight"};
+		default = 5;
+	};
+
+	class probOfDrop {
+		title = "Probability of intel drop (in % of kills)";
+		values[] = {5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90};
+		default = 25;
+	};
+
+	class destroyedRespawnDelay {
+		title = "Time until destroyed vehicles respawn (in seconds)";
+		values[] = {0, 10, 20, 30, 40, 50, 60, 70, 80};
+		default = 0;
+	};
+
+	class abandonedRespawnDelay {
+		title = "Time until abandoned vehicles respawn (in seconds)";
+		values[] = {0, 10, 20, 30, 40, 50, 60, 70, 80};
+		default = 60;
+	};
+
+	class casPlayerTimeout {
+		title = "Time in between player CAS requests (seconds)";
+		values[] = {10, 20, 30, 40, 50, 60, 70, 80};
+		default = 30;
+	};
+
+	class casAITimeout {
+		title = "Time in between AI CAS requests";
+		values[] = {10, 20, 30, 40, 50, 60, 70, 80};
+		default = 60;
+	};
+};
+
+class CfgFunctions {
+	#include "VAS\cfgfunctions.hpp"
+};
