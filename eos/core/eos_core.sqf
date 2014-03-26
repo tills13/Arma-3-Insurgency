@@ -1,6 +1,7 @@
 if (!isServer) exitWith { };
 
-private ["_newpos","_cargoType","_vehType","_dGrp","_mkrAgl","_side","_bGroup","_civZone","_fGrp","_fSize","_fGrps","_eGrp","_eGrps","_dGrps","_aMin","_aSize","_aGrps","_aGrp","_bMin","_units","_bSize","_bGrps","_bGrp","_trig","_cache","_grp","_crew","_vehicle","_actCond","_mAN","_mAH","_distance","_mA","_settings","_cGrp","_cSize","_cGrps","_taken","_clear","_enemyFaction","_faction","_n","_eosAct","_eosActivated","_debug","_mkr","_mPos","_mkrX","_mkrY"];
+hint format["%1", debugMode];
+private ["_newpos","_cargoType","_vehType","_dGrp","_mkrAgl","_side","_bGroup","_civZone","_fGrp","_fSize","_fGrps","_eGrp","_eGrps","_dGrps","_aMin","_aSize","_aGrps","_aGrp","_bMin","_units","_bSize","_bGrps","_bGrp","_trig","_cache","_grp","_crew","_vehicle","_actCond","_mAN","_mAH","_distance","_mA","_settings","_cGrp","_cSize","_cGrps","_taken","_clear","_enemyFaction","_faction","_n","_eosAct","_eosActivated","_mkr","_mPos","_mkrX","_mkrY"];
 
 _mkr = (_this select 0);
 _mPos = markerpos(_this select 0);
@@ -35,7 +36,6 @@ _mA = _settings select 1;
 _distance = _settings select 2;
 _side = _settings select 3;
 _heightLimit = if (count _settings > 4) then { _settings select 4 } else { false };
-_debug = if (count _settings > 5) then { _settings select 5 } else { false };
 _cache = if (count _this > 6) then { _this select 6 } else { false };
 
 
@@ -84,14 +84,14 @@ if (!(getMarkerColor _mkr == "ColorBlack")) then {
 
 
 	for "_counter" from 1 to _aGrps do { // SPAWN HOUSE PATROLS
-		hint format ["spawning house %1", random 40];
+		if (debugMode) then { player sideChat format ["spawning house %1", random 40]; };
 		if (isNil "_aGrp") then { _aGrp = []; };
 		if (_cache) then {
 			_cacheGrp = format ["HP%1", _counter];
 			_units = _eosActivated getVariable _cacheGrp;	
 			_aSize = [_units, _units];
 			_aMin = _aSize select 0;
-			if (_debug) then { player sideChat format ["ID: %1, restore - %2", _cacheGrp, _units]; };
+			if (debugMode) then { player sideChat format ["ID: %1, restore - %2", _cacheGrp, _units]; };
 		};
 		
 		if (_aMin > 0) then {
@@ -105,15 +105,14 @@ if (!(getMarkerColor _mkr == "ColorBlack")) then {
 			_aGrp set [count _aGrp, _aGroup];
 			0 = [_aGroup, "INFskill"] call eos_fnc_grouphandlers;
 			
-			if (_debug) then { 
+			if (debugMode) then { 
 				player sideChat format ["Spawned House Patrol: %1", _counter];
-				0 = [_mkr, _counter, "House Patrol", getPos (leader _aGroup)] call EOS_debug
 			};
 		};
 	};
 			
 	for "_counter" from 1 to _bGrps do { // SPAWN PATROLS
-		hint format ["spawning patrols %1", random 40];
+		if (debugMode) then { player sideChat format ["spawning patrols %1", random 40]; };
 		if (isNil "_bGrp") then { _bGrp = []; };
 		if (_cache) then {
 			hint format ["patrols debug %1", random 40];
@@ -121,7 +120,7 @@ if (!(getMarkerColor _mkr == "ColorBlack")) then {
 			_units = _eosActivated getVariable _cacheGrp;	
 			_bSize = [_units, _units];
 			_bMin = _bSize select 0;
-			if (_debug) then { player sideChat format ["ID: %1, restore - %2", _cacheGrp, _units]; };
+			if (debugMode) then { player sideChat format ["ID: %1, restore - %2", _cacheGrp, _units]; };
 		};
 
 		if (_bMin > 0) then {	
@@ -131,15 +130,14 @@ if (!(getMarkerColor _mkr == "ColorBlack")) then {
 			0 = [_bGroup, _mkr] call EOS_fnc_taskpatrol;
 			_bGrp set [count _bGrp, _bGroup];
 
-			if (_debug) then {
+			if (debugMode) then {
 				player sideChat format ["Spawned Patrol: %1", _counter];
-				0 = [_mkr, _counter, "patrol", getPos (leader _bGroup)] call EOS_debug
 			};
 		};
 	};		
 		
 	for "_counter" from 1 to _cGrps do { //SPAWN LIGHT VEHICLES	
-		hint format ["spawning lv %1", random 40];
+		if (debugMode) then { player sideChat format ["spawning lv %1", random 40]; };
 		if (isNil "_cGrp") then { _cGrp = []; };	
 
 		_newpos = [_mkr, 50] call EOS_fnc_findSafePos;
@@ -161,14 +159,13 @@ if (!(getMarkerColor _mkr == "ColorBlack")) then {
 		0 = [(_cGroup select 2), _mkr] call EOS_fnc_taskpatrol;
 		_cGrp set [count _cGrp, _cGroup];			
 
-		if (_debug) then {
+		if (debugMode) then {
 			player sideChat format ["Light Vehicle: %1 - r%2", _counter, _cGrps];
-			0 = [_mkr, _counter, "Light Vehicle", (getPos leader (_cGroup select 2))] call EOS_debug
 		};
 	};	
 			
 	for "_counter" from 1 to _dGrps do { //SPAWN ARMOURED VEHICLES
-		hint format ["spawning av %1", random 40];
+		if (debugMode) then { player sideChat format ["spawning av %1", random 40]; };
 		if (isNil "_dGrp") then { _dGrp = []; };
 
 		_newpos = [_mkr, 50] call EOS_fnc_findSafePos;
@@ -184,15 +181,14 @@ if (!(getMarkerColor _mkr == "ColorBlack")) then {
 		0 = [(_dGroup select 2), _mkr] call EOS_fnc_taskpatrol;
 		_dGrp set [count _dGrp, _dGroup];
 
-		if (_debug) then {
+		if (debugMode) then {
 			player sideChat format ["Armoured: %1 - r%2", _counter, _dGrps];
-			0 = [_mkr, _counter, "Armour", (getPos leader (_dGroup select 2))] call EOS_debug
 		};
 	};
 			
 	
 	for "_counter" from 1 to _eGrps do { //SPAWN STATIC PLACEMENTS
-		hint format ["spawning static %1", random 40];
+		if (debugMode) then { player sideChat format ["spawning static %1", random 40]; };
 		if (surfaceIsWater _mPos) exitWith { };
 		if (isNil "_eGrp") then { _eGrp = []; };
 
@@ -202,14 +198,13 @@ if (!(getMarkerColor _mkr == "ColorBlack")) then {
 		0 = [(_eGroup select 2),"STAskill"] call eos_fnc_grouphandlers;
 		_eGrp set [count _eGrp, _eGroup];
 
-		if (_debug) then { 
+		if (debugMode) then { 
 			player sideChat format ["Static: %1", _counter];
-			0 = [_mkr, _counter, "Static", (getPos leader (_eGroup select 2))] call EOS_debug
 		};
 	};	
 			
 	for "_counter" from 1 to _fGrps do { //SPAWN CHOPPERS
-		hint format ["spawning chopper %1", random 40];
+		if (debugMode) then { hint format ["spawning chopper %1", random 40]; };
 		if (isNil "_fGrp") then { _fGrp = []; };	
 		if ((_fSize select 0) > 0) then { 
 			_vehType = 4; 
@@ -236,9 +231,8 @@ if (!(getMarkerColor _mkr == "ColorBlack")) then {
 
 		0 = [(_fGroup select 2), "AIRskill"] call eos_fnc_grouphandlers;
 
-		if (_debug) then {
+		if (debugMode) then {
 			player sideChat format ["Chopper: %1", _counter];
-			0 = [_mkr, _counter, "Chopper", (getPos leader (_fGroup select 2))] call EOS_debug
 		};
 	};		
 			
@@ -257,7 +251,7 @@ if (!(getMarkerColor _mkr == "ColorBlack")) then {
 	while { _eosAct } do {
 		// IF PLAYER LEAVES THE AREA OR ZONE DEACTIVATED
 		if (!triggeractivated _eosActivated || getmarkercolor _mkr == "colorblack") exitWith {
-			if (_debug) then {
+			if (debugMode) then {
 				if (!(getMarkerColor _mkr == "ColorBlack")) then {
 					hint "Restarting Zone AND deleting units";
 				} else {
@@ -283,7 +277,7 @@ if (!(getMarkerColor _mkr == "ColorBlack")) then {
 					deleteGroup _grp;
 				} forEach _cGrp;
 
-				if (_debug) then { 
+				if (debugMode) then { 
 					player sideChat format ["ID: c%1", _cGrps];
 				};
 			};
@@ -305,7 +299,7 @@ if (!(getMarkerColor _mkr == "ColorBlack")) then {
 					deleteGroup _grp;
 				} forEach _dGrp;
 				
-				if (_debug) then {
+				if (debugMode) then {
 					player sideChat format ["ID:c%1",_dGrps];
 				};
 			};
@@ -317,7 +311,7 @@ if (!(getMarkerColor _mkr == "ColorBlack")) then {
 					_units = { alive _x } count units _x;
 					_cacheGrp = format ["PA%1", _n];
 
-					if (_debug) then {
+					if (debugMode) then {
 						player sideChat format ["ID: %1, cache - %2", _cacheGrp, _units];
 					};
 			
@@ -334,7 +328,7 @@ if (!(getMarkerColor _mkr == "ColorBlack")) then {
 					_units = { alive _x } count units _x;
 					_cacheGrp = format ["HP%1", _n];
 
-					if (_debug) then {
+					if (debugMode) then {
 						player sideChat format ["ID: %1, cache - %2", _cacheGrp, _units];
 					};
 				
@@ -385,7 +379,7 @@ if (!(getMarkerColor _mkr == "ColorBlack")) then {
 			};
 									
 			_eosAct = false;
-			if (_debug) then { hint "Zone Cached"; };
+			if (debugMode) then { hint "Zone Cached"; };
 		};
 
 		if (triggerActivated _clear and triggerActivated _taken and !_civZone) exitWith {// IF ZONE CAPTURED BEGIN CHECKING FOR ENEMIES
@@ -400,7 +394,7 @@ if (!(getMarkerColor _mkr == "ColorBlack")) then {
 				if (!triggerActivated _clear) then {
 					_mkr setMarkerColor hostileColor;
 					_mkr setMarkerAlpha _mAH;
-					if (_debug) then { hint "Zone Lost"; };
+					if (debugMode) then { hint "Zone Lost"; };
 				} else {
 					_mkr setMarkerColor victoryColor;
 					_mkr setMarkerAlpha _mAN;

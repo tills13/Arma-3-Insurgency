@@ -64,6 +64,12 @@ class Params {
 		values[] = {5, 10, 15, 20, 25, 30, 35, 40};
 		default = 10;
 	};
+
+	class debugMode {
+		title = "Show debug messages";
+		values[] = {true, false};
+		default = false;
+	};
 };
 
 class CfgFunctions {

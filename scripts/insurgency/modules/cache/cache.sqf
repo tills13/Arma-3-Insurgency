@@ -77,7 +77,7 @@ if (isServer || isDedicated) then {
 			endMission "END1";
 		};
 		
-		if (!isMultiplayer) then {
+		if (debugMode) then {
             //debug to see where box spawned is if not multiplayer
             _m = createMarker [format ["box%1", random 1000], getposATL cache];
             _m setMarkerShape "ICON"; 

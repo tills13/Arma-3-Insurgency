@@ -9,19 +9,32 @@ intelTimeout = paramsarray select 5;
 casPlayerTimeout = paramsarray select 6;
 casAITimeout = paramsarray select 7;
 weatherChangeRate = paramsarray select 8;
+debugMode = true;//paramsarray select 9;
+
+/*onplayerConnected {
+	publicVariable "cacheLimit";
+	publicVariable "intelItems";
+	publicVariable "dropProb";
+	publicVariable "destroyedRespawnDelay";
+	publicVariable "abandonedRespawnDelay";
+	publicVariable "intelTimeout";
+	publicVariable "casPlayerTimeout";
+	publicVariable "casAITimeout";
+	publicVariable "weatherChangeRate";
+	publicVariable "debugMode";
+}*/
+
 
 victoryColor = "colorGreen";
 hostileColor = "colorRed";
 bastionColor = "colorOrange";
-EOS_DAMAGE_MULTIPLIER = 1;
-EOS_KILLCOUNTER = true;
 
 #include "scripts\insurgency\core\functions.sqf"
 #include "scripts\insurgency\core\cacheFunctions.sqf"
 #include "scripts\insurgency\core\cacheGetPositions.sqf"
 
 call compile preprocessfilelinenumbers "scripts\insurgency\init.sqf";
-execVM "scripts\cas\initCAS.sqf";
+//execVM "scripts\cas\initCAS.sqf";
 
 // AI scripts 
 //nul = [450,900,30,300,6,[1,1,0],player,"default",1,2500,nil,["CARELESS","SAD"],true] execVM "LV\ambientCombat.sqf";

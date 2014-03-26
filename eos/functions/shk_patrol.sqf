@@ -1,5 +1,3 @@
-DEBUG = false;
-
 if (isServer) then {
 	// Handle parameters
 	private ["_grp","_dst","_marker"];
@@ -50,12 +48,14 @@ if (isServer) then {
 		// When completing waypoint have 33% chance to choose a random next wp
 		[_grp, _i] setWaypointStatements ["true", "if ((random 3) > 2) then { group this setCurrentWaypoint [(group this), (floor (random (count (waypoints (group this)))))];};"];
 
+		if (debugMode) then {
+			private "_m";
+			_m = createMarker [format["SHK_patrol_WP%1%2", (floor(_cur select 0)),(floor(_cur select 1))],_cur];
+			_m setMarkerShape "Ellipse";
+			_m setMarkerSize [20,20];
+			_m setmarkerColor "ColorRed";
+		};
 		
-		private "_m";
-		_m = createMarker [format["SHK_patrol_WP%1%2",(floor(_cur select 0)),(floor(_cur select 1))],_cur];
-		_m setMarkerShape "Ellipse";
-		_m setMarkerSize [20,20];
-		_m setmarkerColor "ColorRed";
 	};
 
 	// Cycle in case we reach the end
@@ -64,7 +64,7 @@ if (isServer) then {
 	_wp1 setWaypointType "CYCLE";
 	_wp1 setWaypointCompletionRadius 50;
 
-	if (DEBUG) then {
+	if (debugMode) then {
 		while { sleep 5; {alive _x} count (units _grp) > 0 } do {
 			private ["_m","_p"];
 			_p = getPos leader _grp;
