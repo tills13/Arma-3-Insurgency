@@ -8,6 +8,7 @@ abandonedRespawnDelay = paramsarray select 4;
 intelTimeout = paramsarray select 5;
 casPlayerTimeout = paramsarray select 6;
 casAITimeout = paramsarray select 7;
+weatherChangeRate = paramsarray select 8;
 
 victoryColor = "colorGreen";
 hostileColor = "colorRed";

@@ -58,6 +58,12 @@ class Params {
 		values[] = {10, 20, 30, 40, 50, 60, 70, 80};
 		default = 60;
 	};
+
+	class weatherChangeRate {
+		title = "Weather change rate (in minutes)";
+		values[] = {5, 10, 15, 20, 25, 30, 35, 40};
+		default = 10;
+	};
 };
 
 class CfgFunctions {
