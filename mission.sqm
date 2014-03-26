@@ -14,7 +14,6 @@ class Mission
 	addOnsAuto[]=
 	{
 		"A3_Characters_F_BLUFOR",
-		"A3_Characters_F_OPFOR",
 		"A3_Air_F_Heli_Light_01",
 		"A3_Structures_F_Mil_Flags",
 		"A3_Soft_F_EPC_Truck_03",
@@ -48,7 +47,7 @@ class Mission
 	};
 	class Groups
 	{
-		items=5;
+		items=4;
 		class Item0
 		{
 			side="WEST";
@@ -96,32 +95,12 @@ class Mission
 			side="WEST";
 			class Vehicles
 			{
-				items=1;
-				class Item0
-				{
-					position[]={3082.7026,10.772558,18267.244};
-					azimut=35.297199;
-					id=2;
-					side="WEST";
-					vehicle="B_Soldier_SL_F";
-					player="PLAYER COMMANDER";
-					leader=1;
-					rank="SERGEANT";
-					skill=0.5;
-				};
-			};
-		};
-		class Item3
-		{
-			side="WEST";
-			class Vehicles
-			{
-				items=1;
+				items=2;
 				class Item0
 				{
 					position[]={3073.8315,10.524131,18256.15};
 					azimut=35.297199;
-					id=3;
+					id=2;
 					side="WEST";
 					vehicle="B_Soldier_SL_F";
 					player="PLAY CDG";
@@ -130,26 +109,38 @@ class Mission
 					skill=0.5;
 					ammo=0;
 				};
+				class Item1
+				{
+					position[]={3082.6638,10.709102,18264.191};
+					azimut=-52.8027;
+					special="NONE";
+					id=3;
+					side="WEST";
+					vehicle="B_Soldier_F";
+					player="PLAYER COMMANDER";
+					lock="UNLOCKED";
+					skill=0.60000002;
+				};
 			};
 		};
-		class Item4
+		class Item3
 		{
-			side="EAST";
+			side="LOGIC";
 			class Vehicles
 			{
 				items=1;
 				class Item0
 				{
-					position[]={3086.9084,10.50408,18274.059};
-					azimut=-139.06033;
+					position[]={13005.063,19.755817,17421.914};
+					azimut=-52.8027;
+					special="NONE";
 					id=4;
-					side="EAST";
-					vehicle="O_Soldier_F";
+					side="LOGIC";
+					vehicle="Logic";
 					leader=1;
-					rank="SERGEANT";
-					skill=0.5;
-					ammo=0;
-					init="_handle = this execVM ""scripts\insurgency\modules\enemyScript\deathListener.sqf"";";
+					lock="UNLOCKED";
+					skill=0.60000002;
+					text="SERVER";
 				};
 			};
 		};

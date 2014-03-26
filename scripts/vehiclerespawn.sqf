@@ -49,13 +49,10 @@ while { _run } do {
 
 
 		_init = "";
-		_netID = netID _unit; 
 		if (_hasInit) then { _init = format ["%1; ", _unitinit]; };
-		_sCommand = format ["{%1(objectFromNetID '%2') = this; this setVehicleVarName ""%2""}", _init, _netID]; 
-		[_sCommand,"BIS_fnc_spawn",true,true] spawn BIS_fnc_MP;  
+		_sCommand = format ["{%1(objectFromNetID '%2') = this; this setVehicleVarName ""%2""}", _init, _unitname]; 
+		[_sCommand, "BIS_fnc_spawn", true, true] spawn BIS_fnc_MP;
 
-		//[{ _unitname = this; }, "BIS_fnc_spawn", _unit] spawn BIS_fnc_MP;
-		//processInitCommands;
 		_dead = false;
 	};
 };

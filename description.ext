@@ -9,13 +9,6 @@ enableDebugConsole = 2;
 #include "VAS\menu.hpp"
 
 class Params {	
-	class EmtpyLine1 {
-		title = ":: Game Settings";
-		values[]={0,0};
-		texts[]={ "",""};
-		default = 0;			
-	};
-	
     class cachesLimit {
 		title = "Total number of caches";
 		values[] = {2, 4, 6, 8, 10, 12, 14, 16};
@@ -46,6 +39,12 @@ class Params {
 		title = "Time until abandoned vehicles respawn (in seconds)";
 		values[] = {0, 10, 20, 30, 40, 50, 60, 70, 80};
 		default = 60;
+	};
+
+	class intelTimeout {
+		title = "Time until dropped intel items disappear (in seconds)";
+		values[] = {60, 120, 180, 240, 300, 360};
+		default = 120;
 	};
 
 	class casPlayerTimeout {
