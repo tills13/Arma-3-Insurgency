@@ -21,7 +21,7 @@ if (surfaceIsWater _pos) then {
 
 _grp = createGroup _side;
 
-for "_x" from 1 to _grpSize do {					
+for "_x" from 1 to _grpSize do {				
 	_unitType = _pool select (floor(random(count _pool)));
 	_unit = _grp createUnit [_unitType, _pos, [], 6, "FORM"];  
 };

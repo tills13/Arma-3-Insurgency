@@ -4,7 +4,7 @@ _unit = _this select 0;
 _unitinit = if (count _this > 1) then { _this select 1 } else { };
 _haveinit = if (count _this > 1) then { true } else { false };
 _delay = destroyedRespawnDelay;
-_deserted = 1;//abandonedRespawnDelay;
+_deserted = abandonedRespawnDelay;
 
 _hasname = false;
 _unitname = vehicleVarName _unit;
@@ -50,7 +50,7 @@ while { _run } do {
 
 		_init = "";
 		if (_hasInit) then { _init = format ["%1; ", _unitinit]; };
-		_sCommand = format ["{%1(objectFromNetID '%2') = this; this setVehicleVarName ""%2""}", _init, _unitname]; 
+		_sCommand = format ["{%1(objectFromNetID '%2') = this; this setVehicleVarName ""%2""}", _init, _unitname];
 		[_sCommand, "BIS_fnc_spawn", true, true] spawn BIS_fnc_MP;
 
 		_dead = false;

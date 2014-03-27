@@ -59,6 +59,7 @@ getCountBuildingPositions = {
 	
 	_building = _this select 0;
 	_count = 0;
+	
 	while {str(_building buildingPos _count) != "[0,0,0]"} do 
 	{
 		_count = _count + 1;

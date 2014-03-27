@@ -1,8 +1,7 @@
 if (isServer) then {
 	private ["_enemyType", "_potentialSpawns", "_cities", "_spawnBuilding", "_spawnPosition", "_i", "_m"];
 
-
-	EOS_Spawn = compile preprocessfilelinenumbers "eos\core\eos_launch.sqf";
+	EOS_Spawn = compile preprocessFileLineNumbers "eos\core\eos_launch.sqf";
 	null = [] execVM "eos\core\spawn_fnc.sqf";
 	onplayerConnected { [] execVM "eos\Functions\EOS_Markers.sqf"; };
 
@@ -14,104 +13,30 @@ if (isServer) then {
 		_cityRadA = _x select 2;
 
 		_numSpawns = 10 max random (_cityRadA / 30);
+		_mkr = str _cityName;
+		if (getMarkerPos _mkr select 0 == 0) then {
+			_marker = format["%1", _cityPos];
+			_mkr = createMarker [_marker, _cityPos];
+			_mkr setMarkerShape "ELLIPSE";
+			_mkr setMarkerType "SOLID";
+			_mkr setMarkerSize [_cityRadA, _cityRadA];
+			_mkr setMarkerColor "ColorRed";
 
-		for "_i" from 1 to _numSpawns do {
-			_pos = + _cityPos;
-			_posx = _pos select 0;
-			_posy = _pos select 1;
-
-			_xmult = 1;
-			_ymult = 1;
-			if (random 1 > 0.5) then { _xmult = -1; };
-			if (random 1 > 0.5) then { _ymult = -1; };
-			_pos set [0, _posx + random (_cityRadA / 1.5) * _xmult];
-			_pos set [1, _posy + random (_cityRadA / 1.5) * _ymult];
-
-		 	_x = _pos select 0;
-		 	_y = _pos select 1;
-		 	_x = _x - (_x % 100);
-		 	_y = _y - (_y % 100);
-		 	_markerPos = [_x + 50, _y + 50, 0];
-
-			_mkr = str _markerPos;
-			if (getMarkerPos _mkr select 0 == 0) then {
-				_marker = format["%1", _markerPos];
-				_mkr = createMarker [_marker, _markerPos];
-				_mkr setMarkerShape "RECTANGLE";
-				_mkr setMarkerType "SOLID";
-				if (debugMode) then { _mkr setMarkerText "units" };
-				_mkr setMarkerSize [50, 50];
-				_mkr setMarkerColor "ColorRed";
-
-				null = [[_mkr], [1, 2, 25], [1, 2, 25], [1, 0, 10], [0], [2, 1, 10], [1, 4, 5], [0, 2, 500, EAST, TRUE, TRUE, TRUE]] call EOS_Spawn;
-			};
+			//		marker | house | ptrl  | lv    | av   |
+			//null = [[markers], hp[grps, size, prob], ptrl[grps, size, prob], lv[grps, size, prob], av[grps, prob], static[grps, prob], helo[grgs, size, prob], [settings]] 
+			null = [[_mkr], [3, 2], [5, 2], [3, 3], [0, 0], [2, 50], [2, 3, 5], [0, 1, _cityRadA, EAST, TRUE, TRUE]] call EOS_Spawn;
 		};
 
-		for "_i" from 1 to (round (random 3)) do {
-			_pos = + _cityPos;
-			_posx = _pos select 0;
-			_posy = _pos select 1;
 
-			_xmult = 1;
-			_ymult = 1;
-			if (random 1 > 0.5) then { _xmult = -1; };
-			if (random 1 > 0.5) then { _ymult = -1; };
-			_pos set [0, _posx + random (_cityRadA / 1.5) * _xmult];
-			_pos set [1, _posy + random (_cityRadA / 1.5) * _ymult];
-
-		 	_x = _pos select 0;
-		 	_y = _pos select 1;
-		 	_x = _x - (_x % 100);
-		 	_y = _y - (_y % 100);
-		 	_markerPos = [_x + 50, _y + 50, 0];
-
-			_mkr = str _markerPos;
-			if (getMarkerPos _mkr select 0 == 0) then {
-				_marker = format["%1", _markerPos];
-				_mkr = createMarker [_marker, _markerPos];
-				_mkr setMarkerShape "RECTANGLE";
-				_mkr setMarkerType "SOLID";
-				if (debugMode) then { _mkr setMarkerText "helicopters" };
-				_mkr setMarkerSize [50, 50];
-				_mkr setMarkerColor "ColorBlue";
-
-				//null = [[_mkr], [1, 2, 25], [1, 2, 25], [1, 0, 10], [0], [2, 1, 10], [1, 4, 5], [0, 2, 500, EAST, TRUE, TRUE]] call EOS_Spawn;
-				null = [[_mkr], [0, 0, 0], [1, 1, 25], [0, 0, 0], [0, 0, 0], [1, 4, 100], [0, 2, 500, EAST, FALSE, TRUE]] call EOS_Spawn;
-			};
-		};
-
-		for "_i" from 1 to (random 5) do {
-			_pos = + _cityPos;
-			_posx = _pos select 0;
-			_posy = _pos select 1;
-
-			_xmult = 1;
-			_ymult = 1;
-			if (random 1 > 0.5) then { _xmult = -1; };
-			if (random 1 > 0.5) then { _ymult = -1; };
-			_pos set [0, _posx + random (_cityRadA / 1.5) * _xmult];
-			_pos set [1, _posy + random (_cityRadA / 1.5) * _ymult];
-
-			_x = _pos select 0;
-		 	_y = _pos select 1;
-		 	_x = _x - (_x % 100);
-		 	_y = _y - (_y % 100);
-		 	_markerPos = [_x + 50, _y + 50, 0];
-
-			_mkr = str _markerPos;
-
-			if (getMarkerPos _mkr select 0 == 0) then {
-				_marker = format["%1", _markerPos];
-				_mkr = createMarker [_marker, _markerPos];
-				_mkr setMarkerShape "RECTANGLE";
-				_mkr setMarkerType "SOLID";
-				if (debugMode) then { _mkr setMarkerText "vehicles" };
-				_mkr setMarkerSize [50, 50];
-				_mkr setMarkerColor "ColorRed";
-
-				null = [[_mkr], [1, 1, 75], [2, 2, 75], [1, 1, 100], [1, 1, 100], [0, 0, 0], [0, 2, 500, EAST, TRUE, TRUE]] call EOS_Spawn;
-			};
-		};
 	} forEach _cities;
+
+	null = [["MAINAIRFIELD"], [3, 2], [6, 2], [3, 3], [2, 50], [3, 75], [2, 2, 75], [0, 1, 500, EAST, TRUE, TRUE]] call EOS_Spawn; // EXTREME
+	null = [["MZONE", "MZONE1", "MZONE2", "MZONE3", "MZONEIMP", "EASTPP"], [4, 2], [4, 2], [3, 2], [2, 50], [3, 75], [2, 3, 25], [0, 1, 500, EAST, TRUE, TRUE]] call EOS_Spawn; // HARD
+	null = [["NEAIRFIELD", "SAIRFIELD", "AACAIRFIELD", "DESERTAIRFIELD", "MPP", "NISLAND"], [3, 2], [3, 2], [1, 3], [0, 0], [2, 50], [1, 3, 25], [0, 1, 500, EAST, TRUE, TRUE]] call EOS_Spawn; // MEDIUM
+	null = [["NAIRFIELD", "DAM", "STADIUM", "SWAMP", "MZONE4", "ERUINS", "WINDFARM", "MZONE5", "CHAPEL", "PPWEST", "CASTLE", "WINDFARM1", "NORTHTIP"], [2, 1], [3, 1], [0, 0], [0, 0], [1, 50], [0, 0, 0], [0, 1, 500, EAST, TRUE, TRUE]] call EOS_Spawn; // EASY
+	null = [["RADIOTOWER", "QUARRY", "MINE", "SLUMS"], [2, 1], [2, 1], [0, 0], [0, 0], [0, 0], [2, 2, 5], [0, 1, 500, EAST, TRUE, TRUE]] call EOS_Spawn; // JOKE
+	
+	proceed = true;
+	publicVariable "proceed";
 };
 

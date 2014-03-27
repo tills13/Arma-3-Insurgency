@@ -2,16 +2,17 @@ _object = _this select 0;
 _distance = _this select 1;
 _casType = _this select 2;
 _loc = getMarkerPos (_this select 3);
-_id = _this select 4;
+_locOrig = getMarkerPos (_this select 4);
+_id = _this select 5;
 
 if (waitCAS) exitWith { hintSilent "CAS already enroute, cancel current CAS or wait for CAS execution before next request!" };
 waitCAS = true;
 
-_canceliD = _object addAction ["Done", "abortCAS = true;"];
+_canceliD = player addAction ["Done", "abortCAS = true;"];
 
-_dir = random 360;
-_dis = 4000;
-_ranPos = [(_loc select 0) + _dis * sin _dir, (_loc select 1) + _dis * cos _dir, 1000];
+_dis = _loc distance _locOrig;
+_ranPos = _locOrig;
+
 _buzz = createVehicle ["B_Plane_CAS_01_F", _ranPos, [], 0, "FLY"];
 [_buzz] execVM "scripts\cas\track.sqf";
 _buzz setVectorDir [(_loc select 0) - (getPos _buzz select 0), (_loc select 1) - (getPos _buzz select 1), 0];
@@ -25,17 +26,17 @@ _originalPos = getPos player;
 player moveinDriver _buzz;
 
 _timeSlept = 0;
-_maxTime = 60;
 while {!abortCAS && alive _buzz} do {
 	sleep 1;
 	_timeSlept = _timeSlept + 1;
 
-	if (_timeSlept > _maxTime) then { 
+	if (_timeSlept > casPlayerTimeLimit) then {
+		player removeAction _canceliD;
 		abortCAS = true; 
-	} else { hint format["%1 seconds left", [_maxTime - _timeSlept]]; };
+	} else { hint format["%1 seconds left", [casPlayerTimeLimit - _timeSlept]]; };
 };
 
-_object removeAction _canceliD;
+player removeAction _canceliD;
 player setPos _originalPos;
 waitCAS = false;
 casRequest = false;
@@ -66,3 +67,4 @@ if (alive _buzz) then {
 deleteVehicle vehicle _buzz;
 deleteVehicle _buzz;
 deleteMarker "CAS_TARGET";
+deleteMarker "CAS_ORIG";

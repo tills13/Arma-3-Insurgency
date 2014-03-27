@@ -4,21 +4,21 @@ _object = _this select 0;
 _distance = _this select 1;
 _casType = _this select 2;
 _loc = getMarkerPos (_this select 3);
-_id = _this select 4;
+_locOrig = getMarkerPos (_this select 4);
+_id = _this select 5;
 
 if (waitCAS) exitWith { hintSilent "CAS already enroute, cancel current CAS or wait for CAS execution before next request!" };
 waitCAS = true;
 
-_canceliD = _object addAction ["Cancel CAS", "abortCAS = true;"];
+_canceliD = player addAction ["Cancel CAS", "abortCAS = true;"];
 _lockobj = createAgent ["Logic", [(_loc select 0), (_loc select 1), 0], [] , 0 , "CAN_COLLIDE"];
 _lockobj setPos _loc;
 
 _lock = getPosASL _lockobj select 2;
 _loc = visiblePosition _lockobj;
 
-_dir = random 360;
-_dis = 5000;
-_ranPos = [(_loc select 0) + _dis * sin _dir, (_loc select 1) + _dis * cos _dir, 260];
+_dis = _loc distance _locOrig;
+_ranPos = _locOrig;
 
 _grp = createGroup west;
 _buzz = createVehicle ["I_Plane_Fighter_03_CAS_F", _ranPos, [], 100, "FLY"];
@@ -78,14 +78,16 @@ while {true} do {
 if (!alive _buzz) exitwith {
 	casRequest = false;
 	deleteMarker "CAS_TARGET";
+	deleteMarker "CAS_ORIG";
 };
 
 waitCAS = false;
 if (abortCAS) exitWith {
 	_buzz move _ranPos;
 	(leader _grp) sideChat "CAS mission aborted";
-	_object removeAction _canceliD;
+	player removeAction _canceliD;
 	deleteMarker "CAS_TARGET";
+	deleteMarker "CAS_ORIG";
 
 	waitUntil{_buzz distance _object >= 2000 || !alive _buzz};
 
@@ -95,7 +97,7 @@ if (abortCAS) exitWith {
 	} forEach units _grp;
 };
 
-_object removeAction _canceliD;
+player removeAction _canceliD;
 [_buzz] spawn doCounterMeasure;
 
 _drop = createAgent ["Logic", [getPos _buzz select 0, getPos _buzz select 1, 0], [] , 0 , "CAN_COLLIDE"]; 
@@ -167,6 +169,7 @@ if ((alive _buzz) && ((_casType == "CBU") || (_casType == "COMBO"))) then {
 deleteVehicle _lockobj;
 casRequest = false;
 deleteMarker "CAS_TARGET";
+deleteMarker "CAS_ORIG";
 _grp = group _buzz;
 
 if !(_dropped) exitWith { (leader _grp) sideChat "unable to deliver ordinance!"; };

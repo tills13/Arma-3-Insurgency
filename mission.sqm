@@ -47,7 +47,7 @@ class Mission
 	};
 	class Groups
 	{
-		items=4;
+		items=5;
 		class Item0
 		{
 			side="WEST";
@@ -95,7 +95,7 @@ class Mission
 			side="WEST";
 			class Vehicles
 			{
-				items=2;
+				items=1;
 				class Item0
 				{
 					position[]={3073.8315,10.524131,18256.15};
@@ -108,18 +108,6 @@ class Mission
 					rank="SERGEANT";
 					skill=0.5;
 					ammo=0;
-				};
-				class Item1
-				{
-					position[]={9287.4014,120.63898,15859.57};
-					azimut=-52.8027;
-					special="NONE";
-					id=3;
-					side="WEST";
-					vehicle="B_Soldier_F";
-					player="PLAYER COMMANDER";
-					lock="UNLOCKED";
-					skill=0.60000002;
 				};
 			};
 		};
@@ -134,13 +122,34 @@ class Mission
 					position[]={13005.063,19.755817,17421.914};
 					azimut=-52.8027;
 					special="NONE";
-					id=4;
+					id=3;
 					side="LOGIC";
 					vehicle="Logic";
 					leader=1;
 					lock="UNLOCKED";
 					skill=0.60000002;
 					text="SERVER";
+				};
+			};
+		};
+		class Item4
+		{
+			side="WEST";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={3077.0598,10.747766,18276.281};
+					azimut=38.983002;
+					special="FLY";
+					id=4;
+					side="WEST";
+					vehicle="B_Soldier_F";
+					player="PLAYER COMMANDER";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
 				};
 			};
 		};
@@ -188,7 +197,7 @@ class Mission
 			lock="UNLOCKED";
 			skill=0.60000002;
 			text="MHQ_Device";
-			init="this addAction[""Satelite View"", player execVM ""scripts\cctv\feedInit.sqf""]; null = [this, 1000] execVM ""scripts\cas\addAction.sqf""";
+			init="null = [this, 1000] execVM ""scripts\cas\addAction.sqf""";
 		};
 		class Item3
 		{
@@ -222,7 +231,340 @@ class Mission
 			vehicle="I_Heli_light_03_unarmed_F";
 			skill=0.60000002;
 			text="ha";
-			init="_res = [this] execVM ""scripts\vehiclerespawn.sqf"";";
+		};
+	};
+	class Markers
+	{
+		items=30;
+		class Item0
+		{
+			position[]={26928.293,20.53154,24717.543};
+			name="NEAIRFIELD";
+			markerType="RECTANGLE";
+			type="Empty";
+			colorName="ColorRed";
+			fillName="FDiagonal";
+			a=250;
+			b=250;
+		};
+		class Item1
+		{
+			position[]={23173.258,3.1900001,18687.42};
+			name="DESERTAIRFIELD";
+			markerType="RECTANGLE";
+			type="Empty";
+			colorName="ColorRed";
+			fillName="FDiagonal";
+			a=300;
+			b=300;
+		};
+		class Item2
+		{
+			position[]={21106.809,20.780197,7319.4619};
+			name="SAIRFIELD";
+			markerType="RECTANGLE";
+			type="Empty";
+			colorName="ColorRed";
+			fillName="FDiagonal";
+			a=300;
+			b=300;
+		};
+		class Item3
+		{
+			position[]={14737.413,17.859119,16388.16};
+			name="MAINAIRFIELD";
+			markerType="RECTANGLE";
+			type="Empty";
+			colorName="ColorRed";
+			fillName="FDiagonal";
+			a=500;
+			b=500;
+		};
+		class Item4
+		{
+			position[]={11527.211,22.950001,11698.045};
+			name="AACAIRFIELD";
+			markerType="RECTANGLE";
+			type="Empty";
+			colorName="ColorRed";
+			fillName="FDiagonal";
+			a=300;
+			b=300;
+		};
+		class Item5
+		{
+			position[]={9151.3984,16.762421,21491.178};
+			name="NAIRFIELD";
+			markerType="RECTANGLE";
+			type="Empty";
+			colorName="ColorRed";
+			fillName="FDiagonal";
+			a=200;
+			b=200;
+		};
+		class Item6
+		{
+			position[]={15232.635,18.025324,17307.059};
+			name="MZONE";
+			markerType="RECTANGLE";
+			type="Empty";
+			colorName="ColorRed";
+			fillName="FDiagonal";
+			a=150;
+			b=150;
+		};
+		class Item7
+		{
+			position[]={25279.871,84.099815,21817.799};
+			name="MZONE2";
+			markerType="RECTANGLE";
+			type="Empty";
+			colorName="ColorRed";
+			fillName="FDiagonal";
+			a=100;
+			b=100;
+		};
+		class Item8
+		{
+			position[]={23555.449,91.168015,21115.572};
+			name="MZONE3";
+			markerType="RECTANGLE";
+			type="Empty";
+			colorName="ColorRed";
+			fillName="FDiagonal";
+			a=300;
+			b=300;
+		};
+		class Item9
+		{
+			position[]={5452.1108,27.299999,15005.085};
+			name="STADIUM";
+			markerType="RECTANGLE";
+			type="Empty";
+			colorName="ColorRed";
+			fillName="FDiagonal";
+			a=200;
+			b=200;
+		};
+		class Item10
+		{
+			position[]={9228.541,40.599041,13722.646};
+			name="DAM";
+			markerType="RECTANGLE";
+			type="Empty";
+			colorName="ColorRed";
+			fillName="FDiagonal";
+			a=200;
+			b=200;
+		};
+		class Item11
+		{
+			position[]={12838.887,88.364197,16699.117};
+			name="MZONE1";
+			markerType="RECTANGLE";
+			type="Empty";
+			colorName="ColorRed";
+			fillName="FDiagonal";
+			a=200;
+			b=200;
+		};
+		class Item12
+		{
+			position[]={20672.92,17.279833,15726.044};
+			name="EASTPP";
+			markerType="RECTANGLE";
+			type="Empty";
+			colorName="ColorRed";
+			fillName="FDiagonal";
+			a=400;
+			b=400;
+		};
+		class Item13
+		{
+			position[]={21097.453,0,14681.637};
+			name="SWAMP";
+			markerType="RECTANGLE";
+			type="Empty";
+			colorName="ColorRed";
+			fillName="FDiagonal";
+			a=600;
+			b=600;
+		};
+		class Item14
+		{
+			position[]={15485.627,12.217071,16140.597};
+			name="MPP";
+			markerType="RECTANGLE";
+			type="Empty";
+			colorName="ColorRed";
+			fillName="FDiagonal";
+			a=200;
+			b=200;
+		};
+		class Item15
+		{
+			position[]={16073.938,15.866934,17001.152};
+			name="MZONEIMP";
+			markerType="RECTANGLE";
+			type="Empty";
+			colorName="ColorRed";
+			fillName="FDiagonal";
+			a=200;
+			b=200;
+		};
+		class Item16
+		{
+			position[]={23057.678,49.069595,7277.2959};
+			name="MZONE4";
+			markerType="RECTANGLE";
+			type="Empty";
+			colorName="ColorRed";
+			fillName="FDiagonal";
+			a=200;
+			b=200;
+		};
+		class Item17
+		{
+			position[]={19354.238,196.44853,9698.4268};
+			name="RADIOTOWER";
+			markerType="RECTANGLE";
+			type="Empty";
+			colorName="ColorRed";
+			fillName="FDiagonal";
+			a=100;
+			b=100;
+		};
+		class Item18
+		{
+			position[]={21496.314,12.505264,10853.571};
+			name="ERUINS";
+			markerType="RECTANGLE";
+			type="Empty";
+			colorName="ColorRed";
+			fillName="FDiagonal";
+			a=200;
+			b=200;
+		};
+		class Item19
+		{
+			position[]={17111.145,34.558281,11342.032};
+			name="QUARRY";
+			markerType="RECTANGLE";
+			type="Empty";
+			colorName="ColorRed";
+			fillName="FDiagonal";
+			a=100;
+			b=100;
+		};
+		class Item20
+		{
+			position[]={18496.098,25.390003,14291.107};
+			name="MINE";
+			markerType="RECTANGLE";
+			type="Empty";
+			colorName="ColorRed";
+			fillName="FDiagonal";
+			a=100;
+			b=100;
+		};
+		class Item21
+		{
+			position[]={10779.206,229.67757,7641.6968};
+			name="WINDFARM";
+			markerType="RECTANGLE";
+			type="Empty";
+			colorName="ColorRed";
+			fillName="FDiagonal";
+			a=300;
+			b=100;
+		};
+		class Item22
+		{
+			position[]={12289.879,123.93518,8889.6914};
+			name="MZONE5";
+			markerType="RECTANGLE";
+			type="Empty";
+			colorName="ColorRed";
+			fillName="FDiagonal";
+			a=100;
+			b=100;
+		};
+		class Item23
+		{
+			position[]={8925.0654,75.413536,7492.6704};
+			name="CHAPEL";
+			markerType="RECTANGLE";
+			type="Empty";
+			colorName="ColorRed";
+			fillName="FDiagonal";
+			a=50;
+			b=50;
+		};
+		class Item24
+		{
+			position[]={8201.0967,15.670392,10912.099};
+			name="PPWEST";
+			markerType="RECTANGLE";
+			type="Empty";
+			colorName="ColorRed";
+			fillName="FDiagonal";
+			a=100;
+			b=100;
+		};
+		class Item25
+		{
+			position[]={6136.7319,237.35829,19806.34};
+			name="WINDFARM1";
+			markerType="RECTANGLE";
+			type="Empty";
+			colorName="ColorRed";
+			fillName="FDiagonal";
+			a=200;
+			b=100;
+		};
+		class Item26
+		{
+			position[]={4839.6016,340.15494,21939.244};
+			name="CASTLE";
+			markerType="RECTANGLE";
+			type="Empty";
+			colorName="ColorRed";
+			fillName="FDiagonal";
+			a=100;
+			b=100;
+		};
+		class Item27
+		{
+			position[]={2364.2119,61.320854,22282.119};
+			name="NORTHTIP";
+			markerType="RECTANGLE";
+			type="Empty";
+			colorName="ColorRed";
+			fillName="FDiagonal";
+			a=200;
+			b=200;
+		};
+		class Item28
+		{
+			position[]={6196.3633,27.614542,14990.806};
+			name="SLUMS";
+			markerType="RECTANGLE";
+			type="Empty";
+			colorName="ColorRed";
+			fillName="FDiagonal";
+			a=200;
+			b=200;
+		};
+		class Item29
+		{
+			position[]={8482.3223,107.94933,25079.465};
+			name="NISLAND";
+			markerType="RECTANGLE";
+			type="Empty";
+			colorName="ColorRed";
+			fillName="FDiagonal";
+			a=400;
+			b=400;
 		};
 	};
 };

@@ -39,20 +39,25 @@ if (isServer) then {
 	_this select 0
 	};
 
+
+
 	private ["_opos", "_rad", "_bpos"];
 	_opos = _this select 0;
 	if (typeName _opos == typeName objNull) then { _opos = getpos _opos };
 	_men = _this select 1;
-	_rad = if (count _this > 2) then { _this select 2 } else { 20 };
 
+	_rad = if (count _this > 2) then { _this select 2 } else { 20 };
+	
 	_bpos = [];
+	
+
 	{
 		private ["_i", "_p"];
-		for [{ _i = 0; _p = _x buildingpos _i }, { str _p != "[0, 0, 0]" }, { _i = _i + 1; _p = _x buildingpos _i }] do {
-			_bpos set [count _bpos, _p];
-		};
+	    for [{_i = 0;_p = _x buildingpos _i},{str _p != "[0,0,0]"},{_i = _i + 1;_p = _x buildingpos _i}] do {
+	      	_bpos set [count _bpos,_p];
+	    };
 	} forEach (nearestObjects [_opos, ["Building"], _rad]);
-
+	
 	// Priority
 	private "_prio";
 	if (count _this > 3) then {

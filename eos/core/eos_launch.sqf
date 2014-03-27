@@ -19,7 +19,7 @@ if (isServer) then {
 
 	_AVgrp = (_this select 4);
 	_AVehGroups = _AVgrp select 0;
-	_AVgroupProbability = if (count _AVgrp > 1) then { _AVgrp select 1 } else { 100 };
+	_AVgroupProbability = if (count _AVgrp > 1) then {_AVgrp select 1} else {100};
 
 	_SVgrp = (_this select 5);
 	_SVehGroups = _SVgrp select 0;

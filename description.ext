@@ -8,6 +8,12 @@ enableDebugConsole = 2;
 
 #include "VAS\menu.hpp"
 
+class Header {
+	gameType = Coop; 
+	minPlayers = 1; //min # of players the mission supports
+	maxPlayers = 10; //max # of players the mission supports
+};
+
 class Params {	
     class cachesLimit {
 		title = "Total number of caches";
@@ -53,6 +59,12 @@ class Params {
 		default = 30;
 	};
 
+	class casPlayerTimeLimit {
+		title = "Time in available to player controlled CAS (in seconds)";
+		values[] = {30, 60, 90, 120, 150, 180, 210, 240};
+		default = 90;
+	};
+
 	class casAITimeout {
 		title = "Time in between AI CAS requests";
 		values[] = {10, 20, 30, 40, 50, 60, 70, 80};
@@ -67,8 +79,9 @@ class Params {
 
 	class debugMode {
 		title = "Show debug messages";
-		values[] = {true, false};
-		default = false;
+		values[] = {1, 0};
+		texts[] = {"On", "Off"};
+		default = 0;
 	};
 };
 

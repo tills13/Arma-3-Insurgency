@@ -34,7 +34,7 @@ if (isServer) then {
 
 		_wps = _wps + [_p];
 	};
-
+	
 	// Create waypoints
 	private ["_cur","_wp"];
 	for "_i" from 1 to (_cnt - 1) do {
@@ -57,21 +57,24 @@ if (isServer) then {
 		};
 		
 	};
-
+	
 	// Cycle in case we reach the end
 	private "_wp1";
 	_wp1 = _grp addWaypoint [(_wps select 1), 0];
 	_wp1 setWaypointType "CYCLE";
 	_wp1 setWaypointCompletionRadius 50;
-
+	
 	if (debugMode) then {
-		while { sleep 5; {alive _x} count (units _grp) > 0 } do {
-			private ["_m","_p"];
-			_p = getPos leader _grp;
-			_m = createMarker [format["SHK_patrol_%1%2%3", (floor(_p select 0)), (floor(_p select 1)), floor time], _p];
-			_m setMarkerShape "Icon";
-			_m setMarkerType "mil_dot";
-			_m setmarkerColor "ColorBlue";
+		[_grp] spawn {
+			_grp = _this select 0;
+			while { sleep 5; {alive _x} count (units _grp) > 0 } do {
+				private ["_m","_p"];
+				_p = getPos leader _grp;
+				_m = createMarker [format["SHK_patrol_%1%2%3", (floor(_p select 0)), (floor(_p select 1)), floor time], _p];
+				_m setMarkerShape "Icon";
+				_m setMarkerType "mil_dot";
+				_m setmarkerColor "ColorBlue";
+			};
 		};
 	};	
 };

@@ -67,8 +67,8 @@ _STAskillSet = [
 1        // general
 ];
 
-server serVariable ["INFskill", _InfskillSet];
-server serVariable ["ARMskill", _ArmSkillSet];
-server serVariable ["LIGskill", _LigSkillSet];
-server serVariable ["AIRskill", _AIRskillSet];
-server serVariable ["STAskill", _STAskillSet];
+server setVariable ["INFskill", _InfskillSet];
+server setVariable ["ARMskill", _ArmSkillSet];
+server setVariable ["LIGskill", _LigSkillSet];
+server setVariable ["AIRskill", _AIRskillSet];
+server setVariable ["STAskill", _STAskillSet];

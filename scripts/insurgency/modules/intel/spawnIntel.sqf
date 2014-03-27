@@ -21,11 +21,11 @@ _cities = call SL_fnc_urbanAreas;
 	for "_i" from 1 to intelItems step 1 do {
 		if(count _cacheBuildings > 0) then {
 			_selectedItem = _intelItems call BIS_fnc_selectRandom; 
-			_targetBuilding = _cacheBuildings select (random((count _cacheBuildings)-1)); // Pull the array and select a random building from it.
+			_targetBuilding = _cacheBuildings select (random((count _cacheBuildings) - 1)); // Pull the array and select a random building from it.
 			_intelPosition = [_targetBuilding] call getRandomBuildingPosition; // Take the random building from the above result and pass it through gRBP function to get a single cache position
 			_laptop = createVehicle [_selectedItem, _intelPosition, [], 0, "None"];
 			[[_laptop,"<t color='#FF0000'>Gather Intel</t>"],"addactionMP", true, true] spawn BIS_fnc_MP;
-			_laptop setPos _intelPosition; // Move the Cache to the above select position
+			_laptop setPos _intelPosition; // Move the intel to the above select position
 			laptop set [count laptop, _laptop];
 			publicVariable "laptop";
 		};

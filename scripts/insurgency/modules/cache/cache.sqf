@@ -46,7 +46,7 @@ if (isServer || isDedicated) then {
 		_cacheBuildings = _cacheTown call SO_fnc_findHouse;
 		
 		// Pull the array and select a random building from it.
-		_targetBuilding = _cacheBuildings select (random((count _cacheBuildings)-1));
+		_targetBuilding = _cacheBuildings select (random((count _cacheBuildings) - 1));
 		// Take the random building from the above result and pass it through gRBP function to get a single cache position
 		_cachePosition = [_targetBuilding] call getRandomBuildingPosition;
 		
@@ -70,9 +70,10 @@ if (isServer || isDedicated) then {
 		cache setPos _cachePosition;
 		publicVariable "cache";
 
-		if (INS_west_score == (paramsArray select 1)) then {
+		if (INS_west_score == (cacheLimit)) then {
 			end_title = {titleText["All ammo caches have been destroyed!", "PLAIN"];};
 			[nil, "end_title", nil, true] spawn BIS_fnc_MP;
+			
 			sleep 20;
 			endMission "END1";
 		};
