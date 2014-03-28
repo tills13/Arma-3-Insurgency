@@ -27,9 +27,9 @@ if (isServer) then {
 	private ["_a","_p"];
 	while {count _wps < _cnt} do {
 		if (surfaceIsWater (getPos(leader _grp)) ) then {
-			_p = [_mkr, true] call SHK_pos;
+			_p = [_mkr, true] call shk_pos;
 		} else {
-			_p = [_mkr, true] call SHK_pos;
+			_p = [_mkr, true] call shk_pos;
 		};
 
 		_wps = _wps + [_p];

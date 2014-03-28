@@ -121,7 +121,7 @@ if (isServer) exitWith {
 			};
 
 			if (_bMin > 0) then {	
-				_pos = [_mkr, true] call SHK_pos;			
+				_pos = [_mkr, true] call shk_pos;			
 				_bGroup = [_pos, _bSize, _faction, _side] call EOS_fnc_spawngroup;
 				0 = [_bGroup, "INFskill"] call eos_fnc_grouphandlers;
 				0 = [_bGroup, _mkr] call EOS_fnc_taskpatrol;

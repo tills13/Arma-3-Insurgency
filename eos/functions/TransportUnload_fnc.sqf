@@ -6,7 +6,7 @@ _counter = (_this select 2);
 _vehicle = _veh select 0;
 _grp = _veh select 2;					
 _cargoGrp = _veh select 3;
-_pos = [_mkr, false] call SHK_pos;									
+_pos = [_mkr, false] call shk_pos;									
 _pad = createVehicle ["Land_HelipadEmpty_F", _pos, [], 0, "NONE"]; 
 if (debugMode) then { 0 = [_mkr, _counter, "Unload Pad", (getPos _pad)] call EOS_debug; };
 
