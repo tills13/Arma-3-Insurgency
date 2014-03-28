@@ -7,7 +7,7 @@ _loc = getMarkerPos (_this select 3);
 _locOrig = getMarkerPos (_this select 4);
 _id = _this select 5;
 
-if (waitCAS) exitWith { hintSilent "CAS already enroute, cancel current CAS or wait for CAS execution before next request!" };
+//if (waitCAS) exitWith { hintSilent "CAS already enroute, cancel current CAS or wait for CAS execution before next request!" };
 waitCAS = true;
 
 _canceliD = player addAction ["Cancel CAS", "abortCAS = true;"];
@@ -67,7 +67,14 @@ doCounterMeasure = {
 	};
 };
 
+_laserLoc = null;
+_notifyLaser = true;
+_notifyTarget = true;
 while {true} do {
+	_laserLoc = laserTarget player;
+	if (_buzz distance _lockobj <= 1000 && _notifyLaser) then { (leader _grp) sideChat "Laser target..."; _notifyLaser = false; };
+	if (_buzz distance _lockobj <= 1000 && !(_notifyLaser) && _notifyTarget && !isNull _laserLoc) then { (leader _grp) sideChat "Target acquired..."; _notifyTarget = false; };
+	if (_buzz distance _lockobj <= 1000 && !(_notifyLaser) && !(_notifyTarget) && isNull _laserLoc) then { (leader _grp) sideChat "Target lost!"; _notifyTarget = true; };
 	if (_buzz distance _lockobj <= 660) exitwith {};
 	if (!alive _buzz) exitwith {};
 	if (abortCAS) exitWith {};
@@ -83,7 +90,7 @@ if (!alive _buzz) exitwith {
 
 waitCAS = false;
 if (abortCAS) exitWith {
-	_buzz move _ranPos;
+	_buzz move _locOrig;
 	(leader _grp) sideChat "CAS mission aborted";
 	player removeAction _canceliD;
 	deleteMarker "CAS_TARGET";
@@ -107,7 +114,7 @@ _height = _height - _ASL;
 _dropped = false;
 
 if ((alive _buzz) && ((_casType == "JDAM") || (_casType == "COMBO"))) then {
-	_bomb = "Bo_GBU12_LGB" createvehicle [getPos _drop select 0, getPos _drop select 1, _height];
+	_bomb = "Bo_GBU12_LGB" createVehicle [getPos _drop select 0, getPos _drop select 1, _height];
 	_bomb setDir ((_loc select 0)-(getPos _bomb select 0)) atan2 ((_loc select 1)-(getPos _bomb select 1));
 	_dist = _bomb distance _loc;
 
@@ -132,7 +139,7 @@ if ((alive _buzz) && ((_casType == "JDAM") || (_casType == "COMBO"))) then {
 
 if ((alive _buzz) && ((_casType == "CBU") || (_casType == "COMBO"))) then {
 	_height = _height + 40;
-	_cbu = "Bo_GBU12_LGB" createvehicle [getPos _drop select 0, getPos _drop select 1, _height];
+	_cbu = "Bo_GBU12_LGB" createVehicle [getPos _drop select 0, getPos _drop select 1, _height];
 	_cbu setDir ((_loc select 0) - (getPos _cbu select 0)) atan2 ((_loc select 1) - (getPos _cbu select 1));
 	_dist = _cbu distance _loc;
 
@@ -153,17 +160,60 @@ if ((alive _buzz) && ((_casType == "CBU") || (_casType == "COMBO"))) then {
 	_cbu setVelocity [_bVelX, _bVelY, (velocity _cbu select 2) - _velocityZ];
 	waitUntil{ getPos _cbu select 2 <= 40 };
 	_pos = getPos _cbu;
-	_effect = "SmallSecondary" createvehicle _pos;
+	_effect = "SmallSecondary" createVehicle _pos;
 	deleteVehicle _cbu;
 
 	for "_i" from 1 to 35 do {
-		_explo = "G_40mm_HEDP" createvehicle _pos;
+		_explo = "G_40mm_HEDP" createVehicle _pos;
 		_explo setVelocity [-35 + (random 70),-35 + (random 70),-50];
 		sleep 0.025;
 	};
 
 	deleteVehicle _drop;
 	_dropped = true;
+};
+
+_homeMissile = {
+	private ["_velocityX", "_velocityY", "_velocityZ", "_target"];
+	_bomb = _this select 0;
+	_target = _this select 1;
+	_bombSpeed = 100;
+
+	if (_bomb distance _target > (_bombSpeed / 20)) then {
+		_travelTime = (_target distance _bomb) / _bombSpeed;
+
+		_relDirHor = [_bomb, _target] call BIS_fnc_DirTo;
+		_bomb setDir _relDirHor;
+
+		_relDirVer = asin ((((getPosASL _bomb) select 2) - ((getPosASL _target) select 2)) / (_target distance _bomb));
+		_relDirVer = (_relDirVer * -1);
+		[_bomb, _relDirVer, 0] call BIS_fnc_setPitchBank;
+
+		_velocityX = (((getPosASL _target) select 0) - ((getPosASL _bomb) select 0)) / _travelTime;
+		_velocityY = (((getPosASL _target) select 1) - ((getPosASL _bomb) select 1)) / _travelTime;
+		_velocityZ = (((getPosASL _target) select 2) - ((getPosASL _bomb) select 2)) / _travelTime;
+	};
+
+	[_velocityX, _velocityY, _velocityZ]
+};
+
+if ((alive _buzz) && (_casType == "GBU")) then {
+	if !(isNull _laserLoc) then {
+		_bomb = "Bo_GBU12_LGB" createVehicle [getPos _drop select 0, getPos _drop select 1, _height];
+		_bomb setDir ((_loc select 0)-(getPos _bomb select 0)) atan2 ((_loc select 1)-(getPos _bomb select 1));
+
+		(leader _grp) sideChat "GBU away...";
+		while {alive _bomb} do {
+			if !(isNull (laserTarget player)) then { _laserLoc = laserTarget player; };
+			_velocityForCheck = [_bomb, _laserLoc] call _homeMissile;
+			if ({(typeName _x) == (typeName 0)} count _velocityForCheck == 3) then { _bomb setVelocity _velocityForCheck };
+			hint str getPos _bomb;
+			sleep 1.0;
+		};
+
+		deleteVehicle _drop;
+		_dropped = true;
+	};
 };
 
 deleteVehicle _lockobj;

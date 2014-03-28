@@ -26,28 +26,26 @@ casRequest = false;
 timeSlept = 0;
 hint "Indicate CAS target by shift-clicking a position on the map, then alt-click to choose where the CAS will originate from (straight line from that point)";
 
-targetPos = [];
-origPos = [];
+targetPos = [0,0,0];
+origPos = [0,0,0];
 
 while { mapListen } do {
 	onMapSingleClick "
 		if (_shift) then {
-			deleteMarker 'CAS_TARGET';
-			_marker = createMarker['CAS_TARGET', _pos];
-			_marker setMarkerType 'mil_destroy';
-			_marker setMarkerSize[0.5, 0.5];
-			_marker setMarkerColor 'ColorRed';
-			_marker setMarkerText ' TARGET';
-
-			nearTargetList = [];
-			nearestVeh = objNull;
-
 			if ((player distance _pos) > maxDisReq) then {
 				hintSilent format ['Max distance to target is limited to %1m', maxDisReq];
 				deleteMarker 'CAS_TARGET';
 			} else { 
 				targetPos = _pos;
-				if (!(str targetPos == '[]') && !(str origPos == '[]')) then {
+
+				deleteMarker 'CAS_TARGET';
+				_marker = createMarker['CAS_TARGET', _pos];
+				_marker setMarkerType 'mil_destroy';
+				_marker setMarkerSize[0.5, 0.5];
+				_marker setMarkerColor 'ColorRed';
+				_marker setMarkerText ' TARGET';
+
+				if (!(str targetPos == '[0,0,0]') && !(str origPos == '[0,0,0]')) then {
 					mapListen = false; casRequest = true; abortCAS = false;
 				}; 
 			};
@@ -56,25 +54,29 @@ while { mapListen } do {
 		};
 
 		if (_alt) then {
-			deleteMarker 'CAS_ORIG';
-			_marker = createMarker['CAS_ORIG', _pos];
-			_marker setMarkerType 'mil_destroy';
-			_marker setMarkerSize[0.5, 0.5];
-			_marker setMarkerColor 'ColorBlue';
-			_marker setMarkerText ' ORIGIN';
+			if (str targetPos == '[0,0,0]') then {
+				hintSilent 'Set target position first.'
+			} else {
+				if ((targetPos distance _pos) < 3000) then {
+					hintSilent format ['Min distance from target is limited to %1m', 3000];
+					deleteMarker 'CAS_ORIG';
+				} else { 
+					origPos = _pos;
+					origPos set [2, 500];
 
-			nearTargetList = [];
-			nearestVeh = objNull;
-
-			if ((player distance _pos) < 3000) then {
-				hintSilent format ['Min distance from target is limited to %1m', 3000];
-				deleteMarker 'CAS_ORIG';
-			} else { 
-				origPos = _pos;
-				if (!(str targetPos == '[]') && !(str origPos == '[]')) then {
-					mapListen = false; casRequest = true; abortCAS = false;
+					deleteMarker 'CAS_ORIG';
+					_marker = createMarker['CAS_ORIG', _pos];
+					_marker setMarkerType 'mil_destroy';
+					_marker setMarkerSize[0.5, 0.5];
+					_marker setMarkerColor 'ColorBlue';
+					_marker setMarkerText ' ORIGIN';
+					
+					if (!(str targetPos == '[0,0,0]') && !(str origPos == '[0,0,0]')) then {
+						mapListen = false; casRequest = true; abortCAS = false;
+					};
 				};
 			};
+			
 
 			onMapSingleClick '';
 		}; 
@@ -84,7 +86,7 @@ while { mapListen } do {
 
 	sleep 0.2;
 	timeSlept = timeSlept + 0.2;
-	if (timeSlept > 20) then { 
+	if (timeSlept > 30) then { 
 		hint "CAS request timed out";
 		mapListen = false; 
 	};

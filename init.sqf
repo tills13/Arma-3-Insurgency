@@ -8,7 +8,7 @@ abandonedRespawnDelay = paramsarray select 4;
 intelTimeout = paramsarray select 5;
 casPlayerTimeout = paramsarray select 6;
 casPlayerTimeLimit = paramsarray select 7;
-casAITimeout = paramsarray select 8;
+casAITimeout = 0;// = paramsarray select 8;
 weatherChangeRate = paramsarray select 9;
 debugMode = if ((paramsarray select 10) == 1) then {true} else {false};
 

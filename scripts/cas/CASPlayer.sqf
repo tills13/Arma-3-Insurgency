@@ -9,11 +9,12 @@ if (waitCAS) exitWith { hintSilent "CAS already enroute, cancel current CAS or w
 waitCAS = true;
 
 _canceliD = player addAction ["Done", "abortCAS = true;"];
+_task = player createSimpleTask ["CAS Target"];
+_task setSimpleTaskDestination (_loc);
 
 _dis = _loc distance _locOrig;
-_ranPos = _locOrig;
 
-_buzz = createVehicle ["B_Plane_CAS_01_F", _ranPos, [], 0, "FLY"];
+_buzz = createVehicle ["B_Plane_CAS_01_F", _locOrig, [], 0, "FLY"];
 [_buzz] execVM "scripts\cas\track.sqf";
 _buzz setVectorDir [(_loc select 0) - (getPos _buzz select 0), (_loc select 1) - (getPos _buzz select 1), 0];
 
@@ -32,11 +33,13 @@ while {!abortCAS && alive _buzz} do {
 
 	if (_timeSlept > casPlayerTimeLimit) then {
 		player removeAction _canceliD;
+		player removeSimpleTask _task;
 		abortCAS = true; 
 	} else { hint format["%1 seconds left", [casPlayerTimeLimit - _timeSlept]]; };
 };
 
 player removeAction _canceliD;
+player removeSimpleTask _task;
 player setPos _originalPos;
 waitCAS = false;
 casRequest = false;
@@ -61,7 +64,7 @@ if (alive _buzz) then {
 		};
 	};
 
-	waitUntil{ _buzz distance _object >= 4000 || !alive _buzz };
+	waitUntil{ _buzz distance _object >= 3000 || !alive _buzz };
 };
 
 deleteVehicle vehicle _buzz;
