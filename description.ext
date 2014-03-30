@@ -9,7 +9,7 @@ enableDebugConsole = 2;
 #include "VAS\menu.hpp"
 
 class Header {
-	gameType = Coop; 
+	gameType = COOP; 
 	minPlayers = 1; //min # of players the mission supports
 	maxPlayers = 10; //max # of players the mission supports
 };
