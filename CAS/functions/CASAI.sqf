@@ -7,7 +7,7 @@ _loc = getMarkerPos (_this select 3);
 _locOrig = getMarkerPos (_this select 4);
 _id = _this select 5;
 
-//if (waitCAS) exitWith { hintSilent "CAS already enroute, cancel current CAS or wait for CAS execution before next request!" };
+if (waitCAS) exitWith { hintSilent "CAS already enroute, cancel current CAS or wait for CAS execution before next request!" };
 waitCAS = true;
 
 _canceliD = player addAction ["Cancel CAS", "abortCAS = true;"];
@@ -22,7 +22,7 @@ _ranPos = _locOrig;
 
 _grp = createGroup west;
 _buzz = createVehicle ["I_Plane_Fighter_03_CAS_F", _ranPos, [], 100, "FLY"];
-[_buzz] execVM "scripts\cas\track.sqf";
+[_buzz] execVM "cas\track.sqf";
 _buzz setVectorDir [(_loc select 0) - (getPos _buzz select 0), (_loc select 1) - (getPos _buzz select 1), 0];
 
 sleep 0.2;
@@ -229,6 +229,7 @@ _countDown = [] spawn {
 	while { timeUntilNextCAS > 0 } do {
 		sleep 1;
 		timeUntilNextCAS = timeUntilNextCAS - 1; 
+		publicVariable "timeUntilNextCAS";
 	};
 };
 

@@ -16,7 +16,6 @@ _injured = (_this select 3) select 1;
 _id = _this select 2;
 
 if (vehicle _injured == _loaded_vehicle) then {
-	// Unload
 	_injured action ["EJECT", vehicle _injured];
 	
 	// Swtich move
@@ -31,7 +30,6 @@ if (vehicle _injured == _loaded_vehicle) then {
 	player sidechat format["'%1' unloaded from '%2'",name _injured, getText(configFile >> 'CfgVehicles' >> typeOf _loaded_vehicle >> 'displayname')];
 };
 
-// Remove unload action
 INS_REV_GVAR_del_unload = [_loaded_vehicle, _injured];
 publicVariable "INS_REV_GVAR_del_unload";
 ["INS_REV_GVAR_del_unload", INS_REV_GVAR_del_unload] spawn INS_REV_FNCT_remove_unload_action;

@@ -19,5 +19,5 @@ if (alive _dest) then {
 
 	{ _x moveInCargo _dest; } forEach units group _player; // move all in group with you
 } else {
-	hintSilent format["%1 current not available", vehicleVarName _dest];
+	hintSilent format["%1 currently not available", vehicleVarName _dest];
 };

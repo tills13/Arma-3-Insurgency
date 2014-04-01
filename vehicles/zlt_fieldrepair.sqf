@@ -11,20 +11,20 @@
 #define DEFAULT_REPAIR_TRUCK_USES 5
 #define DEFAULT_FREE_REPAIRS 1
 
-#define STR_FIELD_REPAIR "Field repair"
-#define STR_CANCEL_ACTION "Cancel action"
-#define STR_SERIOUS_REPAIR "Full repair"
-#define STR_REPAIR_CONDITIONS "Bad conditions for repair"
-#define STR_ANOTHER_ACTION "Another action in progress"
-#define STR_NEED_TOOLKIT "Need ToolKit in inventory yours or vehicle."
-#define STR_REPAIR_INTERRUPTED "Repair interrupted"
-#define STR_REPAIR_FINISHED "Repair finished"
-#define STR_REPAIR_MSG_STRING "%2 will be repaired in %1 sec"
-#define STR_REPAIR_TRUCK_DEPLETED "Spare parts depleted in repair truck"
+#define STR_FIELD_REPAIR "Field Repair"
+#define STR_CANCEL_ACTION "Cancel Action"
+#define STR_SERIOUS_REPAIR "Full Repair"
+#define STR_REPAIR_CONDITIONS "Bad Conditions for Repair"
+#define STR_ANOTHER_ACTION "Another Action in Progress"
+#define STR_NEED_TOOLKIT "Need ToolKit in Inventory (player or vehicle)"
+#define STR_REPAIR_INTERRUPTED "Repair Interrupted"
+#define STR_REPAIR_FINISHED "Repair Finished"
+#define STR_REPAIR_MSG_STRING "%2 will be repaired in %1 second(s)"
+#define STR_REPAIR_TRUCK_DEPLETED "Spare Parts Depleted in Repair Truck"
 #define STR_HELP "Realistic field repair (Author: Zealot) <br/>Script gives each player ability to repair vehicles. <br/>- Repair lasts for 40-400 sec. (Longer for heavy damaged vehicles), it can be interrupted and the continued, time saves.<br/>- Each vehicle could be repaired 1 time for spare parts stored in the vehicle itself.For the next repairs you should have Toolkit in your backpack or in vehicle cargo.<br/>- Field repair fixes only some parts of the vehicle and only to 'Yellow state'.<br/>- Repair from repair trucks lasts 3 min. but completely repairs vehicles. Repair truck can be used 5 times, then spare parts in it will be depleted.<br/>- To use repair truck you should sat on the drivers place of the repair truck then look on damaged vehicle and select 'Full repair' in menu.<br/>"
 #define STR_SCRIPTS_NAME "Scripts"
-#define STR_SCRIPT_NAME "Field repair"
-#define STR_PUSH_APC "Push vehicle"
+#define STR_SCRIPT_NAME "Field Repair"
+#define STR_PUSH_APC "Push Vehicle"
 
 zlt_repair_loop = [_this, 0, false] call BIS_fnc_param;
 
@@ -38,6 +38,7 @@ if (isServer) then {
 					_x setVariable ["zlt_repair_cargo", 1, true]; 
 				};
 			} foreach vehicles;
+
 			_first = false;
 			sleep 26.1;
 		};
@@ -92,8 +93,6 @@ zlt_fnc_vehicledamaged = {
 	_flag;
 };
 
-
-
 zlt_frpr_getPartsRepairTime = {
 	private ["_veh","_vehtype","_flag"];
 	_veh =  [_this, 0] call BIS_fnc_param;
@@ -110,7 +109,7 @@ zlt_frpr_getPartsRepairTime = {
 };
 
 zlt_fnc_notify = {
-	 [ format["<t size='0.75' color='#ffff00'>%1</t>",_this], 0,1,5,0,0,301] spawn bis_fnc_dynamicText;
+	 [format["<t size='0.75' color='#ffff00'>%1</t>", _this], 0 , 1, 5, 0, 0, 301] spawn bis_fnc_dynamicText;
 };
 
 zlt_fnc_hastk = {
@@ -118,15 +117,15 @@ zlt_fnc_hastk = {
 	_ret = 0;
 	if ("ToolKit" in (items player)) then {_ret = 1;};
 	if ("ToolKit" in (itemCargo _veh)) then {_ret = 2;};
-	if ( (_veh getVariable ["zlt_longrepair_times",0] ) < DEFAULT_FREE_REPAIRS) then {_ret = 3;};
+	if ((_veh getVariable ["zlt_longrepair_times",0]) < DEFAULT_FREE_REPAIRS) then {_ret = 3;};
 	_ret;
 };
 
 
 zlt_fnc_removeitemfromcargo = {
 	private ["_veh"];
-	_item = [_this,0,""] call BIS_fnc_param;
-	_veh = [_this,1] call BIS_fnc_param;
+	_item = [_this, 0, ""] call BIS_fnc_param;
+	_veh = [_this, 1] call BIS_fnc_param;
 	_allitems = itemcargo _veh;
 	clearItemCargoGlobal _veh;
 	_allitems = _allitems call BIS_fnc_consolidateArray;
@@ -154,8 +153,7 @@ zlt_prc_repairvehicle = {
 	_vehname = getText ( configFile >> "CfgVehicles" >> typeOf(_veh) >> "displayName");
 	_length = _maxlength;
 	_cycle = 0;
-	while {alive player and (player distance _veh) < 7 and (vehicle player == player) and speed _veh < 3 and not _repairFinished and zlt_mutexAction and (_cycle < 3 or (["medic",animationState player] call BIS_fnc_inString))} do {		
-	//	diag_log ("ANIM STATE = "+str(animationState player));	
+	while {alive player and (player distance _veh) < 7 and (vehicle player == player) and speed _veh < 3 and not _repairFinished and zlt_mutexAction and (_cycle < 3 or (["medic",animationState player] call BIS_fnc_inString))} do {
 		(format[STR_REPAIR_MSG_STRING, _length, _vehname] ) call zlt_fnc_notify;
 		if (_length <= 0) then {_repairFinished = true;};
 		_length = _length - 1;
@@ -164,6 +162,7 @@ zlt_prc_repairvehicle = {
 		if (_hastk <= 0) exitWith {STR_NEED_TOOLKIT call zlt_fnc_notify; sleep 1.;};	
 		_cycle = _cycle + 1;
 	};
+
 	if (_repairFinished) then {
 		_hastk = [] call zlt_fnc_hastk;
 		if (_hastk == 0) exitWith {STR_NEED_TOOLKIT call zlt_fnc_notify; sleep 1.;};	
@@ -192,18 +191,18 @@ zlt_fnc_repair_cond = {
 	_ret;
 };
 
-
-
 zlt_fnc_heavyRepair = {
 	_caller = player;
 	_truck = vehicle _caller;
 	_veh = cursorTarget;
+
 	if (isNil "_veh" or {isNull _truck} or {isNull _veh}) exitWith {false};
 	 
 	
 	if (zlt_mutexAction) exitWith {
 		STR_ANOTHER_ACTION call zlt_fnc_notify;
 	};
+
 	if (_truck getVariable ["zlt_repair_cargo", 0] <= 0) then {
 		STR_REPAIR_TRUCK_DEPLETED call zlt_fnc_notify;
 	};
@@ -213,8 +212,9 @@ zlt_fnc_heavyRepair = {
 	_repairFinished = false;
 	zlt_mutexAction = true;	
 	_maxlength = _veh getVariable["zlt_longrepairTruck",DEFAULT_FULLREPAIR_LENGTH];
-	_vehname = getText ( configFile >> "CfgVehicles" >> typeOf(_veh) >> "displayName");
+	_vehname = getText (configFile >> "CfgVehicles" >> typeOf(_veh) >> "displayName");
 	_length = _maxlength;
+
 	while { alive player and alive _truck and alive _veh and vehicle _caller != _caller and speed _veh <= 3 and not _repairFinished and zlt_mutexAction and _veh distance _truck <= 15 } do {			
 		(format[STR_REPAIR_MSG_STRING, _length, _vehname] ) call zlt_fnc_notify;
 		if (_length <= 0) then {_repairFinished = true;};
@@ -231,7 +231,7 @@ zlt_fnc_heavyRepair = {
 		_veh setVariable["zlt_fullrepair_times", (_veh getVariable ["zlt_fullrepair_times",0]) + 1 , true ];
 	} else {
 		STR_REPAIR_INTERRUPTED call zlt_fnc_notify;
-		_veh setVariable["zlt_longrepairTruck",_length, true];
+		_veh setVariable["zlt_longrepairTruck", _length, true];
 	};
 	zlt_mutexAction = false;  	
 };
@@ -242,13 +242,12 @@ zlt_pushapc = {
 
 	if (zlt_mutexAction) exitWith {};
 	zlt_mutexAction = true;
-	sleep 1.;
+	sleep 1.0;
 	_spd = 3;
 	_dir = direction _veh;
-	_veh setVelocity [(sin _dir)*_spd, (cos _dir)*_spd, 0];  
+	_veh setVelocity [(sin _dir) * _spd, (cos _dir) * _spd, 0];  
 	zlt_mutexAction = false;
 };
-
 
 // obsolete
 zlt_fnc_heavyRepairCOnd = {

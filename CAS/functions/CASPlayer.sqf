@@ -61,6 +61,7 @@ if (alive _buzz) then {
 		while { timeUntilNextCAS > 0 } do {
 			sleep 1;
 			timeUntilNextCAS = timeUntilNextCAS - 1; 
+			publicVariable "timeUntilNextCAS";
 		};
 	};
 
