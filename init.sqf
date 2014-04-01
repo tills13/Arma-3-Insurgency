@@ -1,4 +1,5 @@
-waitUntil { isServer || !isNull player };
+if (!isServer && isNull player) then {isJIP=true;} else {isJIP=false;};
+if (!isDedicated) then {waitUntil {!isNull player && isPlayer player};};
 
 cacheLimit = paramsarray select 0;
 intelItems = paramsarray select 1;
@@ -36,7 +37,7 @@ bastionColor = "colorOrange";
 
 call compile preprocessfilelinenumbers "scripts\insurgency\init.sqf";
 execVM "scripts\cas\initCAS.sqf";
-[] execVM "zlt_fieldrepair.sqf";
+[] execVM "scripts\vehicles\zlt_fieldrepair.sqf";
 [] execVM "INS_revive\revive_init.sqf";
 
 waitUntil {!isNil "INS_REV_FNCT_init_completed"};

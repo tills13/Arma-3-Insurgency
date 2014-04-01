@@ -83,8 +83,17 @@ class Params {
 		texts[] = {"On", "Off"};
 		default = 0;
 	};
+
+	#include "INS_revive\params.hpp"
+};
+
+class RscTitles {
+	//// Respawn Script - Start ////
+	#include "INS_revive\rsctitles.hpp"
+	//// Respawn Script - End   ////
 };
 
 class CfgFunctions {
+	#include "INS_revive\cfgfunctions.hpp"
 	#include "VAS\cfgfunctions.hpp"
 };
