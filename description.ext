@@ -94,6 +94,5 @@ class RscTitles {
 };
 
 class CfgFunctions {
-	#include "INS_revive\cfgfunctions.hpp"
 	#include "VAS\cfgfunctions.hpp"
 };

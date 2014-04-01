@@ -35,8 +35,8 @@ bastionColor = "colorOrange";
 #include "scripts\insurgency\core\cacheFunctions.sqf"
 #include "scripts\insurgency\core\cacheGetPositions.sqf"
 
-//call compile preprocessfilelinenumbers "scripts\insurgency\init.sqf";
-//execVM "scripts\cas\initCAS.sqf";
+call compile preprocessfilelinenumbers "scripts\insurgency\init.sqf";
+execVM "scripts\cas\initCAS.sqf";
 [] execVM "scripts\vehicles\zlt_fieldrepair.sqf";
 [] execVM "INS_revive\revive_init.sqf";
 
