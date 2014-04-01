@@ -35,12 +35,12 @@ bastionColor = "colorOrange";
 #include "scripts\insurgency\core\cacheFunctions.sqf"
 #include "scripts\insurgency\core\cacheGetPositions.sqf"
 
-call compile preprocessfilelinenumbers "scripts\insurgency\init.sqf";
-execVM "scripts\cas\initCAS.sqf";
+//call compile preprocessfilelinenumbers "scripts\insurgency\init.sqf";
+//execVM "scripts\cas\initCAS.sqf";
 [] execVM "scripts\vehicles\zlt_fieldrepair.sqf";
 [] execVM "INS_revive\revive_init.sqf";
 
-waitUntil {!isNil "INS_REV_FNCT_init_completed"};
+//waitUntil {!isNil "INS_REV_FNCT_init_completed"};
 
 // AI scripts 
 //nul = [450,900,30,300,6,[1,1,0],player,"default",1,2500,nil,["CARELESS","SAD"],true] execVM "LV\ambientCombat.sqf";
