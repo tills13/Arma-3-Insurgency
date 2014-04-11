@@ -40,9 +40,9 @@ class Params {
 		default = 0;
 	};
 
-	#include "Insurgency\params.hpp"
+	#include "insurgency\params.hpp"
 	#include "INS_revive\params.hpp"
-	#include "Cas\params.hpp"
+	#include "cas\params.hpp"
 };
 
 class RscTitles {

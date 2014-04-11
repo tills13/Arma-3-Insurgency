@@ -71,7 +71,7 @@ if (isServer || isDedicated) then {
 		cache setPos _cachePosition;
 		publicVariable "cache";
 
-		if (INS_west_score == (cacheLimit)) then {
+		if (INS_west_score == (INS_numCaches)) then {
 			end_title = {titleText["All ammo caches have been destroyed!", "PLAIN"];};
 			[nil, "end_title", nil, true] spawn BIS_fnc_MP;
 			

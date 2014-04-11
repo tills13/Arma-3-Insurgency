@@ -5,6 +5,11 @@ _argArr = _this select 3;
 
 if (timeUntilNextCAS > 0) exitWith { hint format["%1 seconds until CAS is available", timeUntilNextCAS]; };
 
+deleteMarker "maxDist";
+deleteMarker "minDistOrig";
+deleteMarker "CAS_TARGET";
+deleteMarker "CAS_ORIG";
+
 maxDisReq = (_this select 3) select 0;
 casType = (_this select 3) select 1;
 
@@ -100,6 +105,6 @@ if (!casRequest) then {
 	deleteMarker "CAS_TARGET";
 	deleteMarker "CAS_ORIG";
 } else { 
-	if (casType != "GAU") then { [_owner, maxDisReq, casType, "CAS_TARGET", "CAS_ORIG", _id] execVM "cas\CASAI.sqf"; }
+	if (casType != "GAU") then { [_owner, maxDisReq, "CAS_TARGET", "CAS_ORIG", _id] execVM "cas\CASAI.sqf"; }
 	else { [_owner, maxDisReq, casType, "CAS_TARGET", "CAS_ORIG", _id] execVM "cas\CASPlayer.sqf"; };
 };

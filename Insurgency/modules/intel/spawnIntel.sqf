@@ -18,7 +18,7 @@ _cities = call SL_fnc_urbanAreas;
 
 	_cacheBuildings = [_cityPos, _cityRadA] call SL_fnc_findBuildings;
 
-	for "_i" from 1 to intelItems step 1 do {
+	for "_i" from 1 to INS_intelItems step 1 do {
 		if(count _cacheBuildings > 0) then {
 			_selectedItem = _intelItems call BIS_fnc_selectRandom; 
 			_targetBuilding = _cacheBuildings select (random((count _cacheBuildings) - 1)); // Pull the array and select a random building from it.

@@ -127,14 +127,12 @@ KRON_Replace = {
 // End of Kronzky's code
 
 // Start monitoring the vehicle
-while {_run} do 
-{    
+while {_run} do {    
     sleep (2 + random 10);
-      if ((getDammage _unit > 0.8) and ({alive _x} count crew _unit == 0)) then {_dead = true};
+    if ((getDammage _unit > 0.8) and ({alive _x} count crew _unit == 0)) then {_dead = true};
 
     // Check if the vehicle is deserted.
-    if (_deserted > 0) then
-    {
+    if (_deserted > 0) then {
         if ((getPosASL _unit distance _position > 10) and ({alive _x} count crew _unit == 0) and (getDammage _unit < 0.8)) then 
         {
             _timeout = time + _deserted;

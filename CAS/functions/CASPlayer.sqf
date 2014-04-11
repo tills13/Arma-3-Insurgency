@@ -1,14 +1,13 @@
 _object = _this select 0;
 _distance = _this select 1;
-_casType = _this select 2;
-_loc = getMarkerPos (_this select 3);
-_locOrig = getMarkerPos (_this select 4);
-_id = _this select 5;
+_loc = getMarkerPos (_this select 2);
+_locOrig = getMarkerPos (_this select 3);
+_id = _this select 4;
 
 if (waitCAS) exitWith { hintSilent "CAS already enroute, cancel current CAS or wait for CAS execution before next request!" };
 waitCAS = true;
 
-_canceliD = player addAction ["Done", "abortCAS = true;"];
+_cancelID = player addAction ["Done", "abortCAS = true;"];
 _task = player createSimpleTask ["CAS Target"];
 _task setSimpleTaskDestination (_loc);
 
@@ -32,13 +31,13 @@ while {!abortCAS && alive _buzz} do {
 	_timeSlept = _timeSlept + 1;
 
 	if (_timeSlept > casPlayerTimeLimit) then {
-		player removeAction _canceliD;
+		player removeAction _cancelID;
 		player removeSimpleTask _task;
 		abortCAS = true; 
 	} else { hint format["%1 seconds left", [casPlayerTimeLimit - _timeSlept]]; };
 };
 
-player removeAction _canceliD;
+player removeAction _cancelID;
 player removeSimpleTask _task;
 player setPos _originalPos;
 waitCAS = false;
@@ -56,16 +55,16 @@ if (alive _buzz) then {
 
 	_buzz move _ranPos;
 
-	_countDown = [] spawn {
-		timeUntilNextCAS = casPlayerTimeout;
-		while { timeUntilNextCAS > 0 } do {
-			sleep 1;
-			timeUntilNextCAS = timeUntilNextCAS - 1; 
-			publicVariable "timeUntilNextCAS";
-		};
-	};
-
 	waitUntil{ _buzz distance _object >= 3000 || !alive _buzz };
+};
+
+_countDown = [] spawn {
+	timeUntilNextCAS = casPlayerTimeout;
+	while { timeUntilNextCAS > 0 } do {
+		sleep 1;
+		timeUntilNextCAS = timeUntilNextCAS - 1; 
+		publicVariable "timeUntilNextCAS";
+	};
 };
 
 deleteVehicle vehicle _buzz;
