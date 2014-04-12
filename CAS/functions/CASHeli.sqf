@@ -22,7 +22,7 @@ _grp setBehaviour "COMBAT";
 _grp setSpeedMode "FULL";
 _grp setCombatMode "BLUE";
 
-_helo move _ranPos;
+_helo move _loc;
 
 while { true } do {
 	if (abortCAS or !(alive _helo)) then {
@@ -33,6 +33,7 @@ while { true } do {
 };
 
 while {!abortCAS && alive _helo} do {
+	// helo should circle the location
 	sleep 1;
 	_timeSlept = _timeSlept + 1;
 
@@ -43,8 +44,17 @@ while {!abortCAS && alive _helo} do {
 	} else { hint format["%1 seconds left", [casPlayerTimeLimit - _timeSlept]]; };
 };
 
+player removeAction _cancelID;
+_helo move _locOrig; // move back to original location
+
+waitUntil{ _helo distance _object >= 2000 || !alive _buzz };
+
+{
+	deleteVehicle vehicle _x;
+	deleteVehicle _x;
+} forEach units _grp;
+
 waitCAS = false;
 casRequest = false;
 deleteMarker "CAS_TARGET";
 deleteMarker "CAS_ORIG";
-player removeAction _cancelID;

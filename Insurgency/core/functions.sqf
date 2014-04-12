@@ -21,6 +21,7 @@ SL_fnc_urbanAreas = {
 			_i = _i + 1;
 		};
 	};
+	
 	_cities;
 };
 
