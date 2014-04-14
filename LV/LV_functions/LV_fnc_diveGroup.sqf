@@ -42,6 +42,7 @@ _i = 0;
 for "_i" from 0 to _amount do {
 	_man1 = _men select (floor(random(count _men)));
 	_man = _grp createUnit [_man1, _pos, [], 0, "NONE"];
+	_man execVM "insurgency\modules\ai\deathListener.sqf";
 	sleep 0.3 ;
 };
 

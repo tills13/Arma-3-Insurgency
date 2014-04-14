@@ -197,6 +197,7 @@ if(_grpSize > (getNumber (configFile >> "CfgVehicles" >> _heliT >> "transportSol
 
 _man1 = _men select (floor(random(count _men)));
 _man = _grp1 createUnit [_man1, _pos, [], 0, "NONE"];
+_man execVM "insurgency\modules\ai\deathListener.sqf";
 _man moveInDriver _heli;
 _man setUnitRank "SERGEANT";
 if(_precise)then{_man setBehaviour "CARELESS";};
@@ -224,6 +225,7 @@ _i = 1;
 for "_i" from 1 to _vehSpots do {
 	_man1 = _men select (floor(random(count _men)));
 	_man2 = _grp2 createUnit [_man1, _pos, [], 0, "NONE"];
+	_man2 execVM "insurgency\modules\ai\deathListener.sqf";
 	if(typeName _skills != "STRING")then{_skls = [_man2,_skills] call LV_ACskills;};
 	_man2 moveInCargo _heli;
 	if(!isNil("_customInit"))then{ 
@@ -233,6 +235,7 @@ for "_i" from 1 to _vehSpots do {
 if((_vehSpots == 0)&&(_grpSize > 0))then{
 	_man1 = _men select (floor(random(count _men)));
 	_man2 = _grp2 createUnit [_man1, _pos, [], 0, "NONE"];
+	_man2 execVM "insurgency\modules\ai\deathListener.sqf";
 	if(typeName _skills != "STRING")then{_skls = [_man2,_skills] call LV_ACskills;};
 	_man2 moveInTurret [_heli, [0]];
 	if(!isNil("_customInit"))then{ 

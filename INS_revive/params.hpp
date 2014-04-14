@@ -1,4 +1,3 @@
-// Call defalt value
 #include "config.hpp"
 
 class TitleLine {

@@ -69,5 +69,3 @@ while{_i < (count LV_ACS_activeGroups)}do{
 	}forEach units _grp;
 	LV_ACS_activeGroups = LV_ACS_activeGroups - [_grp];
 };
-
-//hint "end";

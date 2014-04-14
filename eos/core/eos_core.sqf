@@ -62,7 +62,6 @@ if (isServer) exitWith {
 			};
 		};
 
-		hint "other";
 		_eosActivated = createTrigger ["EmptyDetector", _mPos]; 
 		_eosActivated setTriggerArea [(_distance + _mkrX), (_distance + _mkrY), _mkrAgl, FALSE]; 
 		_eosActivated setTriggerActivation ["ANY", "PRESENT", true];
@@ -71,7 +70,6 @@ if (isServer) exitWith {
 
 		server setVariable [_trig, _eosActivated];	
 	} else {
-		hint "trig";
 		_eosActivated = server getVariable _trig;	
 	};
 

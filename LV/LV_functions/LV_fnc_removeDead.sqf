@@ -29,6 +29,3 @@ while{true}do{
   
   sleep 50;
 };
-
-//wrecks
-//groups

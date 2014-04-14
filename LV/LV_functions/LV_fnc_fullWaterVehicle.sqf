@@ -51,6 +51,7 @@ if(_vehSpots > 0)then{
 	for "_i" from 1 to _vehSpots do {
 		_man1 = getText (configFile >> "CfgVehicles" >> _veh1 >> "crew");
 		_man = _grp createUnit [_man1, _pos1, [], 0, "NONE"];
+		_man execVM "insurgency\modules\ai\deathListener.sqf";
 		_man moveInCargo _vehicle;
 		sleep 0.3 ;
 	};

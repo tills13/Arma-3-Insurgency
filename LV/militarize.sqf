@@ -162,6 +162,7 @@ if((_men select 0)||(_men select 1))then{
 			};
 		};
 		_unit = _milGroup createUnit [_unitType, _pos, [], 0, "NONE"];
+		_unit execVM "insurgency\modules\ai\deathListener.sqf";
 		_unit setPos _pos;
 
 		if(!_still)then{

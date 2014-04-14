@@ -1,41 +1,3 @@
-/*
-				***		ARMA3Alpha FILL HOUSE SCRIPT v1.6 - by SPUn / lostvar	***
-
-						Fills house or buildings in defined range with soldiers
-						
-			Calling the script:
-			
-					default: nul = [this] execVM "LV\fillHouse.sqf";
-					
-					custom:  nul = [target, side, patrol, patrol type, spawn rate, radius, skills, group, 
-									custom init, ID] execVM "LV\fillHouse.sqf";
-
-		Parameters:
-		
-	target 		= 	center point 	(Game Logics/Objects/Marker name, ex: GL01 or this or "marker1")
-	side 		= 	1 or 2 or 3		(1 = blue team, 2 = red team, 3 = green team) 							DEFAULT: 2
-	patrol 		= 	true or false 	(if true, units will patrol) 											DEFAULT: true
-	patrol type = 	1 or 2 			(1=only inside building, 2=also outside of building) 					DEFAULT: 2
-	spawn rate  = 	1-100 OR Array 	(on how many percentage of possible positions are soldiers spawned) 	DEFAULT: 50
-				NOTE: Array - you can also use following syntax: [amount,random amount] for example:
-				[10,12] will spawn at least 10 units + random 12 units 
-	radius 		= 	1 or larger number (1=nearest building. if larger number, then all buildings in radius) DEFAULT: 1
-	skills 		= 	"default" 	(default AI skills) 														DEFAULT: "default"
-				or	number	=	0-1.0 = this value will be set to all AI skills, ex: 0.8
-				or	array	=	all AI skills invidiually in array, values 0-1.0, order:
-		[aimingAccuracy, aimingShake, aimingSpeed, spotDistance, spotTime, courage, commanding, general, endurance, reloadSpeed] 
-		ex: 	[0.75,0.5,0.6,0.85,0.9,1,1,0.75,1,1] 
-	group 		= 	group name or nil (if you want units in existing group, set it here. if nil, 			DEFAULT: nil
-					new group is made) EXAMPLE: (group player)
-	custom init = 	"init commands" (if you want something in init field of units, put it here) 			DEFAULT: nil
-				NOTE: Keep it inside quotes, and if you need quotes in init commands, you MUST use ' or "" instead of ".
-				EXAMPLE: "hint 'this is hint';"
-	ID 			= 	number (if you want to delete units this script creates, you'll need ID number for them)DEFAULT: nil
-
-EXAMPLE: 	nul = [this, 2, true, 2, 50, 1, 0.75, nil, nil, 9] execVM "LV\fillHouse.sqf";
-			spawns in nearest building east soldiers in 50% of possible building positions with skill 0.75,
-			and makes them patrol in & outside of that building
-*/
 if (!isServer)exitWith{};
 private ["_blueMenArray3","_blueMenArray2","_BLUarrays","_redMenArray2","_OPFarrays","_greenMenArray","_grpId","_customInit","_center","_skls","_skills","_a","_buildings","_rat","_milHQ","_milGroup","_menArray","_i","_newPos","_i2","_unitType","_unit","_building","_sideOption","_blueMenArray","_redMenArray","_bPoss","_patrol","_pFile","_pType"];
 
@@ -63,17 +25,19 @@ _redMenArray2 = ["O_recon_exp_F","O_recon_JTAC_F","O_recon_M_F","O_recon_medic_F
 _OPFarrays = [_redMenArray,_redMenArray2];
 _greenMenArray = ["I_Soldier_A_F","I_soldier_AR_F","I_medic_F","I_engineer_F","I_soldier_exp_F","I_Soldier_GL_F","I_soldier_M_F","I_soldier_AA_F","I_soldier_AT_F","I_officer_F","I_soldier_repair_F","I_Soldier_F","I_soldier_LAT_F","I_Soldier_lite_F","I_Soldier_SL_F","I_Soldier_TL_F","I_soldier_AAR_F","I_soldier_AAA_F","I_soldier_AAT_F"];
 
-switch (_sideOption) do { 
+switch (_sideOption) do {
     case 1: {
         _milHQ = createCenter west;
 		if(isNil("_milGroup"))then{_milGroup = createGroup west;}else{_milGroup = _milGroup};
         _menArray = (_BLUarrays call BIS_fnc_selectRandom);
     }; 
+
 	case 2: {
         _milHQ = createCenter east;
         if(isNil("_milGroup"))then{_milGroup = createGroup east;}else{_milGroup = _milGroup};
         _menArray = (_OPFarrays call BIS_fnc_selectRandom);
     };	
+
     default {
         _milHQ = createCenter resistance;
         if(isNil("_milGroup"))then{_milGroup = createGroup resistance;}else{_milGroup = _milGroup};
@@ -81,23 +45,24 @@ switch (_sideOption) do {
     }; 
 };
 
-if(_center in allMapMarkers)then{
+if (_center in allMapMarkers) then {
 		_center0 = getMarkerPos _center;
-	}else{
-		if (typeName _center == "ARRAY") then{
-			_center0 = _center;
-		}else{
-			_center0 = getPos _center;
-		};
+} else {
+	if (typeName _center == "ARRAY") then {
+		_center0 = _center;
+	} else {
+		_center0 = getPos _center;
 	};
+};
 
-if(_radius > 1)then{
-	_buildings = ["all in radius",_center,_radius] call LV_nearestBuilding;
-}else{
+if (_radius > 1) then{
+	_buildings = ["all in radius", _center, _radius] call LV_nearestBuilding;
+} else {
 	_buildings = ["nearest one",_center] call LV_nearestBuilding;
 };
-if(isNil("_buildings"))exitWith{};
-if(count _buildings == 0) exitWith{};
+
+if (isNil("_buildings")) exitWith {};
+if (count _buildings == 0) exitWith {};
 
 _bPoss = [];
 _a = 0;
@@ -125,6 +90,7 @@ while{_i2 < _rat}do{
 
     _unitType = _menArray select (floor(random(count _menArray)));
 	_unit = _milGroup createUnit [_unitType, _newPos, [], 0, "NONE"];
+	_unit execVM "insurgency\modules\ai\deathListener.sqf";
 	_unit setpos _newPos;  
 	
 	if(typeName _skills != "STRING")then{_skls = [_unit,_skills] call LV_ACskills;};

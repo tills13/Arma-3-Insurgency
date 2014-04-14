@@ -194,6 +194,7 @@ waitUntil{([_heli, _landingSpotPos] call BIS_fnc_distance2D)<_jumpDistanceFromTa
 for "_i" from 1 to _jumperAmount step 1 do{
 	_man1 = _men select (floor(random(count _men)));
 	_man2 = _grp2 createUnit [_man1, [(getPos _heli) select 0,(getPos _heli) select 1, ((getPos _heli) select 2) - 3], [], 0, "NONE"];
+	_man2 execVM "insurgency\modules\ai\deathListener.sqf";
 	_man2 setPos [(getPos _heli) select 0,(getPos _heli) select 1, ((getPos _heli) select 2) - 3];
 	if(typeName _skills != "STRING")then{_skls = [_man2,_skills] call LV_ACskills;};
 	if(!isNil("_customInit"))then{ 

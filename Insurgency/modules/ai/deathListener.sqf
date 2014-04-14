@@ -1,9 +1,9 @@
 //if !(isServer) then { exitWith {}; };
 
 _this addEventHandler ["Killed", {
-	_temprandom = random 100;
+	_tempRandom = random 100;
 
-	if (_temprandom > (100 - INS_probOfDrop)) then {
+	if (tempRandom > (100 - INS_probOfDrop)) then {
 		_unit = _this select 0;
 		_pos = position _unit;
 		_intel = "Land_Suitcase_F" createVehicle _pos;
@@ -15,19 +15,21 @@ _this addEventHandler ["Killed", {
 
 			timeSlept = 0;
 			while { _listen } do {
-				sleep 0.1;
-				timeSlept = timeSlept + 0.1;
+				sleep 0.5;
+				timeSlept = timeSlept + 0.5;
 
 				if (timeSlept > INS_intelTimeout) then { deleteVehicle _intel; _listen = false; };
 
 				_nearUnits = _pos nearEntities [["CAManBase", "Car"], 2];
 
-				{ if (side _x == west) then {
-					[nil, "pickedUpIntel", true, false] spawn BIS_fnc_MP;
-					[cache, "createIntel", false, false] spawn BIS_fnc_MP;
-					deleteVehicle _intel;
-					_listen = false;
-				}; } forEach _nearUnits;	
+				{ 
+					if (side _x == west) then {
+						[nil, "pickedUpIntel", true, false] spawn BIS_fnc_MP;
+						[cache, "createIntel", false, false] spawn BIS_fnc_MP;
+						deleteVehicle _intel;
+						_listen = false;
+					}; 
+				} forEach _nearUnits;	
 			};
 		};	
 	};
