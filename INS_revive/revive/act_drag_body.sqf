@@ -1,13 +1,3 @@
-/*
- * Drag body action
- * 
- * Copyleft 2013 naong
- * 
- * This program is free software under the terms of the GNU General Public License version 3.
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 private ["_injured", "_player", "_release_body_action","_carry_body_action","_playerMove","_wrong_moves","_trigger"];
 
 // Set variable
@@ -70,11 +60,7 @@ waitUntil {(animationState _player == "acinpknlmwlksraswrfldb" || animationState
 
 // Set injured move
 if !(call INS_REV_FNCT_is_finished_dragging) then {
-	//if !(GVAR_is_arma3) then {
-		[_injured, "AinjPpneMrunSnonWnonDb_grab"] call INS_REV_FNCT_switchMove;
-	//} else {
-	//	[_injured, "AinjPpneMstpSnonWrflDnon"] call INS_REV_FNCT_playMoveNow;
-	//};
+	[_injured, "AinjPpneMrunSnonWnonDb_grab"] call INS_REV_FNCT_switchMove;
 };
 
 // Add carry body action
@@ -94,17 +80,7 @@ if (!isNil "INS_REV_GVAR_is_carring" && {INS_REV_GVAR_is_carring}) exitWith {};
 
 // If injured is not disconnected, release body
 if !(isNull _injured) then {
-	// Detach injured
 	detach _injured;
-	
-	/*
-	// If injured is alive set move
-	//if (alive _injured) then {
-		//[_injured, "AinjPpneMstpSnonWrflDb_release"] call INS_REV_FNCT_playMoveNow;
-	//} else {
-		[_injured, "AinjPpneMstpSnonWrflDnon"] call INS_REV_FNCT_switchMove;
-	//};
-	*/
 	
 	if (_injured getVariable "INS_REV_PVAR_is_unconscious") then {
 		[_injured, "AinjPpneMstpSnonWrflDnon"] call INS_REV_FNCT_switchMove;

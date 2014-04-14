@@ -62,6 +62,7 @@ if (isServer) exitWith {
 			};
 		};
 
+		hint "other";
 		_eosActivated = createTrigger ["EmptyDetector", _mPos]; 
 		_eosActivated setTriggerArea [(_distance + _mkrX), (_distance + _mkrY), _mkrAgl, FALSE]; 
 		_eosActivated setTriggerActivation ["ANY", "PRESENT", true];
@@ -70,6 +71,7 @@ if (isServer) exitWith {
 
 		server setVariable [_trig, _eosActivated];	
 	} else {
+		hint "trig";
 		_eosActivated = server getVariable _trig;	
 	};
 
@@ -81,14 +83,14 @@ if (isServer) exitWith {
 		if (!(getMarkerColor _mkr == victoryColor)) then { _mkr setMarkerAlpha _mAH; };
 
 		for "_counter" from 1 to _aGrps do { // SPAWN HOUSE PATROLS
-			if (debugMode) then { player sideChat format ["spawning house %1", random 40]; };
+			if (debugMode == 1) then { player sideChat format ["spawning house %1", random 40]; };
 			if (isNil "_aGrp") then { _aGrp = []; };
 			if (_cache) then {
 				_cacheGrp = format ["HP%1", _counter];
 				_units = _eosActivated getVariable _cacheGrp;	
 				_aSize = [_units, _units];
 				_aMin = _aSize select 0;
-				if (debugMode) then { player sideChat format ["ID: %1, restore - %2", _cacheGrp, _units]; };
+				if (debugMode == 1) then { player sideChat format ["ID: %1, restore - %2", _cacheGrp, _units]; };
 			};
 			
 			if (_aMin > 0) then {
@@ -102,7 +104,7 @@ if (isServer) exitWith {
 
 				_aGrp set [count _aGrp, _aGroup];
 				0 = [_aGroup, "INFskill"] call eos_fnc_grouphandlers;
-				if (debugMode) then { 
+				if (debugMode == 1) then { 
 					player sideChat format ["Spawned House Patrol: %1", _counter];
 				};
 			};
@@ -117,7 +119,7 @@ if (isServer) exitWith {
 				_units = _eosActivated getVariable _cacheGrp;	
 				_bSize = [_units, _units];
 				_bMin = _bSize select 0;
-				if (debugMode) then { player sideChat format ["ID: %1, restore - %2", _cacheGrp, _units]; };
+				if (debugMode == 1) then { player sideChat format ["ID: %1, restore - %2", _cacheGrp, _units]; };
 			};
 
 			if (_bMin > 0) then {	
@@ -127,7 +129,7 @@ if (isServer) exitWith {
 				0 = [_bGroup, _mkr] call EOS_fnc_taskpatrol;
 				_bGrp set [count _bGrp, _bGroup];
 
-				if (debugMode) then {
+				if (debugMode == 1) then {
 					player sideChat format ["Spawned Patrol: %1", _counter];
 				};
 			};
@@ -155,13 +157,13 @@ if (isServer) exitWith {
 			0 = [(_cGroup select 2), _mkr] call EOS_fnc_taskpatrol;
 			_cGrp set [count _cGrp, _cGroup];			
 
-			if (debugMode) then {
+			if (debugMode == 1) then {
 				player sideChat format ["Spawned LV: %1 - r%2", _counter, _cGrps];
 			};
 		};	
 			
 		for "_counter" from 1 to _dGrps do { //SPAWN ARMOURED VEHICLES
-			if (debugMode) then { player sideChat format ["spawning av %1", random 40]; };
+			if (debugMode == 1) then { player sideChat format ["spawning av %1", random 40]; };
 			if (isNil "_dGrp") then { _dGrp = []; };
 
 			_newpos = [_mkr, 50] call EOS_fnc_findSafePos;
@@ -177,13 +179,13 @@ if (isServer) exitWith {
 			0 = [(_dGroup select 2), _mkr] call EOS_fnc_taskpatrol;
 			_dGrp set [count _dGrp, _dGroup];
 
-			if (debugMode) then {
+			if (debugMode == 1) then {
 				player sideChat format ["Armoured: %1 - r%2", _counter, _dGrps];
 			};
 		};
 	
 		for "_counter" from 1 to _eGrps do { //SPAWN STATIC PLACEMENTS
-			if (debugMode) then { player sideChat format ["spawning static %1", random 40]; };
+			if (debugMode == 1) then { player sideChat format ["spawning static %1", random 40]; };
 			if (surfaceIsWater _mPos) exitWith { };
 			if (isNil "_eGrp") then { _eGrp = []; };
 
@@ -193,7 +195,7 @@ if (isServer) exitWith {
 			0 = [(_eGroup select 2), "STAskill"] call eos_fnc_grouphandlers;
 			_eGrp set [count _eGrp, _eGroup];
 
-			if (debugMode) then { 
+			if (debugMode == 1) then { 
 				player sideChat format ["Static: %1", _counter];
 				_mkr = createMarker ["Static: %1", _newpos];
 				_mkr setMarkerShape "ICON";
@@ -203,7 +205,7 @@ if (isServer) exitWith {
 		};	
 				
 		for "_counter" from 1 to _fGrps do { //SPAWN CHOPPERS
-			if (debugMode) then { hint format ["spawning chopper %1", random 40]; };
+			if (debugMode == 1) then { hint format ["spawning chopper %1", random 40]; };
 			if (isNil "_fGrp") then { _fGrp = []; };	
 			if ((_fSize select 0) > 0) then { 
 				_vehType = 4; 
@@ -230,7 +232,7 @@ if (isServer) exitWith {
 
 			0 = [(_fGroup select 2), "AIRskill"] call eos_fnc_grouphandlers;
 
-			if (debugMode) then {
+			if (debugMode == 1) then {
 				player sideChat format ["Chopper: %1", _counter];
 			};
 		};		
@@ -250,7 +252,7 @@ if (isServer) exitWith {
 		while { _eosAct } do {
 			// IF PLAYER LEAVES THE AREA OR ZONE DEACTIVATED
 			if (!triggeractivated _eosActivated || getmarkercolor _mkr == "colorblack") exitWith {
-				if (debugMode) then {
+				if (debugMode == 1) then {
 					if (!(getMarkerColor _mkr == "ColorBlack")) then {
 						hint "Restarting Zone AND deleting units";
 					} else {
@@ -276,7 +278,7 @@ if (isServer) exitWith {
 						deleteGroup _grp;
 					} forEach _cGrp;
 
-					if (debugMode) then { 
+					if (debugMode == 1) then { 
 						player sideChat format ["ID: c%1", _cGrps];
 					};
 				};
@@ -298,7 +300,7 @@ if (isServer) exitWith {
 						deleteGroup _grp;
 					} forEach _dGrp;
 					
-					if (debugMode) then {
+					if (debugMode == 1) then {
 						player sideChat format ["ID:c%1",_dGrps];
 					};
 				};
@@ -310,7 +312,7 @@ if (isServer) exitWith {
 						_units = { alive _x } count units _x;
 						_cacheGrp = format ["PA%1", _n];
 
-						if (debugMode) then {
+						if (debugMode == 1) then {
 							player sideChat format ["ID: %1, cache - %2", _cacheGrp, _units];
 						};
 				
@@ -327,7 +329,7 @@ if (isServer) exitWith {
 						_units = { alive _x } count units _x;
 						_cacheGrp = format ["HP%1", _n];
 
-						if (debugMode) then {
+						if (debugMode == 1) then {
 							player sideChat format ["ID: %1, cache - %2", _cacheGrp, _units];
 						};
 					
@@ -378,7 +380,7 @@ if (isServer) exitWith {
 				};
 										
 				_eosAct = false;
-				if (debugMode) then { hint "Zone Cached"; };
+				if (debugMode == 1) then { hint "Zone Cached"; };
 			};
 
 			if (triggerActivated _clear and triggerActivated _taken and !_civZone) exitWith {// IF ZONE CAPTURED BEGIN CHECKING FOR ENEMIES
@@ -393,7 +395,7 @@ if (isServer) exitWith {
 					if (!triggerActivated _clear) then {
 						_mkr setMarkerColor hostileColor;
 						_mkr setMarkerAlpha _mAH;
-						if (debugMode) then { hint "Zone Lost"; };
+						if (debugMode == 1) then { hint "Zone Lost"; };
 					} else {
 						_mkr setMarkerColor victoryColor;
 						_mkr setMarkerAlpha _mAN;

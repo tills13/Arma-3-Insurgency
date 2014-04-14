@@ -8,8 +8,6 @@
 #define INS_REV_DEF_displayRespawnLocationMarker 1
 #define INS_REV_DEF_respawnLocationMarkerColor 0
 #define INS_REV_DEF_respawnLocationMarkerType 0
-#define INS_REV_DEF_destroyDamagedVehicle 0
-#define INS_REV_DEF_destroyDamagedVehicleDelay 30
 #define INS_REV_DEF_jip_action 1
 #define INS_REV_DEF_can_drag_body 1
 #define INS_REV_DEF_can_carry_body 1
@@ -21,4 +19,4 @@
 #define INS_REV_DEF_near_enemy 0
 #define INS_REV_DEF_near_enemy_distance 50
 #define INS_REV_DEF_all_dead_respawn 1
-#define INS_REV_DEF_loadout_on_respawn 0
+#define INS_REV_DEF_loadout_on_respawn 1

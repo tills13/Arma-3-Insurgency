@@ -22,7 +22,7 @@ _ranPos = _locOrig;
 
 _grp = createGroup west;
 _buzz = createVehicle ["I_Plane_Fighter_03_CAS_F", _ranPos, [], 100, "FLY"];
-[_buzz] execVM "cas\track.sqf";
+[_buzz] execVM "cas\functions\track.sqf";
 _buzz setVectorDir [(_loc select 0) - (getPos _buzz select 0), (_loc select 1) - (getPos _buzz select 1), 0];
 
 sleep 0.2;
@@ -67,14 +67,18 @@ doCounterMeasure = {
 	};
 };
 
-_laserLoc = null;
+_laserLoc = locationNULL;
+_isGBU = if (casType == "GBU") then {true} else {false};
 _notifyLaser = true;
 _notifyTarget = true;
 while {true} do {
-	_laserLoc = laserTarget player;
-	if (_buzz distance _lockobj <= 1000 && _notifyLaser) then { (leader _grp) sideChat "Laser target..."; _notifyLaser = false; };
-	if (_buzz distance _lockobj <= 1000 && !(_notifyLaser) && _notifyTarget && !isNull _laserLoc) then { (leader _grp) sideChat "Target acquired..."; _notifyTarget = false; };
-	if (_buzz distance _lockobj <= 1000 && !(_notifyLaser) && !(_notifyTarget) && isNull _laserLoc) then { (leader _grp) sideChat "Target lost!"; _notifyTarget = true; };
+	if (_isGBU) then {
+		_laserLoc = laserTarget player;
+		if (_buzz distance _lockobj <= 1000 && _notifyLaser) then { (leader _grp) sideChat "Laser target..."; _notifyLaser = false; };
+		if (_buzz distance _lockobj <= 1000 && !(_notifyLaser) && _notifyTarget && !isNull _laserLoc) then { (leader _grp) sideChat "Target acquired..."; _notifyTarget = false; };
+		if (_buzz distance _lockobj <= 1000 && !(_notifyLaser) && !(_notifyTarget) && isNull _laserLoc) then { (leader _grp) sideChat "Target lost!"; _notifyTarget = true; };
+	};
+	
 	if (_buzz distance _lockobj <= 660) exitwith {};
 	if (!alive _buzz) exitwith {};
 	if (abortCAS) exitWith {};

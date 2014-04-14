@@ -105,6 +105,7 @@ if (!casRequest) then {
 	deleteMarker "CAS_TARGET";
 	deleteMarker "CAS_ORIG";
 } else { 
-	if (casType != "GAU") then { [_owner, maxDisReq, "CAS_TARGET", "CAS_ORIG", _id] execVM "cas\CASAI.sqf"; }
-	else { [_owner, maxDisReq, casType, "CAS_TARGET", "CAS_ORIG", _id] execVM "cas\CASPlayer.sqf"; };
+	if (casType != "GAU" and casType != "HELO") then { [_owner, maxDisReq, casType, "CAS_TARGET", "CAS_ORIG", _id] execVM "cas\functions\casAI.sqf"; };
+	if (casType == "GAU") then { [_owner, maxDisReq, "CAS_TARGET", "CAS_ORIG", _id] execVM "cas\functions\casPlayer.sqf"; };
+	if (casType == "HELO") then { [_owner, maxDisReq, "CAS_TARGET", "CAS_ORIG", _id] execVM "cas\functions\casHeli.sqf"; };
 };

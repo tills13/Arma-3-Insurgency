@@ -1,13 +1,17 @@
-#include "insurgency\core\functions.sqf"
+#include "core\functions.sqf"
 
 if (isServer || isDedicated) then {
-	proceed = false;
-	publicVariable "proceed";
-
 	[] execVM "insurgency\modules\ai\spawnEnemies.sqf";
-	waitUntil { proceed };
+	waitUntil {!isNil "proceed"};
 
-	[] execVM "insurgency\modules\markersScript\createMarkers.sqf";
+	[] execVM "insurgency\modules\markers\createMarkers.sqf";
+	//waitUntil {!isNil "INS_CORE_doneCreate"};
+
 	[] execVM "insurgency\modules\intel\spawnIntel.sqf";
-	call compile preprocessfilelinenumbers "insurgency\modules\cache\cache.sqf";
+	//waitUntil {!isNil "INS_CORE_doneSpawnEnemies"};
+
+	[] execVM "insurgency\modules\cache\cache.sqf";
+	//waitUntil {!isNil "INS_CORE_doneSpawnEnemies"};
+
+	//call compile preprocessfilelinenumbers "insurgency\modules\cache\cache.sqf";
 };

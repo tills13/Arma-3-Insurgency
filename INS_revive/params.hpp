@@ -78,20 +78,6 @@ class INS_REV_PARAM_respawnLocationMarkerType {
 	texts[] = {"mil_marker", "mil_flag", "mil_dot", "mil_box", "mil_triangle", "mil_destroy", "mil_circle"};
 };
 
-class INS_REV_PARAM_destroyDamagedVehicle {
-	title = "Destroy Mobile Respawn if Disabled/Damaged";
-	values[] = {1, 0};
-	default = INS_REV_DEF_destroyDamagedVehicle;
-	texts[] = {"Enabled", "Disabled"};
-};
-
-class INS_REV_PARAM_destroyDamagedVehicleDelay {
-	title = "Mobile Respawn Delay Time";
-	values[] = {10, 15, 20, 25, 30, 40, 50, 60, 120, 300, 600};
-	default = INS_REV_DEF_destroyDamagedVehicleDelay;
-	texts[] = {"10 sec", "15 sec", "20 Sec", "25 Sec", "30 Sec", "40 Sec", "50 Sec", "1 Min", "2 Min", "5 Min", "10 Min"};
-};
-
 class INS_REV_PARAM_jip_action {
 	title = "Join in Progress Action";
 	values[] = {0, 1, 2};

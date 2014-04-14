@@ -10,7 +10,7 @@ if (isServer) then {
 	_side = side (leader _grp);
 		
 	_emptySeats = _vehicle emptyPositions "cargo"; // FILL EMPTY SEATS
-	if (debugMode) then { hint format ["%1", _emptySeats]; };
+	if (debugMode == 1) then { hint format ["%1", _emptySeats]; };
 
 	//GET MIN MAX GROUP
 	_grpMin = _grpSize select 0;
@@ -22,7 +22,7 @@ if (isServer) then {
 	
 	if (_emptySeats > 0) then { // IF VEHICLE HAS SEATS		
 		if 	(_grpSize > _emptySeats) then { _grpSize = _emptySeats };	// LIMIT SEATS TO FILL TO GROUP SIZE				
-		if (debugMode) then { hint format ["Seats Filled: %1", _grpSize]; };	
+		if (debugMode == 1) then { hint format ["Seats Filled: %1", _grpSize]; };	
 
 		for "_x" from 1 to _grpSize do {					
 			_unit = _cargoPool select (floor(random(count _cargoPool)));

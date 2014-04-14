@@ -215,7 +215,7 @@ getSideOfRoadPosition = {
 // ---------------------------------------
 
 killedText = {
-	hint parseText format["<t color='#eaeaea' align='center' size='1.2'>%1/6 ammo caches have been destroyed</t>", INS_west_score]
+	hint parseText format["<t color='#eaeaea' align='center' size='1.2'>%1/%2 ammo caches have been destroyed</t>", INS_west_score, INS_numCaches]
 };
 
 pickedUpIntel = { 
@@ -299,7 +299,7 @@ createIntel = {
 	
 	if (_radius < 50) then { _radius = 50; };
 	
-	_pos = [(getPosATL _cache select 0) + _sign *(random _radius),(getPosATL _cache select 1) + _sign2*(random _radius)];
+	_pos = [(getPosATL _cache select 0) + _sign * (random _radius), (getPosATL _cache select 1) + _sign2 * (random _radius)];
 	_mkr = createMarker[format["%1intel%2", _cache, _i], _pos]; 
 	_mkr setMarkerType "hd_unknown";
 	_range = round sqrt(_radius^2*2);
@@ -307,6 +307,8 @@ createIntel = {
 	_mkr setMarkerText format["%1m", _range];
 	_mkr setMarkerColor "ColorRed"; 	
 	_mkr setMarkerSize [0.5, 0.5];
+
+	INS_marker_array = INS_marker_array + [_mkr];
 };
 
 addactionMP = {

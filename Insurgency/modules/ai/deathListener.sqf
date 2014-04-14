@@ -1,7 +1,9 @@
 //if !(isServer) then { exitWith {}; };
 
 _this addEventHandler ["Killed", {
-	if (random 100 > INS_DEF_probOfDrop) then {
+	_temprandom = random 100;
+
+	if (_temprandom > (100 - INS_probOfDrop)) then {
 		_unit = _this select 0;
 		_pos = position _unit;
 		_intel = "Land_Suitcase_F" createVehicle _pos;

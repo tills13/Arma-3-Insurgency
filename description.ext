@@ -1,8 +1,7 @@
 onLoadName = "Altis Insurgency";
 author = "dolan";
-OnLoadMission = "Virtual Ammobox System";
 respawn = BASE;
-respawndelay = 10;
+respawndelay = 0;
 disabledAI = true;
 enableDebugConsole = 2;
 
@@ -15,31 +14,7 @@ class Header {
 };
 
 class Params {	
-	class destroyedRespawnDelay {
-		title = "Time until destroyed vehicles respawn (in seconds)";
-		values[] = {0, 10, 20, 30, 40, 50, 60, 70, 80};
-		default = 0;
-	};
-
-	class abandonedRespawnDelay {
-		title = "Time until abandoned vehicles respawn (in seconds)";
-		values[] = {0, 10, 20, 30, 40, 50, 60, 70, 80};
-		default = 60;
-	};
-
-	class weatherChangeRate {
-		title = "Weather change rate (in minutes)";
-		values[] = {5, 10, 15, 20, 25, 30, 35, 40};
-		default = 10;
-	};
-
-	class debugMode {
-		title = "Show debug messages";
-		values[] = {1, 0};
-		texts[] = {"On", "Off"};
-		default = 0;
-	};
-
+	#include "params.hpp"
 	#include "insurgency\params.hpp"
 	#include "INS_revive\params.hpp"
 	#include "cas\params.hpp"

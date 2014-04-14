@@ -1,5 +1,6 @@
-#include "config.sqf"
+#include "config.sqf" // Load Config File
 
+// Set JIP variable
 if (isNil "isJIP") then {
 	isJIP = false;
 	player setVariable ["isJIP", false, true];
@@ -11,5 +12,5 @@ if (isNil "isJIP") then {
 	};
 };
 
-GVAR_is_arma3 = true;
-Call Compile preprocessFileLineNumbers "INS_revive\revive\init_vanilla.sqf";
+// INS_revive Initializing
+call compile preprocessFileLineNumbers "INS_revive\revive\init_vanilla.sqf";

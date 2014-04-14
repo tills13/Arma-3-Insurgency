@@ -1,13 +1,3 @@
-/*
- * Carry body action
- * 
- * Copyleft 2013 naong
- * 
- * This program is free software under the terms of the GNU General Public License version 3.
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 private ["_injured", "_player", "_release_body_action","_playerMove","_wrong_moves","_dir","_trigger"];
 
 // Remove action
@@ -26,7 +16,7 @@ INS_REV_GVAR_injured = _injured;
 // Infrom player is taking care of injured
 _injured setVariable ["INS_REV_PVAR_who_taking_care_of_injured", _player, true];
 
-// Start carring move
+// Start carrying move
 [_injured, "AinjPpneMstpSnonWrflDnon"] call INS_REV_FNCT_switchMove;
 waitUntil {animationState _injured == "AinjPpneMstpSnonWrflDnon"};
 _injured switchMove "AinjPfalMstpSnonWnonDnon_carried_Up";
@@ -50,8 +40,7 @@ if (isNil "FNC_dir_func") then {
 		_p = getDir _unit;
 		_c = 360;
 
-		_dir = _c-((_c-_p)-(_c-_v));
-
+		_dir = _c - ((_c - _p) - (_c - _v));
 		_dir
 	};
 };

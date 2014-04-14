@@ -14,7 +14,7 @@ _task setSimpleTaskDestination (_loc);
 _dis = _loc distance _locOrig;
 
 _buzz = createVehicle ["B_Plane_CAS_01_F", _locOrig, [], 0, "FLY"];
-[_buzz] execVM "scripts\cas\track.sqf";
+[_buzz] execVM "cas\functions\track.sqf";
 _buzz setVectorDir [(_loc select 0) - (getPos _buzz select 0), (_loc select 1) - (getPos _buzz select 1), 0];
 
 sleep 0.2;
@@ -47,7 +47,7 @@ if (alive _buzz) then {
 	_grp = createGroup west;
 	_pilot = _grp createUnit ["B_Pilot_F", _ranPos, [], 0, "FORM"];
 	_pilot moveinDriver _buzz;
-	_buzz flyInheight 260;
+	_buzz flyInheight 150;
 
 	_grp setBehaviour "STEALTH";
 	_grp setSpeedMode "FULL";

@@ -34,7 +34,7 @@ if (!isNull _injured && alive _injured && _injured getVariable "INS_REV_PVAR_is_
 		
 		// Check injured is loaded
 		if (vehicle _injured != _injured) then {
-			player sidechat format["'%1' loaded in '%2'",name _injured, getText(configFile >> 'CfgVehicles' >> typeOf _load_vehicle >> 'displayname')];
+			player sidechat format["'%1' loaded into '%2'", name _injured, getText(configFile >> 'CfgVehicles' >> typeOf _load_vehicle >> 'displayname')];
 		} else {
 			// Swtich move
 			if (_injured getVariable "INS_REV_PVAR_is_unconscious") then {
@@ -43,14 +43,6 @@ if (!isNull _injured && alive _injured && _injured getVariable "INS_REV_PVAR_is_
 					sleep 0.1;
 					[_injured, "AinjPpneMstpSnonWrflDnon"] call INS_REV_FNCT_switchMove;
 				};
-				/*
-				[_injured, "kia_passenger_mrap_01_front"] call INS_REV_FNCT_switchMove;
-				while {animationState _injured != "kia_passenger_mrap_01_front"} do {
-					sleep 0.1;
-					[_injured, "kia_passenger_mrap_01_front"] call INS_REV_FNCT_switchMove;
-				};
-				*/
-				
 			};
 			
 			// Remove unload action
@@ -58,10 +50,9 @@ if (!isNull _injured && alive _injured && _injured getVariable "INS_REV_PVAR_is_
 			publicVariable "INS_REV_GVAR_del_unload";
 			["INS_REV_GVAR_del_unload", INS_REV_GVAR_del_unload] spawn INS_REV_FNCT_remove_unload_action;
 			
-			player sidechat format["Failed loading",name _injured, getText(configFile >> 'CfgVehicles' >> typeOf _load_vehicle >> 'displayname')];
+			player sidechat format["Failed loading", name _injured, getText(configFile >> 'CfgVehicles' >> typeOf _load_vehicle >> 'displayname')];
 		};
-		
 	} else {
-		player sidechat format["There's no cargo space in '%1'",getText(configFile >> 'CfgVehicles' >> typeOf _load_vehicle >> 'displayname')];
+		player sidechat format["There's no cargo space in '%1'", getText(configFile >> 'CfgVehicles' >> typeOf _load_vehicle >> 'displayname')];
 	};
 };

@@ -11,5 +11,5 @@ _skillset = server getVariable _skillArray;
 		_unit setSkill [_x, _skillvalue];
 	} forEach ['aimingAccuracy', 'aimingShake', 'aimingSpeed', 'spotDistance', 'spotTime', 'courage', 'reloadSpeed', 'commanding', 'general'];
 
-	_handle = _unit execVM "scripts\insurgency\modules\ai\deathListener.sqf";
+	_handle = _unit execVM "insurgency\modules\ai\deathListener.sqf";
 } forEach (units _grp); 

@@ -1,13 +1,3 @@
-/*
- * INS_revive functions
- * 
- * Copyleft 2013 naong
- * 
- * This program is free software under the terms of the GNU General Public License version 3.
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
- 
 // Remote execution
 INS_REV_FNCT_remote_exec = {
 	private ["_unit", "_command", "_parameter"];
@@ -18,6 +8,7 @@ INS_REV_FNCT_remote_exec = {
 	if (_command == "switchMove") exitWith {
 		_unit switchMove _parameter;
 	};
+	
 	if (_command == "allowDamage") exitWith {
 		if (_parameter) then {
 			_unit allowDamage true;
@@ -28,11 +19,8 @@ INS_REV_FNCT_remote_exec = {
 		};
 	};
 	
-	if (local _unit) then 
-	{
-		switch (_command) do
-		{
-			//case "switchMove":	{_unit switchMove _parameter;};
+	if (local _unit) then {
+		switch (_command) do {
 			case "setDir":		{_unit setDir _parameter;};
 			case "playMove":	{_unit playMove _parameter;};
 			case "playMoveNow":	{_unit playMoveNow _parameter;};
@@ -1103,7 +1091,7 @@ INS_REV_FNCT_respawn_tag = {
 	if (!(INS_REV_GVAR_camPlayer call INS_REV_FNCT_isRespawnLocation)) then {
 		_name = name INS_REV_GVAR_camPlayer;
 	} else {
-		_name = toUpper (format["%1",INS_REV_GVAR_camPlayer]);
+		_name = toUpper (format["%1", INS_REV_GVAR_camPlayer]);
 	};
 	
 	// If restrict respawn
@@ -1115,7 +1103,7 @@ INS_REV_FNCT_respawn_tag = {
 		_txt = format["%1 (Spectating)<br/>(You can only respawn at the base)%2", _name, _leftTimeText];
 		_ctrlText = (uiNamespace getVariable 'TAGS_HUD') displayCtrl 64434;
 		_ctrlText ctrlSetStructuredText parseText format[
-			"<t color='%2' shadow='1' shadowColor='#000000'>%1</t><br/><br/><t color='#808080' shadow='1' shadowColor='#000000'>Left Arrow: Previous unit<br/>Right Arrow: Next unit<br/></t>",
+			"<t color='%2' shadow='1' shadowColor='#000000'>%1</t><br/><br/><t color='#808080' shadow='1' shadowColor='#000000'>Left Arrow: Previous Unit<br/>Right Arrow: Next Unit<br/></t>",
 			_txt,
 			_color
 		];
@@ -1130,7 +1118,7 @@ INS_REV_FNCT_respawn_tag = {
 		_txt = format["%1 (Spectating)<br/>(Cannot respawn at the damaged vehicle)%2", _name, _leftTimeText];
 		_ctrlText = (uiNamespace getVariable 'TAGS_HUD') displayCtrl 64434;
 		_ctrlText ctrlSetStructuredText parseText format[
-			"<t color='%2' shadow='1' shadowColor='#000000'>%1</t><br/><br/><t color='#808080' shadow='1' shadowColor='#000000'>Left Arrow: Previous unit<br/>Right Arrow: Next unit<br/></t>",
+			"<t color='%2' shadow='1' shadowColor='#000000'>%1</t><br/><br/><t color='#808080' shadow='1' shadowColor='#000000'>Left Arrow: Previous Unit<br/>Right Arrow: Next Unit<br/></t>",
 			_txt,
 			_color
 		];
@@ -1143,7 +1131,7 @@ INS_REV_FNCT_respawn_tag = {
 		_txt = format["%1 (Spectating)<br/>(Respawn in %2 sec)", _name, _leftTime];
 		_ctrlText = (uiNamespace getVariable 'TAGS_HUD') displayCtrl 64434; 	
 		_ctrlText ctrlSetStructuredText parseText format[
-			"<t color='%2' shadow='1' shadowColor='#000000'>%1</t><br/><br/><t color='#808080' shadow='1' shadowColor='#000000'>Left Arrow: Previous unit<br/>Right Arrow: Next unit<br/></t>",
+			"<t color='%2' shadow='1' shadowColor='#000000'>%1</t><br/><br/><t color='#808080' shadow='1' shadowColor='#000000'>Left Arrow: Previous Unit<br/>Right Arrow: Next Unit<br/></t>",
 			_txt,
 			_color
 		];
@@ -1158,7 +1146,7 @@ INS_REV_FNCT_respawn_tag = {
 		_txt = format["%1 (Spectating)<br/>(Cannot spawn while vehicle is full)%2", _name, _leftTimeText];
 		_ctrlText = (uiNamespace getVariable 'TAGS_HUD') displayCtrl 64434;
 		_ctrlText ctrlSetStructuredText parseText format[
-			"<t color='%2' shadow='1' shadowColor='#000000'>%1</t><br/><br/><t color='#808080' shadow='1' shadowColor='#000000'>Left Arrow: Previous unit<br/>Right Arrow: Next unit<br/></t>",
+			"<t color='%2' shadow='1' shadowColor='#000000'>%1</t><br/><br/><t color='#808080' shadow='1' shadowColor='#000000'>Left Arrow: Previous Unit<br/>Right Arrow: Next Unit<br/></t>",
 			_txt,
 			_color
 		];
@@ -1174,25 +1162,18 @@ INS_REV_FNCT_respawn_tag = {
 	} else {
 		_txt   = format["%1 (Press Enter to Spawn)", _name];
 	};
+
 	if (!(INS_REV_GVAR_camPlayer call INS_REV_FNCT_isRespawnLocation)) then {
 		_color = "#347C17";
 	} else {
 		_color = "#2554C7";
 	};
 	
-	/*
-	// If camplayer lost conscious
-	if (lifeState INS_REV_GVAR_camPlayer == "UNCONSCIOUS") then {
-		_txt   = format["%1 (Cannot spawn on a critically wounded soldier)", getName(INS_REV_GVAR_camPlayer)]; 
-		_color = "#C11B17";
-	};
-	*/
-	
 	// Apply respawn tag
 	cutRsc["Rtags", "PLAIN",5]; 	
 	_ctrlText = (uiNamespace getVariable 'TAGS_HUD') displayCtrl 64434; 	
 	_ctrlText ctrlSetStructuredText parseText format[
-		"<t color='%2' shadow='1' shadowColor='#000000'>%1</t><br/><br/><t color='#808080' shadow='1' shadowColor='#000000'>Left Arrow: Previous unit<br/>Right Arrow: Next unit<br/></t>",
+		"<t color='%2' shadow='1' shadowColor='#000000'>%1</t><br/><br/><t color='#808080' shadow='1' shadowColor='#000000'>Left Arrow: Previous Unit<br/>Right Arrow: Next Unit<br/></t>",
 		_txt,
 		_color
 	];
@@ -1202,33 +1183,26 @@ INS_REV_FNCT_respawn_tag = {
 // Usage(thread) : '_sctipt = unit spawn INS_REV_FNCT_dead_camera;'
 INS_REV_FNCT_dead_camera = {
 	private ["_unit","_camPlayer","_respawnDelay","_KH","_MH1","_MH2","_to_be_Respawned_in","_doRespawn","_camAttachCoords","_vehicle","_ctrlText","_deadTime","_condition","_isTeleport"];
-	disableserialization;
+	disableSerialization;
 	
 	// Set parameter to variable
-	_unit 						= _this;
+	_unit = _this;
 	
-	// Set variable
-	_camPlayer    				= objNull;
-	INS_REV_GVAR_camMap			= false;
-	INS_REV_GVAR_camPlayer   	= objNull;
-	_respawnDelay				= call INS_REV_FNCT_getRespawnDelay;
+	_camPlayer = objNull;
+	INS_REV_GVAR_camMap	= false;
+	INS_REV_GVAR_camPlayer = objNull;
+	_respawnDelay = call INS_REV_FNCT_getRespawnDelay;
 	
-	//sleep 0.1;
-	
-	// Initialize dead camera
-	call INS_REV_FNCT_reset_camera;
-	
-	// Check arma 2
-	if (GVAR_is_arma3 || GVAR_is_arma2oa) then {
-		call INS_REV_FNCT_disalble_thermal_cam;
-	};
+	call INS_REV_FNCT_reset_camera; // Initialize dead camera
+	call INS_REV_FNCT_disalble_thermal_cam;
+
 	showcinemaborder false;	// Disable cinema border
 	
 	// Initialize variable
-	_camPlayer				= INS_REV_GVAR_camPlayer;
-	_vehicle				= vehicle INS_REV_GVAR_camPlayer;
-	_to_be_Respawned_in		= round (time + 5);
-	_doRespawn				= false;
+	_camPlayer = INS_REV_GVAR_camPlayer;
+	_vehicle = vehicle INS_REV_GVAR_camPlayer;
+	_to_be_Respawned_in = round (time + 5);
+	_doRespawn = false;
 	INS_REV_GVAR_enterSpawn	= false;
 	
 	// Wait until player be respawned
@@ -1262,12 +1236,8 @@ INS_REV_FNCT_dead_camera = {
 	_MH1 = (findDisplay 46) displayAddEventHandler ["MouseMoving", "_this call INS_REV_FNCT_onMouseMove;"];
 	_MH2 = (findDisplay 46) displayAddEventHandler ["MouseZChanged", "_this call INS_REV_FNCT_onMouseWheel;"];
 	
-	// Check Ace mod
-	if (PVAR_isAce) then {
-		_condition = _unit call ace_sys_wounds_fnc_isUncon;
-	} else {
-		_condition = _unit getVariable "INS_REV_PVAR_is_unconscious";
-	};
+	_condition = _unit getVariable "INS_REV_PVAR_is_unconscious";
+
 	
 	// Loop while player is unconscious
 	while {_condition && alive _unit} do {
@@ -1296,41 +1266,28 @@ INS_REV_FNCT_dead_camera = {
 				INS_REV_GVAR_dead_camera camCommit 0;
 			};
 			
-			// Update respawn tag
-			[_unit] call INS_REV_FNCT_respawn_tag;
+			[_unit] call INS_REV_FNCT_respawn_tag; // Update respawn tag
 		};
 		
 		// Display to be respawned timeout tag
 		if (_camPlayer == INS_REV_GVAR_camPlayer && INS_REV_GVAR_enterSpawn) then {
 			// If not player can respawn to camPlayer then exit
 			if !(call INS_REV_FNCT_can_respawn) exitWith {
-				// Reset variable
-				INS_REV_GVAR_enterSpawn = false; _to_be_Respawned_in = round (time + 5);
+				INS_REV_GVAR_enterSpawn = false; _to_be_Respawned_in = round (time + 5); // Reset variable
 			};
 			
 			// Display respawn tag
 			cutRsc["Rtags", "PLAIN",5];
 			_ctrlText = (uiNamespace getVariable 'TAGS_HUD') displayCtrl 64434; 	
 			_ctrlText ctrlSetStructuredText parseText format[
-				"<t color='%2' shadow='1' shadowColor='#000000'>Spawning in %1</t><br/><br/><t color='#808080' shadow='1' shadowColor='#000000'>Left Arrow: Previous unit<br/>Right Arrow: Next unit<br/></t>",
+				"<t color='%2' shadow='1' shadowColor='#000000'>Respawning in %1</t><br/><br/><t color='#808080' shadow='1' shadowColor='#000000'>Left Arrow: Previous Unit<br/>Right Arrow: Next Unit<br/></t>",
 				round (_to_be_Respawned_in - time),
 				"#FFFFFF"
 			]; 
 			
 			// If to be respawned timeout is over, do respawn (End loop)
-			if (round (_to_be_Respawned_in - time) <= 0) exitWith {
-				// Check Ace mod
-				if (PVAR_isAce) then {
-					if ([_player] call ACE_fnc_isBurning) then { ['ace_sys_wounds_burnoff', _player] call CBA_fnc_globalEvent;};
-					_unit call ace_sys_wounds_fnc_unitInit;
-					_unit call ace_sys_wounds_fnc_RemoveBleed;
-					_unit call ace_sys_wounds_fnc_RemovePain;
-					_unit call ace_sys_wounds_fnc_RemoveUncon;
-					[_unit,0] call ace_sys_wounds_fnc_heal;
-				};
-				
-				// Reset variable
-				_unit setVariable ["INS_REV_PVAR_is_unconscious", false, true];
+			if (round (_to_be_Respawned_in - time) <= 0) exitWith {				
+				_unit setVariable ["INS_REV_PVAR_is_unconscious", false, true]; // Reset variable
 				_doRespawn = true;
 			};
 		};
@@ -1380,16 +1337,10 @@ INS_REV_FNCT_dead_camera = {
 				};
 			};
 		};
-		
-		// Moditor frequency
+
 		sleep 0.2;
-		
-		// Update player's condition
-		if (PVAR_isAce) then {
-			_condition = _unit call ace_sys_wounds_fnc_isUncon;
-		} else {
-			_condition = _unit getVariable "INS_REV_PVAR_is_unconscious";
-		};
+		_condition = _unit getVariable "INS_REV_PVAR_is_unconscious";
+
 	};
 	
 	// Remove display eventhander
@@ -1398,8 +1349,8 @@ INS_REV_FNCT_dead_camera = {
 	(findDisplay 46) displayRemoveEventHandler ["MouseZChanged",_MH2];
 	
 	// Terminate dead camera
-	openMap [false,false];
-	INS_REV_GVAR_dead_camera cameraEffect ["terminate","back"];
+	openMap [false, false];
+	INS_REV_GVAR_dead_camera cameraEffect ["terminate", "back"];
 	camDestroy INS_REV_GVAR_dead_camera;
 	"dynamicBlur" ppEffectEnable true;
 	"dynamicBlur" ppEffectAdjust [6];
@@ -1414,16 +1365,9 @@ INS_REV_FNCT_onKeyPress = {
 	
 	scopeName "main";
 	
-	_key     = _this select 1;
-	// _shift   = _this select 2;
-	//_ctrl    = _this select 3;
-	//_alt	 = _this select 4;
+	_key = _this select 1;
 	_handled = false;
 	_respawnDelay = call INS_REV_FNCT_getRespawnDelay;
-	
-	/*
-	if (_key in actionKeys "tacticalView") then { hint "Tactical View is disabled in current mission."; _handled=true; };
-	*/
 	
 	// if not alive player then exit function.
 	if (!alive player) exitWith {};
@@ -1438,24 +1382,7 @@ INS_REV_FNCT_onKeyPress = {
 		};
 	};
 	
-	switch _key do {
-		//TAB key
-		/*
-		case 15: {
-			if (!_ctrl) exitWith {};
-			if (useroptions != 1) exitWith {};
-			if (!dialog) then {
-				createDialog "OPTIONS";
-			} else {
-				closeDialog 0;
-			};
-		}; 
-		*/
-		
-		//ESC key
-		//case 1: {
-		//};
-		
+	switch _key do {	
 		//N key
 		case 49: {
 			//if (isNull respawnCamera) exitWith {};
@@ -1522,9 +1449,6 @@ INS_REV_FNCT_onKeyPress = {
 			if (_id == _size) then { _id = 0; };
 			INS_REV_GVAR_camPlayer =  _list select _id;
 		};	
-		//Backspace
-		//case 14: {
-		//};
 	};
 	
 	_handled
@@ -1562,9 +1486,6 @@ INS_REV_FNCT_onMouseMove = {
 		INS_REV_GVAR_dead_camera camSetRelPos _camAttachCoords;
 		INS_REV_GVAR_dead_camera camCommit 0.5;
 	};
-	/*
-	INS_REV_GVAR_dead_camera attachTo [vehicle INS_REV_GVAR_camPlayer, _camAttachCoords];
-	*/
 };
 
 // MouseWheel event handler
@@ -1596,9 +1517,6 @@ INS_REV_FNCT_onMouseWheel = {
 		INS_REV_GVAR_dead_camera camSetRelPos _camAttachCoords;
 		INS_REV_GVAR_dead_camera camCommit 0.5;
 	};
-	/*
-	INS_REV_GVAR_dead_camera attachTo [vehicle INS_REV_GVAR_camPlayer, _camAttachCoords];
-	*/
 };
 
 // On killed event handler
@@ -1629,26 +1547,14 @@ INS_REV_FNCT_onKilled_process = {
 	_altitude_ATL_before_dead = getPosATL INS_REV_GVAR_body_before_dead select 2;
 	_direction_before_dead = getDir INS_REV_GVAR_body_before_dead;
 	
-	// Memorize player's loadout
-	if (!GVAR_is_arma3) then {
-		_magazines_before_dead = magazines INS_REV_GVAR_body_before_dead;
-		_weapons_before_dead = weapons INS_REV_GVAR_body_before_dead;
-		
-		// Backpack
-		if (GVAR_is_arma2oa) then {
-			[_player, INS_REV_GVAR_player_loadout] call INS_REV_FNCT_set_loadout_a2oa;
-		};
-	};
-	
 	// Remove dead body's actions
-	if !(PVAR_isAce) then {
-		INS_REV_GVAR_end_unconscious = INS_REV_GVAR_body_before_dead;
-		publicVariable "INS_REV_GVAR_end_unconscious";
-		["INS_REV_GVAR_end_unconscious", INS_REV_GVAR_end_unconscious] spawn INS_REV_FNCT_remove_actions;
-		INS_REV_GVAR_body_before_dead setVariable ["INS_REV_PVAR_is_unconscious", false, true];
-		INS_REV_GVAR_body_before_dead setVariable ["INS_REV_PVAR_who_taking_care_of_injured", nil, true];
-	};
-	
+
+	INS_REV_GVAR_end_unconscious = INS_REV_GVAR_body_before_dead;
+	publicVariable "INS_REV_GVAR_end_unconscious";
+	["INS_REV_GVAR_end_unconscious", INS_REV_GVAR_end_unconscious] spawn INS_REV_FNCT_remove_actions;
+	INS_REV_GVAR_body_before_dead setVariable ["INS_REV_PVAR_is_unconscious", false, true];
+	INS_REV_GVAR_body_before_dead setVariable ["INS_REV_PVAR_who_taking_care_of_injured", nil, true];
+
 	// Wait respawn camera
 	sleep round (playerRespawnTime - 1);
 	
@@ -1662,44 +1568,24 @@ INS_REV_FNCT_onKilled_process = {
 	waitUntil {alive player};
 	sleep 0.1;
 	
-	
-	// If Ace mod, terminate spectator
-	if (PVAR_isAce) then {
-		ace_sys_spectator_exit_spectator=true;
-		[player,1,true,9999999] call ace_w_setunitdam;
-	};
-	
 	// Set variable
 	_player = player;
 	
 	// Revert Loadout
-	if (GVAR_is_arma3) then {
-		if (INS_REV_CFG_loadout_on_respawn) then {
-			[_player, INS_REV_GVAR_player_loadout] call INS_REV_FNCT_set_loadout;
-		} else {
-			[_player, INS_REV_GVAR_player_loadout, ["ammo"]] call INS_REV_FNCT_set_loadout;
-		};
+	if (INS_REV_CFG_loadout_on_respawn) then {
+		[_player, INS_REV_GVAR_player_loadout] call INS_REV_FNCT_set_loadout;
 	} else {
-		{_player addMagazine _x;} forEach _magazines_before_dead;
-		{_player addWeapon _x;} forEach _weapons_before_dead;
-		
-		if (GVAR_is_arma2oa) then {
-			[_player, INS_REV_GVAR_player_loadout] call INS_REV_FNCT_set_loadout_a2oa;
-		};
+		[_player, INS_REV_GVAR_player_loadout, ["ammo"]] call INS_REV_FNCT_set_loadout;
 	};
 	
 	
 	// Set player do not allow damage and cannot be attacked
 	[_player, false] call INS_REV_FNCT_allowDamage;
-	if !(PVAR_isAce) then {
-		[_player, "AinjPpneMstpSnonWrflDnon"] call INS_REV_FNCT_switchMove;
-	};
-	
-	// Set variable
-	if !(PVAR_isAce) then {
-		INS_REV_GVAR_start_unconscious = _player;
-		publicVariable "INS_REV_GVAR_start_unconscious";
-	};
+	[_player, "AinjPpneMstpSnonWrflDnon"] call INS_REV_FNCT_switchMove;
+
+	INS_REV_GVAR_start_unconscious = _player;
+	publicVariable "INS_REV_GVAR_start_unconscious";
+
 	_player setVariable ["INS_REV_PVAR_is_unconscious", true, true];
 	_player setVariable ["INS_REV_PVAR_playerSide", INS_REV_GVAR_body_before_dead getVariable "INS_REV_PVAR_playerSide", true];
 	_player setVariable ["INS_REV_PVAR_playerGroup", INS_REV_GVAR_body_before_dead getVariable "INS_REV_PVAR_playerGroup", true];
@@ -1710,49 +1596,18 @@ INS_REV_FNCT_onKilled_process = {
 	// If player not used teleport, remove dead body
 	if !(_player getVariable "INS_REV_PVAR_isTeleport") then {
 		waitUntil {INS_REV_GVAR_body_before_dead != _player};
-		if !(GVAR_is_arma3) then {
-			if (call INS_REV_FNCT_can_respawn_player_body) then {deleteVehicle INS_REV_GVAR_body_before_dead;};
-		} else {
-			deleteVehicle INS_REV_GVAR_body_before_dead;
-		};
+		deleteVehicle INS_REV_GVAR_body_before_dead;
 	};
-	
-	// Check Ace mod
-	if (!PVAR_isAce) then {
-		// If player can respawn player's own body
-		if !(GVAR_is_arma3) then {
-			if (!(call INS_REV_FNCT_can_respawn_player_body)) then {
-				//_player setPos [_position_before_dead select 0, _position_before_dead select 1, 2000];
-				_player setPos [0,0,0];
-			};
-		};
-		
-		// If player not used teleport, remove dead body
-		if !(_player getVariable "INS_REV_PVAR_isTeleport") then {
-			// If player cannot respawn player's own body
-			if !(GVAR_is_arma3) then {
-				if (!(call INS_REV_FNCT_can_respawn_player_body)) then {
-					sleep 5;
-					deleteVehicle INS_REV_GVAR_body_before_dead;
-				};
-			};
-		};
-		_player setVelocity [0, 0, 0];
-		_player setDir _direction_before_dead;
-		_player setPos [_position_before_dead select 0, _position_before_dead select 1, _altitude_ATL_before_dead - (_position_before_dead select 2)];
-	};
+
+	_player setVelocity [0, 0, 0];
+	_player setDir _direction_before_dead;
+	_player setPos [_position_before_dead select 0, _position_before_dead select 1, _altitude_ATL_before_dead - (_position_before_dead select 2)];
 	
 	// Reset variable
 	INS_REV_GVAR_body_before_dead = _player;
-	
-	// Wait respawn or revive
-	if (PVAR_isAce) then {
-		_condition = _player call ace_sys_wounds_fnc_isUncon;
-	} else {
-		_condition = _player getVariable "INS_REV_PVAR_is_unconscious";
-	};
-	while {_condition} do
-	{
+	_condition = _player getVariable "INS_REV_PVAR_is_unconscious";
+
+	while {_condition} do {
 		_who_taking_care_of_injured = _player getVariable "INS_REV_PVAR_who_taking_care_of_injured";
 			
 		// If somebody is taking care of you
@@ -1768,7 +1623,7 @@ INS_REV_FNCT_onKilled_process = {
 		};
 		
 		// Check MEDEVAC vehicle
-		if (!PVAR_isAce && INS_REV_CFG_medevac) then {
+		if (INS_REV_CFG_medevac) then {
 			if (_player != vehicle _player) then {
 				if (alive vehicle _player) then {
 					INS_REV_GVAR_is_loaded = true;
@@ -1804,53 +1659,30 @@ INS_REV_FNCT_onKilled_process = {
 		};
 		
 		sleep 0.3;
-		
-		// Check Ace mod
-		if (PVAR_isAce) then {
-			_condition = _player call ace_sys_wounds_fnc_isUncon;
-		} else {
-			_condition = _player getVariable "INS_REV_PVAR_is_unconscious";
-		};
-		
-		// Prevent drown in Arma3
-		if (GVAR_is_arma3) then {
-			[_player] call INS_REV_FNCT_prevent_drown;
-		};
+
+		_condition = _player getVariable "INS_REV_PVAR_is_unconscious";
+		[_player] call INS_REV_FNCT_prevent_drown;
+
 	};
 	
 	sleep 0.2;
 	
-	// Select primary weapon
-	_player selectWeapon (primaryWeapon _player);
 	
-	// Check Ace mod
-	if (PVAR_isAce) then {
-		if ([_player] call ACE_fnc_isBurning) then { ['ace_sys_wounds_burnoff', _player] call CBA_fnc_globalEvent;};
-		//[_player, 0, true, 999999] call ace_w_setunitdam;
-		//_player call ace_sys_wounds_fnc_RemoveBleed;
-		//_player call ace_sys_wounds_fnc_RemovePain;
-		//_player call ace_sys_wounds_fnc_RemoveUncon;
-		//_player setVariable ["ace_w_heal", true];
-		//_player setVariable ["ace_w_eh",0];
-		//[_player,0] call ace_sys_wounds_fnc_heal;
-		_player call ace_sys_wounds_fnc_unitInit;
-		[_player,0] call ace_sys_wounds_fnc_heal;
-		_player setdamage 0;
-	} else {
-		// Remove revive action
-		INS_REV_GVAR_end_unconscious = _player;
-		publicVariable "INS_REV_GVAR_end_unconscious";		
-		["INS_REV_GVAR_end_unconscious", INS_REV_GVAR_end_unconscious] spawn INS_REV_FNCT_remove_actions;
+	_player selectWeapon (primaryWeapon _player); // Select primary weapon
+
+	// Remove revive action
+	INS_REV_GVAR_end_unconscious = _player;
+	publicVariable "INS_REV_GVAR_end_unconscious";		
+	["INS_REV_GVAR_end_unconscious", INS_REV_GVAR_end_unconscious] spawn INS_REV_FNCT_remove_actions;
+	
+	// Remove unload action
+	if (!isNil "INS_REV_GVAR_is_loaded" && {INS_REV_GVAR_is_loaded} && INS_REV_CFG_medevac) then {
+		INS_REV_GVAR_del_unload = [INS_REV_GVAR_loaded_vehicle, _player];
+		publicVariable "INS_REV_GVAR_del_unload";
+		["INS_REV_GVAR_del_unload", INS_REV_GVAR_del_unload] spawn INS_REV_FNCT_remove_unload_action;
 		
-		// Remove unload action
-		if (!isNil "INS_REV_GVAR_is_loaded" && {INS_REV_GVAR_is_loaded} && INS_REV_CFG_medevac) then {
-			INS_REV_GVAR_del_unload = [INS_REV_GVAR_loaded_vehicle, _player];
-			publicVariable "INS_REV_GVAR_del_unload";
-			["INS_REV_GVAR_del_unload", INS_REV_GVAR_del_unload] spawn INS_REV_FNCT_remove_unload_action;
-			
-			INS_REV_GVAR_is_loaded = false;
-			INS_REV_GVAR_loaded_vehicle = nil;
-		};
+		INS_REV_GVAR_is_loaded = false;
+		INS_REV_GVAR_loaded_vehicle = nil;
 	};
 	
 	
@@ -1890,16 +1722,7 @@ INS_REV_FNCT_unload = {
 // Teleport to teammate action
 INS_REV_FNCT_init_teleport_to_teamate = {
 	sleep 3;
-	INS_REV_GVAR_teleportToTeam = player addAction [
-		"<t color='#06ff00'>Teleport To Teammate</t>",	/* Title */
-		"INS_revive\revive\act_teleportToTeam.sqf",		/* Script */
-		[],		/* Arguments */
-		10,		/* Priority */
-		false,	/* ShowWindow */
-		true,	/* HideOnUse */
-		"",		/* Shortcut */
-		""		/* Condition */
-	];
+	INS_REV_GVAR_teleportToTeam = player addAction ["<t color='#06ff00'>Teleport To Teammate</t>", [], 10, false, true, "",	""];
 	sleep 10;
 	hintSilent "Use your scroll wheel to teleport to your teammate. (It available only within 3 minutes.)";
 	sleep 180;//3min
@@ -2035,41 +1858,19 @@ INS_REV_FNCT_getRespawnDelay = {
 INS_REV_FNCT_clientHD = {
 	private ["_unit","_dam"];
 	_unit = _this select 0;
-	//_part = _this select 1;
 	_dam = _this select 2;
-	//_injurer = _this select 3;
-	//_ammo = _this select 4;
 	
 	if (!alive _unit || {_dam == 0}) exitWith {
-		//__TRACE_1("ClientHD exiting, unit dead or healing","_dam");
 		_dam
 	};
-	if (_unit getVariable "INS_REV_PVAR_is_unconscious") exitWith {
-		//__TRACE_2("ClientHD exiting, unit uncon or invulnerable","_part");
-		0
-	};
-	/*
-	if (d_no_teamkill == 0 && {_dam >= 0.1} && {!isNull _injurer} && {isPlayer _injurer} && {_injurer != _unit} && {vehicle _unit == _unit} && {side (group _injurer) == side (group _unit)}) exitWith {
-		if (_part == "" && {_ammo != ""} && {getText (configFile >> "CfgAmmo" >> _ammo >> "simulation") in __shots} && {time > (__pGetVar(d_tk_cutofft) + 3)}) then {
-			_unit setVariable ["d_tk_cutofft", time];
-			hint format [(localize "STR_DOM_MISSIONSTRING_497"), name _injurer];
-			["d_unit_tkr", [_unit,_injurer]] call d_fnc_NetCallEventCTS;
-			if (d_domdatabase) then {
-				["d_ptkkg", _injurer] call d_fnc_NetCallEventCTS;
-			};
-		};
-		0
-	};
-	*/
+	if (_unit getVariable "INS_REV_PVAR_is_unconscious") exitWith {0};
+
 	if (_dam >= 0.9 && {time > INS_REV_GVAR_player_loadout_time}) then {
-		//__TRACE_1("ClientHD saving respawn gear","_dam");
-		//_unit setVariable [QGVARXR(last_gear_save), time + 1];
-		//call d_fnc_save_respawngear;
-		//_unit setVariable [QGVARXR(isleader), leader (group player) == player];
-		//GVARXR(pl_group) = group player;
+
 		INS_REV_GVAR_player_loadout_time = time + 1;
 		INS_REV_GVAR_player_loadout = [_unit,["ammo"]] call INS_REV_FNCT_get_loadout;
 	};
+
 	BIS_hitArray = _this; BIS_wasHit = true;
 	_dam
 };
@@ -2134,41 +1935,6 @@ INS_REV_FNCT_displayRespawnLocationMarker = {
 				deleteMarkerLocal _x;
 			};
 		} forEach _markers;
-		sleep 1;
-	};
-};
-
-// Destroy damaged vehicle
-// Usage : 'spawn INS_REV_FNCT_destroyDamagedVehicle;'
-INS_REV_FNCT_destroyDamagedVehicle = {
-	private ["_respawnLocations", "_vehicles"];
-	
-	while {true} do {
-		_respawnLocations = [] call INS_REV_FNCT_get_respawn_locations;
-		_vehicles = [];
-		{
-			if ([_x] call INS_REV_FNCT_is_vehicle) then {
-				if (!canMove _x) then {
-					[_x] spawn {
-						private ["_delayTime","_isDestroyed","_vehicle"];
-						
-						_vehicle = _this select 0;
-						_delayTime = time + INS_REV_CFG_destroyDamagedVehicleDelay;
-						_isDestroyed = false;
-						
-						while {time < _delayTime && !_isDestroyed} do {
-							if (!alive _vehicle) then {
-								isDestroyed = true
-							};
-							sleep 1;
-						};
-						
-						if (!_isDestroyed) then {_vehicle setDamage 1;};
-					};
-				};
-			};
-		} forEach _respawnLocations;
-		
 		sleep 1;
 	};
 };
