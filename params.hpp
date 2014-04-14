@@ -8,7 +8,8 @@ class destroyedRespawnDelay {
 
 class abandonedRespawnDelay {
 	title = "Time until abandoned vehicles respawn (in seconds)";
-	values[] = {60, 70, 80, 90, 100, 120, 180, 240, 300};
+	values[] = {0, 60, 120, 180, 240, 300, 360, 420, 480, 540};
+	texts[] = {"never", "60", "120", "180", "240", "300", "360", "420", "480", "540"};
 	default = INS_DEF_abandonedRespawnDelay;
 };
 

@@ -28,18 +28,15 @@ player moveInGunner _helo;
 _wp = group _helo addWaypoint [_loc, 0];
 _wp setWaypointType "LOITER";
 
-while { true } do {
-	if (_helo distance _loc < 900 or abortCAS or !alive _helo) exitWith {};
-};
+waitUntil { _helo distance _loc < 900 or abortCAS or !alive _helo };
 
 _timeSlept = 0;
-casPlayerTimeLimit = 90;
 while {!abortCAS && alive _helo} do {
 	sleep 1;
 	_timeSlept = _timeSlept + 1;
 
 	if (_timeSlept > casPlayerTimeLimit) then { abortCAS = true; } 
-	else { hint format["%1 seconds left", [casPlayerTimeLimit - _timeSlept]]; };
+	else { hint format["%1 seconds left", (casPlayerTimeLimit - _timeSlept)]; };
 };
 
 deleteWaypoint _wp;
