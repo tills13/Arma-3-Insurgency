@@ -1541,7 +1541,8 @@ INS_REV_FNCT_onKilled = {
 // Process onKilled event
 INS_REV_FNCT_onKilled_process = {
 	private ["_position_before_dead", "_altitude_ATL_before_dead", "_direction_before_dead","_magazines_before_dead","_weapons_before_dead", "_player","_condition","_loadout","_who_taking_care_of_injured"];
-	
+
+	diag_log format ["%1 unconscious", player];
 	// Memorize player's body position
 	_position_before_dead = getPos INS_REV_GVAR_body_before_dead;
 	_altitude_ATL_before_dead = getPosATL INS_REV_GVAR_body_before_dead select 2;
@@ -1724,7 +1725,6 @@ INS_REV_FNCT_init_teleport_to_teamate = {
 	sleep 3;
 	INS_REV_GVAR_teleportToTeam = player addAction ["<t color='#06ff00'>Teleport To Teammate</t>", [], 10, false, true, "",	""];
 	sleep 10;
-	hintSilent "Use your scroll wheel to teleport to your teammate. (It available only within 3 minutes.)";
 	sleep 180;//3min
 	player removeAction INS_REV_GVAR_teleportToTeam;
 	isJIP = false;

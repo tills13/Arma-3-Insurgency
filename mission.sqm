@@ -8,31 +8,49 @@ class Mission
 		"A3_Air_F_EPB_Heli_Light_03",
 		"A3_Characters_F_OPFOR",
 		"a3_characters_f_beta",
-		"A3_Air_F_Heli_Light_01"
+		"A3_Air_F_Heli_Light_01",
+		"A3_Soft_F_EPC_Truck_03",
+		"A3_Structures_F_Mil_Flags",
+		"A3_Air_F_Heli_Light_02",
+		"A3_Soft_F_Gamma_HEMTT",
+		"A3_Air_F_Beta_Heli_Attack_01",
+		"A3_Air_F_Gamma_Plane_Fighter_03",
+		"ac_130X_a3",
+		"A3_Soft_F_MRAP_01",
+		"A3_Air_F_EPC_Plane_CAS_01",
+		"A3_Air_F_Beta_Heli_Attack_02",
+		"A3_Armor_F_Marid",
+		"A3_Armor_F_T100K"
 	};
 	addOnsAuto[]=
 	{
 		"A3_Characters_F_BLUFOR",
+		"a3_characters_f_beta",
 		"A3_Air_F_EPB_Heli_Light_03",
 		"A3_Air_F_Heli_Light_01",
+		"A3_Soft_F_EPC_Truck_03",
+		"A3_Structures_F_Mil_Flags",
+		"A3_Air_F_Heli_Light_02",
+		"A3_Soft_F_Gamma_HEMTT",
+		"A3_Air_F_Beta_Heli_Attack_01",
+		"A3_Air_F_Gamma_Plane_Fighter_03",
+		"A3_Soft_F_MRAP_01",
+		"A3_Air_F_EPC_Plane_CAS_01",
+		"A3_Air_F_Beta_Heli_Attack_02",
+		"A3_Armor_F_Marid",
+		"A3_Armor_F_T100K",
 		"a3_map_altis"
 	};
 	randomSeed=9788479;
 	class Intel
 	{
 		resistanceWest=0;
-		startWeather=0.30000001;
-		startFog=0.5;
+		startWeather=0;
 		startWind=0.099999994;
-		startRain=0.22999999;
-		startWaves=0.39999998;
-		forecastWeather=0.30000001;
-		forecastFog=0.5;
+		forecastWeather=0;
 		forecastWind=0.099999994;
-		forecastWaves=0.39999998;
-		forecastRain=0.25;
+		forecastWaves=0;
 		forecastLightnings=0.099999994;
-		rainForced=1;
 		wavesForced=1;
 		year=2035;
 		month=6;
@@ -70,50 +88,330 @@ class Mission
 			side="WEST";
 			class Vehicles
 			{
-				items=1;
+				items=8;
 				class Item0
 				{
-					position[]={10769.02,15.710642,10131.931};
+					position[]={3082.0691,10.822659,18270.811};
 					id=1;
 					side="WEST";
-					vehicle="B_Soldier_F";
+					vehicle="B_Soldier_SL_F";
 					player="PLAYER COMMANDER";
 					leader=1;
-					skill=0.60000002;
+					rank="SERGEANT";
+					skill=0.5;
+				};
+				class Item1
+				{
+					position[]={3085.6514,10.6625,18268.863};
+					special="NONE";
+					id=2;
+					side="WEST";
+					vehicle="B_Soldier_TL_F";
+					player="PLAY CDG";
+					lock="UNLOCKED";
+					rank="SERGEANT";
+					skill=0.5;
+				};
+				class Item2
+				{
+					position[]={3079.4778,10.914195,18268.188};
+					special="NONE";
+					id=3;
+					side="WEST";
+					vehicle="B_soldier_AR_F";
+					player="PLAY CDG";
+					rank="CORPORAL";
+					skill=0.44999999;
+				};
+				class Item3
+				{
+					position[]={3085.3992,10.604689,18272.641};
+					special="NONE";
+					id=4;
+					side="WEST";
+					vehicle="B_soldier_AR_F";
+					player="PLAY CDG";
+					skill=0.40000001;
+				};
+				class Item4
+				{
+					position[]={3078.9045,10.843875,18272.641};
+					special="NONE";
+					id=5;
+					side="WEST";
+					vehicle="B_soldier_AAR_F";
+					player="PLAY CDG";
+					skill=0.40000001;
+				};
+				class Item5
+				{
+					position[]={3082.2205,10.716976,18274.018};
+					special="NONE";
+					id=6;
+					side="WEST";
+					vehicle="B_soldier_LAT_F";
+					player="PLAY CDG";
+					rank="CORPORAL";
+					skill=0.44999999;
+				};
+				class Item6
+				{
+					position[]={3076.2307,11.071967,18270.041};
+					special="NONE";
+					id=7;
+					side="WEST";
+					vehicle="B_medic_F";
+					player="PLAY CDG";
+					skill=0.40000001;
+				};
+				class Item7
+				{
+					position[]={3082.7937,10.761719,18266.918};
+					special="NONE";
+					id=8;
+					side="WEST";
+					vehicle="B_Soldier_A_F";
+					player="PLAY CDG";
+					skill=0.40000001;
 				};
 			};
 		};
 	};
 	class Vehicles
 	{
-		items=3;
+		items=22;
 		class Item0
 		{
 			position[]={26778.732,22.136076,24614.938};
-			azimut=135.12477;
-			id=2;
+			azimut=135.125;
+			id=9;
 			side="EMPTY";
 			vehicle="I_Heli_light_03_unarmed_F";
 			skill=0.60000002;
+			init="null = [this, ""HELLCAT1"", 120, 240] execVM ""vehicles\respawn.sqf"";";
 		};
 		class Item1
 		{
 			position[]={26798.75,21.83786,24635.541};
 			azimut=135.125;
-			id=3;
+			id=10;
 			side="EMPTY";
 			vehicle="I_Heli_light_03_unarmed_F";
 			skill=0.60000002;
 			text="ha";
+			init="null = [this, ""HELLCAT2"", 120, 240] execVM ""vehicles\respawn.sqf"";";
 		};
 		class Item2
 		{
-			position[]={10776.88,15.346868,10145.063};
-			id=4;
+			position[]={3087.3589,10.439077,18278.031};
+			id=11;
 			side="EMPTY";
 			vehicle="B_Heli_Light_01_F";
 			skill=0.60000002;
-			init="null = [this, ""AHQ"", true, false, true] execVM ""vehicles\respawn.sqf"";";
+			text="AHQ";
+			init="null = [this, ""AHQ"", 10, 0, ""_this addAction ['Virtual Ammobox', 'vas\open.sqf']; [_this, 500] execVM 'cas\functions\addAction.sqf';""] execVM ""vehicles\respawn.sqf"";";
+		};
+		class Item3
+		{
+			position[]={3073.8982,10.491521,18280.916};
+			id=12;
+			side="EMPTY";
+			vehicle="O_Truck_03_covered_F";
+			skill=0.60000002;
+			text="MHQ";
+			init="null = [this, ""MHQ"", 10, 10, ""_this addAction ['Virtual Ammobox', 'vas\open.sqf']; [_this, 500] execVM 'cas\functions\addAction.sqf';""] execVM ""vehicles\respawn.sqf"";";
+		};
+		class Item4
+		{
+			position[]={3080.6509,10.393884,18281.969};
+			id=13;
+			side="EMPTY";
+			vehicle="Flag_US_F";
+			skill=0.40000001;
+			text="FLAG";
+		};
+		class Item5
+		{
+			position[]={20799.15,29.11031,7225.8218};
+			azimut=149.80299;
+			special="NONE";
+			id=14;
+			side="EMPTY";
+			vehicle="O_Heli_Light_02_F";
+			leader=1;
+			skill=0.5;
+			init="null = [this, ""ORCA1"", 60, 120, """"] execVM ""vehicles\respawn.sqf"";";
+		};
+		class Item6
+		{
+			position[]={20789.936,29.150558,7207.855};
+			azimut=149.80299;
+			special="NONE";
+			id=15;
+			side="EMPTY";
+			vehicle="B_Truck_01_box_F";
+			leader=1;
+			skill=0.5;
+		};
+		class Item7
+		{
+			position[]={23080.07,48.148464,7298.6533};
+			azimut=149.80299;
+			special="NONE";
+			id=16;
+			side="EMPTY";
+			vehicle="B_Heli_Light_01_armed_F";
+			leader=1;
+			skill=0.5;
+			init="null = [this, ""PAWNEE1"", 60, 120] execVM ""vehicles\respawn.sqf"";";
+		};
+		class Item8
+		{
+			position[]={17550.361,13.060825,13241.682};
+			azimut=149.80299;
+			special="NONE";
+			id=17;
+			side="EMPTY";
+			vehicle="B_Heli_Attack_01_F";
+			leader=1;
+			skill=0.5;
+			init="null = [this, ""BF1"", 60, 120] execVM ""vehicles\respawn.sqf"";";
+		};
+		class Item9
+		{
+			position[]={14779.672,17.91,16841.252};
+			azimut=149.80299;
+			special="NONE";
+			id=18;
+			side="EMPTY";
+			vehicle="I_Plane_Fighter_03_AA_F";
+			leader=1;
+			skill=0.5;
+			init="null = [this, ""BUZZ3"", 60, 120] execVM ""vehicles\respawn.sqf"";";
+		};
+		class Item10
+		{
+			position[]={14769.493,17.91,16831.514};
+			azimut=149.80299;
+			special="NONE";
+			id=19;
+			side="EMPTY";
+			vehicle="I_Plane_Fighter_03_AA_F";
+			leader=1;
+			skill=0.5;
+			init="null = [this, ""BUZZ2"", 60, 120] execVM ""vehicles\respawn.sqf"";";
+		};
+		class Item11
+		{
+			position[]={14757.92,17.91,16820.994};
+			azimut=149.80299;
+			special="NONE";
+			id=20;
+			side="EMPTY";
+			vehicle="I_Plane_Fighter_03_AA_F";
+			leader=1;
+			skill=0.5;
+			init="null = [this, ""BUZZ1"", 60, 120] execVM ""vehicles\respawn.sqf"";";
+		};
+		class Item12
+		{
+			position[]={14600.438,17.91,16656.846};
+			azimut=134.069;
+			id=21;
+			side="EMPTY";
+			vehicle="B_MRAP_01_F";
+			skill=0.60000002;
+			init="null = [this, ""H1"", 60, 120] execVM ""vehicles\respawn.sqf"";";
+		};
+		class Item13
+		{
+			position[]={14403.076,19.275509,16311.14};
+			azimut=204.06;
+			id=22;
+			side="EMPTY";
+			vehicle="B_Plane_CAS_01_F";
+			skill=0.60000002;
+			init="null = [this, ""WIPEOUT1"", 120, 240] execVM ""vehicles\respawn.sqf"";";
+		};
+		class Item14
+		{
+			position[]={14344.267,18.768406,16325.689};
+			azimut=183.44901;
+			id=23;
+			side="EMPTY";
+			vehicle="B_Plane_CAS_01_F";
+			skill=0.60000002;
+			init="null = [this, ""WIPEOUT2"", 120, 240] execVM ""vehicles\respawn.sqf"";";
+		};
+		class Item15
+		{
+			position[]={14264.362,19.365074,16301.194};
+			azimut=150.326;
+			id=24;
+			side="EMPTY";
+			vehicle="B_Plane_CAS_01_F";
+			skill=0.60000002;
+			init="null = [this, ""WIPEOUT3"", 120, 240] execVM ""vehicles\respawn.sqf"";";
+		};
+		class Item16
+		{
+			position[]={9197.457,15.09957,21618.178};
+			azimut=187.351;
+			id=25;
+			side="EMPTY";
+			vehicle="O_Heli_Attack_02_black_F";
+			skill=0.60000002;
+			init="null = [this, ""KAJMAN2"", 120, 240] execVM ""vehicles\respawn.sqf"";";
+		};
+		class Item17
+		{
+			position[]={9179.7295,14.98215,21613.094};
+			azimut=187.351;
+			id=26;
+			side="EMPTY";
+			vehicle="O_Heli_Attack_02_black_F";
+			skill=0.60000002;
+			init="null = [this, ""KAJMAN1"", 120, 240] execVM ""vehicles\respawn.sqf"";";
+		};
+		class Item18
+		{
+			position[]={9095.1025,15.219282,21560.063};
+			azimut=141.145;
+			id=27;
+			side="EMPTY";
+			vehicle="O_APC_Wheeled_02_rcws_F";
+			skill=0.60000002;
+			init="null = [this, ""MARID3"", 120, 240] execVM ""vehicles\respawn.sqf"";";
+		};
+		class Item19
+		{
+			position[]={9102.1943,15.176941,21565.764};
+			azimut=141.145;
+			id=28;
+			side="EMPTY";
+			vehicle="O_APC_Wheeled_02_rcws_F";
+			skill=0.60000002;
+			init="null = [this, ""MARID2"", 120, 240] execVM ""vehicles\respawn.sqf"";";
+		};
+		class Item20
+		{
+			position[]={9109.5928,15.125342,21571.008};
+			azimut=141.145;
+			id=29;
+			side="EMPTY";
+			vehicle="O_APC_Wheeled_02_rcws_F";
+			skill=0.60000002;
+			init="null = [this, ""MARID1"", 120, 240] execVM ""vehicles\respawn.sqf"";";
+		};
+		class Item21
+		{
+			position[]={14209.944,74.110626,21228.994};
+			azimut=380.01199;
+			id=30;
+			side="EMPTY";
+			vehicle="O_MBT_02_cannon_F";
+			skill=0.60000002;
+			init="null = [this, ""T100"", 120, 240] execVM ""vehicles\respawn.sqf"";";
 		};
 	};
 	class Markers
@@ -484,7 +782,7 @@ class Mission
 		};
 		class Item33
 		{
-			position[]={10771.127,15.495297,10140.626};
+			position[]={3081.606,10.742856,18273.594};
 			name="start";
 			type="Empty";
 		};

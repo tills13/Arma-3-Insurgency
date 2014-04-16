@@ -47,30 +47,37 @@ if (isServer) exitWith {
 	// INITIATE ZONE
 	_trig = format ["EOSTrigger%1", _mkr];
 
-	if (!_cache) then {
-		if isMultiplayer then {
-			if (_heightLimit) then {
-				_actCond = "{vehicle _x in thisList && isplayer _x && ((getPosATL _x) select 2) < 5} count playableUnits > 0";
+	_attempts = 0;
+	while { isNil "_eosActivated" } do {
+		if (_attempts > 2) then { _cache = false; };
+
+		if (!_cache) then {
+			if isMultiplayer then {
+				if (_heightLimit) then {
+					_actCond = "{vehicle _x in thisList && isplayer _x && ((getPosATL _x) select 2) < 5} count playableUnits > 0";
+				} else {
+					_actCond = "{vehicle _x in thisList && isplayer _x} count playableUnits > 0";
+				};
 			} else {
-				_actCond = "{vehicle _x in thisList && isplayer _x} count playableUnits > 0";
+				if (_heightLimit) then {
+					_actCond = "{vehicle _x in thisList && isplayer _x && ((getPosATL _x) select 2) < 5} count allUnits > 0";
+				} else {
+					_actCond = "{vehicle _x in thisList && isplayer _x} count allUnits > 0";
+				};
 			};
+
+			_eosActivated = createTrigger ["EmptyDetector", _mPos]; 
+			_eosActivated setTriggerArea [(_distance + _mkrX), (_distance + _mkrY), _mkrAgl, FALSE]; 
+			_eosActivated setTriggerActivation ["ANY", "PRESENT", true];
+			_eosActivated setTriggerTimeout [1, 1, 1, true];
+			_eosActivated setTriggerStatements [_actCond, "", ""];
+
+			server setVariable [_trig, _eosActivated];	
 		} else {
-			if (_heightLimit) then {
-				_actCond = "{vehicle _x in thisList && isplayer _x && ((getPosATL _x) select 2) < 5} count allUnits > 0";
-			} else {
-				_actCond = "{vehicle _x in thisList && isplayer _x} count allUnits > 0";
-			};
+			_eosActivated = server getVariable _trig;	
 		};
-
-		_eosActivated = createTrigger ["EmptyDetector", _mPos]; 
-		_eosActivated setTriggerArea [(_distance + _mkrX), (_distance + _mkrY), _mkrAgl, FALSE]; 
-		_eosActivated setTriggerActivation ["ANY", "PRESENT", true];
-		_eosActivated setTriggerTimeout [1, 1, 1, true];
-		_eosActivated setTriggerStatements [_actCond, "", ""];
-
-		server setVariable [_trig, _eosActivated];	
-	} else {
-		_eosActivated = server getVariable _trig;	
+		
+		_attempts = _attempts + 1;
 	};
 
 	_mkr setMarkerAlpha _mAN;
@@ -412,7 +419,7 @@ if (isServer) exitWith {
 		deleteVehicle _taken;	
 
 		if (!(getMarkerColor _mkr == "ColorBlack")) then {	
-			null = [_mkr, [_aGrps, _aSize], [_bGrps, _bSize], [_cGrps, _cSize], [_dGrps, _eGrps, _fGrps, _fSize], _settings, True] execVM "eos\core\eos_core.sqf";
+			null = [_mkr, [_aGrps, _aSize], [_bGrps, _bSize], [_cGrps, _cSize], [_dGrps, _eGrps, _fGrps, _fSize], _settings, true] execVM "eos\core\eos_core.sqf";
 		} else { _mkr setMarkerAlpha 0; };
 	};
 };

@@ -9,7 +9,7 @@ if (isServer) then {
 		_param = (configName ((missionConfigFile >> "Params") select _i));
 		_value = (paramsArray select _i);
 		format["%1 = %2", _param, _value] call BIS_fnc_log;
-		call compile format ["%1 = %2", (configName ((missionConfigFile >> "Params") select _i)), (paramsArray select _i)];
+		call compile format ["%1 = %2; publicVariable ""%1""", (configName ((missionConfigFile >> "Params") select _i)), (paramsArray select _i)];
 	};
 	
 	[] execVM "INS_revive\revive_init.sqf";

@@ -13,10 +13,17 @@ class Header {
 	maxPlayers = 10; //max # of players the mission supports
 };
 
-class Params {	
+class Params {
+	class TitleLineGen { title = "General ---------"; values[] = {0, 0}; texts[] = {"", ""}; default = 0; };	
 	#include "params.hpp"
+
+	class TitleLineIns { title = "Insurgency ---------"; values[] = {0, 0}; texts[] = {"", ""}; default = 0; };
 	#include "insurgency\params.hpp"
+
+	class TitleLineRev { title = "Revive ---------"; values[] = {0, 0}; texts[] = {"", ""}; default = 0; };
 	#include "INS_revive\params.hpp"
+
+	class TitleLineCAS { title = "Close Air Support ---------"; values[] = {0, 0}; texts[] = {"", ""}; default = 0; };
 	#include "cas\params.hpp"
 };
 

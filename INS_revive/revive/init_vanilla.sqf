@@ -30,10 +30,11 @@ if (isServer) then {
 
 // If not player then exit
 if (!isDedicated) then {
+	diag_log "INS initialized and running for player";
 	[] spawn {
 		private ["_loadout", "_playableUnits"];
 
-		INS_REV_thread_exec_wait_revive = [] spawn {};	// On killed wating revive thread
+		INS_REV_thread_exec_wait_revive = [] spawn {};	// On killed waiting revive thread
 		INS_REV_thread_dead_camera = [] spawn {};		// On killed dead camera thread
 		
 		waitUntil {!(isNull player)}; // Wait until player initialized

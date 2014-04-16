@@ -18,5 +18,5 @@
 #define INS_REV_DEF_near_friendly_distance 50
 #define INS_REV_DEF_near_enemy 0
 #define INS_REV_DEF_near_enemy_distance 50
-#define INS_REV_DEF_all_dead_respawn 1
+#define INS_REV_DEF_all_dead_respawn 0
 #define INS_REV_DEF_loadout_on_respawn 1
