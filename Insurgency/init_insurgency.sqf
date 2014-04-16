@@ -2,7 +2,7 @@
 #include "core\ai_functions.sqf"
 
 if (isServer || isDedicated) then {
-	[] execVM "insurgency\modules\ai\spawnEnemies.sqf";
+	call preprocessFile "insurgency\modules\ai\INS_fnc_spawnEnemies.sqf";
 	
 	//[] execVM "insurgency\modules\markers\createMarkers.sqf";
 	//waitUntil {!isNil "INS_CORE_doneCreate"};
