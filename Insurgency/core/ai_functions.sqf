@@ -55,7 +55,7 @@ INS_fn_spawnUnits = {
 			_gridPos = getPos _building call gridPos;
 
 			if (getMarkerColor str _gridPos == "ColorRed") then {
-				_eCount = count nearestObjects[_pos, ["Man"], 15];
+				_eCount = count nearestObjects[_pos, ["Man", "CAR"], 15];
 				if (_eCount < 10) then {
 					_m = createMarker [format ["box%1", random 1000], getposATL _building];
 					//_m setMarkerText str floor random 1;
@@ -75,12 +75,15 @@ INS_fn_despawnUnits = {
 	_cityRad = _this select 2;
 	diag_log format ["deleting units in %1", _cityName];
 
-	_enemies = nearestObjects[_cityPos, ["Man"], _cityRad];
+	_enemies = nearestObjects[_cityPos, ["Man", "Car"], _cityRad];
 	_cachedEnemies = [];
 
 	{
 		if (alive _x) then {
-			_eInfo = [typeOf _x, getPos _x, damage _x, group _x];
+			if (_x isKindOf "Car") then {
+				if (side )
+			};
+			_eInfo = [isKindOf _x, typeOf _x, getPos _x, damage _x, group _x];
 			deleteVehicle _x;
 			diag_log format ["caching %1 at %2", typeOf _x, getPos _x];
 			_cachedEnemies = _cachedEnemies + [_eInfo];
