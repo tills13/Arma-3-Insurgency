@@ -1,4 +1,4 @@
-private ["_sUnit","_nearestUnit","_nsUnit","_wGroup","_leader","_uns","_i","_maxDis","_mp"];
+private ["_sUnit", "_nearestUnit", "_nsUnit", "_wGroup", "_leader", "_uns", "_i", "_maxDis", "_mp"];
 _sUnit = _this select 0;
 _maxDis = _this select 1;
 _mp = _this select 2;

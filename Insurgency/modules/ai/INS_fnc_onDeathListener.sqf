@@ -1,6 +1,7 @@
 //if !(isServer) then { exitWith {}; };
 
-_this addEventHandler ["Killed", {
+
+INS_fnc_onDeathListener = {
 	_tempRandom = random 100;
 
 	if (tempRandom > (100 - INS_probOfDrop)) then {
@@ -33,4 +34,4 @@ _this addEventHandler ["Killed", {
 			};
 		};	
 	};
-}]
+};

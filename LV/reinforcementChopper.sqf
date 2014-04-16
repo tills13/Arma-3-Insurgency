@@ -48,7 +48,7 @@
 	EXAMPLE: 	nul = [player,false,2,3,false,true,player,"random",1000,true,false,8,0.75,[false,true,false,true],nil,nil,33,false] execVM "LV\reinforcementChopper.sqf";
 */
 if (!isServer)exitWith{};
-private ["_BLUmen3","_mp","_smoke","_INDchoppers","_BLUchoppers","_OPFchoppers","_OPFarrays","_BLUarrays","_INDgrp","_INDhq","_INDmen","_OPFmen2","_BLUmen2","_captive","_patrol","_heliT","_chopperTypes","_chopperType","_setInit2","_setInit","_c0","_customInit","_tPos","_exactPos","_skls","_skills","_grpSize","_cycle","_precise","_man2","_direction","_distance","_targetM","_i2","_heliPad","_targetPos","_side","_targetMarker","_BLUmen","_OPFmen","_men","_hq","_grp1","_grp2","_man1","_man","_dir","_range","_pos","_heli","_vehSpots","_i","_wp1"];
+private ["_BLUmen3","_mp","_smoke","_INDchoppers","_BLUchoppers","_OPFchoppers","_OPFarrays","_BLUarrays","_INDgrp","_INDhq","_INDmen","_OPFmen2","_BLUmen2","_captive","_patrol","_heliT","_chopperTypes","_chopperType","_setInit2","_setInit","_c0","_tPos","_exactPos","_skls","_skills","_grpSize","_cycle","_precise","_man2","_direction","_distance","_targetM","_i2","_heliPad","_targetPos","_side","_targetMarker","_BLUmen","_OPFmen","_men","_hq","_grp1","_grp2","_man1","_man","_dir","_range","_pos","_heli","_vehSpots","_i","_wp1"];
 
 //Extra options:
 _doorHandling = true;
@@ -70,9 +70,8 @@ _grpSize = if (count _this > 11) then {_this select 11; }else{8;};
 _skills = if (count _this > 12) then {_this select 12; }else{"default";};
 _smoke = if (count _this > 13) then {_this select 13; }else{[false,false,false,false];};
 _grp2 = if (count _this > 14) then {_this select 14; }else{nil;};
-_customInit = if (count _this > 15) then {_this select 15; }else{nil;};
-_grpId = if (count _this > 16) then { _this select 16;} else {nil};
-_mp = if (count _this > 17) then { _this select 17;} else {false};
+_grpId = if (count _this > 15) then { _this select 15;} else {nil};
+_mp = if (count _this > 16) then { _this select 16;} else {false};
 
 if(_mp)then{if(isNil("LV_GetPlayers"))then{LV_GetPlayers = compile preprocessFile "LV\LV_functions\LV_fnc_getPlayers.sqf";};};
 
@@ -111,7 +110,6 @@ if((_smoke select 0))then{
 //Prepare functions:
 if(isNil("LV_ACskills"))then{LV_ACskills = compile preprocessFile "LV\LV_functions\LV_fnc_ACskills.sqf";};
 if(isNil("LV_RandomSpot"))then{LV_RandomSpot = compile preprocessFile "LV\LV_functions\LV_fnc_randomSpot.sqf";};
-if(isNil("LV_vehicleInit"))then{LV_vehicleInit = compile preprocessFile "LV\LV_functions\LV_fnc_vehicleInit.sqf";};
 
 //Unit arrays:
 _BLUmen = ["B_Soldier_A_F","B_soldier_AR_F","B_medic_F","B_engineer_F","B_soldier_exp_F","B_Soldier_GL_F","B_soldier_M_F","B_soldier_AA_F","B_soldier_AT_F","B_officer_F","B_soldier_repair_F","B_Soldier_F","B_soldier_LAT_F","B_Soldier_lite_F","B_Soldier_SL_F","B_Soldier_TL_F","B_soldier_AAR_F","B_soldier_AAA_F","B_soldier_AAT_F"];
@@ -228,19 +226,13 @@ for "_i" from 1 to _vehSpots do {
 	_man2 execVM "insurgency\modules\ai\deathListener.sqf";
 	if(typeName _skills != "STRING")then{_skls = [_man2,_skills] call LV_ACskills;};
 	_man2 moveInCargo _heli;
-	if(!isNil("_customInit"))then{ 
-		[_man2,_customInit] spawn LV_vehicleInit;
-	};
 };
 if((_vehSpots == 0)&&(_grpSize > 0))then{
 	_man1 = _men select (floor(random(count _men)));
 	_man2 = _grp2 createUnit [_man1, _pos, [], 0, "NONE"];
 	_man2 execVM "insurgency\modules\ai\deathListener.sqf";
 	if(typeName _skills != "STRING")then{_skls = [_man2,_skills] call LV_ACskills;};
-	_man2 moveInTurret [_heli, [0]];
-	if(!isNil("_customInit"))then{ 
-		[_man2,_customInit] spawn LV_vehicleInit;
-	}; 
+	_man2 moveInTurret [_heli, [0]]; 
 };
 
 if(!isNil("_grpId"))then{

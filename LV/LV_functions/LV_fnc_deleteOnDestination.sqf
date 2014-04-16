@@ -15,7 +15,7 @@ while { alive _unit } do {
 		};
 	};
 
-	if((_unit distance _destination) < 200) then {
+	if ((_unit distance _destination) < 200) then {
 		if (vehicle _unit != _unit) then { deleteVehicle (vehicle _unit); };
 		deleteVehicle _unit;
 	};

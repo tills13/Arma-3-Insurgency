@@ -1,5 +1,5 @@
 if (!isServer) exitWith{};
-private ["_patrolType","_customInit","_communication","_eastGroups","_westGroups","_skills","_syncedUnit","_groupAmount","_grp","_minRange","_maxRange","_minTime","_maxTime","_centerPos","_range","_dir","_spawnPos","_side","_menOrVehicle","_timeDelay","_skls","_spotValid","_leftSides","_fullRatio","_perRatio","_westRatio","_eastRatio","_indeRatio","_lossRatio","_indeGroups","_sideRatios","_dissapearDistance","_waterUnitChance","_landOrAir","_mp","_tempPos","_isFlat","_d1","_m","_avoidArray"];
+private ["_patrolType","_communication","_eastGroups","_westGroups","_skills","_syncedUnit","_groupAmount","_grp","_minRange","_maxRange","_minTime","_maxTime","_centerPos","_range","_dir","_spawnPos","_side","_menOrVehicle","_timeDelay","_skls","_spotValid","_leftSides","_fullRatio","_perRatio","_westRatio","_eastRatio","_indeRatio","_lossRatio","_indeGroups","_sideRatios","_dissapearDistance","_waterUnitChance","_landOrAir","_mp","_tempPos","_isFlat","_d1","_m","_avoidArray"];
 
 _minRange = if (count _this > 0) then { _this select 0; } else {450};	 
 _maxRange = if (count _this > 1) then { _this select 1; } else {900};	 
@@ -11,9 +11,8 @@ _syncedUnit = if (count _this > 6) then { _this select 6; } else {player};
 _skills = if (count _this > 7) then { _this select 7; } else {"default"};	 
 _communication = if (count _this > 8) then { _this select 8; } else {0};	 
 _dissapearDistance = if (count _this > 9) then { _this select 9; } else {2500};	 
-_customInit = if (count _this > 10) then { _this select 10; } else {nil};	 
-_patrolType = if (count _this > 11) then { _this select 11; } else {1};	
-_mp = if (count _this > 12) then { _this select 12; } else {true};
+_patrolType = if (count _this > 10) then { _this select 10; } else {1};	
+_mp = if (count _this > 11) then { _this select 11; } else {true};
 
 
 
@@ -25,10 +24,8 @@ if (isNil("LV_diveGroup")) then { LV_diveGroup = compile preprocessFile "LV\LV_f
 if (isNil("LV_ACpatrol")) then { LV_ACpatrol = compile preprocessFile "LV\LV_functions\LV_fnc_ACpatrol.sqf"; };
 if (isNil("LV_ACcleanUp")) then { LV_ACcleanUp = compile preprocessFile "LV\LV_functions\LV_fnc_ACcleanUp.sqf"; };
 if (isNil("LV_ACskills")) then { LV_ACskills = compile preprocessFile "LV\LV_functions\LV_fnc_ACskills.sqf"; };
-if (_communication == 1) then { if (isNil("LV_AIcommunication")) then { LV_AIcommunication = compile preprocessFile "LV\LV_functions\LV_fnc_AIcommunication.sqf"; }; };
-if (isNil("LV_vehicleInit")) then { LV_vehicleInit = compile preprocessFile "LV\LV_functions\LV_fnc_vehicleInit.sqf"; };
 if (isNil("LV_RandomSpot")) then { LV_RandomSpot = compile preprocessFile "LV\LV_functions\LV_fnc_randomSpot.sqf"; };
-if (_mp) then {if (isNil("LV_GetPlayers")) then { LV_GetPlayers = compile preprocessFile "LV\LV_functions\LV_fnc_getPlayers.sqf"; }; };
+if (_mp and isNil("LV_GetPlayers")) then { LV_GetPlayers = compile preprocessFile "LV\LV_functions\LV_fnc_getPlayers.sqf"; }; };
 if (isNil("LV_FindLandPosition")) then { LV_FindLandPosition = compile preprocessFile "LV\LV_functions\LV_fnc_findLandPosition.sqf"; };
 if (isNil("LV_IsInMarker")) then { LV_IsInMarker = compile preprocessFile "LV\LV_functions\LV_fnc_isInMarker.sqf"; };
 
@@ -39,13 +36,9 @@ if (isNil("LV_AI_indeGroups")) then { LV_AI_indeGroups = []; };
 
 if (!(isNil("ACpatrol"))) then { terminate ACpatrol; };
 if (!(isNil("ACcleanUp"))) then { terminate ACcleanUp; };
-if (_communication == 1) then {
-	if (!(isNil("ACcommunication"))) then { terminate ACcommunication; };
-	ACcommunication = [] spawn LV_AIcommunication;
-};
 
-ACcleanUp = [_syncedUnit,_dissapearDistance,_mp] spawn LV_ACcleanUp;
-ACpatrol = [_syncedUnit,_maxRange,_patrolType,_mp] spawn LV_ACpatrol;
+ACcleanUp = [_syncedUnit, _dissapearDistance, _mp] spawn LV_ACcleanUp;
+ACpatrol = [_syncedUnit, _maxRange, _patrolType, _mp] spawn LV_ACpatrol;
 
 while { true } do {
 	if (_maxTime == _minTime) then {
@@ -62,11 +55,8 @@ while { true } do {
 			while { !_spotValid } do {
 				_spotValid = true;
 				
-				if (((typeName _syncedUnit) == "ARRAY") || (_mp)) then {
-					_centerPos = getPos (_syncedUnit call BIS_fnc_selectRandom);
-				} else {
-					_centerPos = getPos _syncedUnit;
-				};
+				if (((typeName _syncedUnit) == "ARRAY") || (_mp)) then { _centerPos = getPos (_syncedUnit call BIS_fnc_selectRandom); }
+				else { _centerPos = getPos _syncedUnit; };
 				
 				if (_maxRange == _minRange) then { _range = _maxRange; } 
 				else { _range = (random(_maxRange - _minRange)) + _minRange; };
@@ -92,6 +82,7 @@ while { true } do {
 						};
 					};
 				};
+
 				if (((typeName _syncedUnit) == "ARRAY")||(_mp)) then {
 					{
 						if ((_x distance _spawnPos) < _minRange)exitWith{ _spotValid = false; };
@@ -101,13 +92,12 @@ while { true } do {
 				_avoidArray = [];
 				for "_i" from 0 to 30 do {
 					if (_i == 0) then { _m = "ACavoid"; } else { _m = ("ACavoid_" + str _i); };
-					if (_m in allMapMarkers) then { _avoidArray set[(count _avoidArray),_m]; };
+					if (_m in allMapMarkers) then { _avoidArray = _avoidArray + [_m]; };
 				};
+
 				{
-					if ([_spawnPos,_x] call LV_IsInMarker)exitWith{ _spotValid = false; };
+					if ([_spawnPos,_x] call LV_IsInMarker) exitWith { _spotValid = false; };
 				} forEach _avoidArray;
-				
-				
 			};
 
 		//Handle side ratios -> decide side:
@@ -120,6 +110,7 @@ while { true } do {
 		_westGroups = {(side _x) == west} count LV_ACS_activeGroups;
 		_eastGroups = {(side _x) == east} count LV_ACS_activeGroups;
 		_indeGroups = {(side _x) == resistance} count LV_ACS_activeGroups;
+
 		if (_westGroups < _westRatio) then {
 			_side = 0;
 		} else {
@@ -144,7 +135,7 @@ while { true } do {
 		};
 			
 		_menOrVehicle = floor(random 10);
-		if (_menOrVehicle < 4) then {
+		if (_menOrVehicle < 3) then { // vehicle
 			if (surfaceIsWater _spawnPos) then {
 				_grp = [_spawnPos, _side] call LV_fullWaterVehicle;
 			} else {
@@ -155,34 +146,21 @@ while { true } do {
 					_grp = [_spawnPos, _side] call LV_fullLandVehicle;
 				};
 			};
-		} else {
+		} else { // infantry
 			if (surfaceIsWater _spawnPos) then {
-				_grp = [_spawnPos, _side, [10,3]] call LV_diveGroup;
+				_grp = [_spawnPos, _side, [10, 3]] call LV_diveGroup;
 			} else {
-				_grp = [_spawnPos, _side, [10,3]] call LV_menGroup;
+				_grp = [_spawnPos, _side, [10, 3]] call LV_menGroup;
 			};
 		};
+
 		if (typeName _skills != "STRING") then { _skls = [_grp,_skills] call LV_ACskills; };
 		LV_ACS_activeGroups set [(count LV_ACS_activeGroups), (group _grp)];
 		
 		switch(_side) do {
-			case 0: {
-				LV_AI_eastGroups set [(count LV_AI_eastGroups), (group _grp)];
-			};
-
-			case 1: {
-				LV_AI_westGroups set [(count LV_AI_westGroups), (group _grp)];
-			};
-
-			case 2: {
-				LV_AI_indeGroups set [(count LV_AI_indeGroups), (group _grp)];
-			};
-		};
-		
-		if (!isNil("_customInit")) then { 
-			{
-				[_x,_customInit] spawn LV_vehicleInit;
-			} forEach units group _grp;
+			case 0: { LV_AI_eastGroups = LV_AI_eastGroups + [_grp]; };
+			case 1: { LV_AI_westGroups = LV_AI_westGroups + [_grp]; };
+			case 2: { LV_AI_indeGroups = LV_AI_indeGroups + [_grp]; };
 		};
 	};
 };

@@ -1,5 +1,5 @@
 if (!isServer)exitWith{};
-private ["_blueMenArray3","_blueMenArray2","_BLUarrays","_redMenArray2","_OPFarrays","_greenMenArray","_grpId","_customInit","_center","_skls","_skills","_a","_buildings","_rat","_milHQ","_milGroup","_menArray","_i","_newPos","_i2","_unitType","_unit","_building","_sideOption","_blueMenArray","_redMenArray","_bPoss","_patrol","_pFile","_pType"];
+private ["_blueMenArray3", "_blueMenArray2", "_BLUarrays", "_redMenArray2", "_OPFarrays", "_greenMenArray", "_grpId", "_center", "_skls", "_skills", "_a", "_buildings", "_rat", "_milHQ", "_milGroup", "_menArray", "_i", "_newPos", "_i2", "_unitType", "_unit", "_building", "_sideOption", "_blueMenArray", "_redMenArray", "_bPoss", "_patrol", "_pFile", "_pType"];
 
 _center = if (count _this > 0) then { _this select 0;};	 
 _sideOption = if (count _this > 1) then { _this select 1;} else {2};	 
@@ -9,21 +9,19 @@ _ratio = if (count _this > 4) then { _this select 4;} else {50};
 _radius = if (count _this > 5) then { _this select 5;} else {1};	 
 _skills = if (count _this > 6) then { _this select 6;} else {"default"};	 
 _milGroup = if (count _this > 7) then { _this select 7;} else {nil}; if(!isNil("_milGroup"))then{if(_milGroup == "nil0")then{_milGroup = nil;};};
-_customInit = if (count _this > 8) then { _this select 8;} else {nil}; if(!isNil("_customInit"))then{if(_customInit == "nil0")then{_customInit = nil;};};
-_grpId = if (count _this > 9) then { _this select 9;} else {nil};	 
+_grpId = if (count _this > 8) then { _this select 8;} else {nil};	 
 
 if(isNil("LV_ACskills"))then{LV_ACskills = compile preprocessFile "LV\LV_functions\LV_fnc_ACskills.sqf";};
-if(isNil("LV_vehicleInit"))then{LV_vehicleInit = compile preprocessFile "LV\LV_functions\LV_fnc_vehicleInit.sqf";};
 if(isNil("LV_nearestBuilding"))then{LV_nearestBuilding = compile preprocessFile "LV\LV_functions\LV_fnc_nearestBuilding.sqf";};
 
-_blueMenArray = ["B_Soldier_A_F","B_soldier_AR_F","B_medic_F","B_engineer_F","B_soldier_exp_F","B_Soldier_GL_F","B_soldier_M_F","B_soldier_AA_F","B_soldier_AT_F","B_officer_F","B_soldier_repair_F","B_Soldier_F","B_soldier_LAT_F","B_Soldier_lite_F","B_Soldier_SL_F","B_Soldier_TL_F","B_soldier_AAR_F","B_soldier_AAA_F","B_soldier_AAT_F"];
-_blueMenArray2 = ["B_recon_exp_F","B_recon_JTAC_F","B_recon_M_F","B_recon_medic_F","B_recon_F","B_recon_LAT_F","B_recon_TL_F","B_soldier_AAR_F","B_soldier_AAA_F","B_soldier_AAT_F"];
-_blueMenArray3 = ["B_G_Soldier_A_F","B_G_soldier_AR_F","B_G_medic_F","B_G_engineer_F","B_G_soldier_exp_F","B_G_Soldier_GL_F","B_G_soldier_M_F","B_G_officer_F","B_G_Soldier_F","B_G_soldier_LAT_F","B_G_Soldier_lite_F","B_G_Soldier_SL_F","B_G_Soldier_TL_F"];
+_blueMenArray = ["B_Soldier_A_F", "B_soldier_AR_F", "B_medic_F", "B_engineer_F", "B_soldier_exp_F", "B_Soldier_GL_F", "B_soldier_M_F", "B_soldier_AA_F", "B_soldier_AT_F", "B_officer_F", "B_soldier_repair_F", "B_Soldier_F", "B_soldier_LAT_F", "B_Soldier_lite_F", "B_Soldier_SL_F", "B_Soldier_TL_F", "B_soldier_AAR_F", "B_soldier_AAA_F", "B_soldier_AAT_F"];
+_blueMenArray2 = ["B_recon_exp_F", "B_recon_JTAC_F", "B_recon_M_F", "B_recon_medic_F", "B_recon_F", "B_recon_LAT_F", "B_recon_TL_F", "B_soldier_AAR_F", "B_soldier_AAA_F", "B_soldier_AAT_F"];
+_blueMenArray3 = ["B_G_Soldier_A_F", "B_G_soldier_AR_F", "B_G_medic_F", "B_G_engineer_F", "B_G_soldier_exp_F", "B_G_Soldier_GL_F", "B_G_soldier_M_F", "B_G_officer_F", "B_G_Soldier_F", "B_G_soldier_LAT_F", "B_G_Soldier_lite_F", "B_G_Soldier_SL_F", "B_G_Soldier_TL_F"];
 _BLUarrays = [_blueMenArray,_blueMenArray2,_blueMenArray3];
-_redMenArray = ["O_Soldier_A_F","O_soldier_AR_F","O_medic_F","O_engineer_F","O_soldier_exp_F","O_Soldier_GL_F","O_soldier_M_F","O_soldier_AA_F","O_soldier_AT_F","O_officer_F","O_soldier_repair_F","O_Soldier_F","O_soldier_LAT_F","O_Soldier_lite_F","O_Soldier_SL_F","O_Soldier_TL_F","O_soldier_AAR_F","O_soldier_AAA_F","O_soldier_AAT_F"];
-_redMenArray2 = ["O_recon_exp_F","O_recon_JTAC_F","O_recon_M_F","O_recon_medic_F","O_recon_F","O_recon_LAT_F","O_recon_TL_F","O_soldier_AAR_F","O_soldier_AAA_F","O_soldier_AAT_F"];
+_redMenArray = ["O_Soldier_A_F", "O_soldier_AR_F", "O_medic_F", "O_engineer_F", "O_soldier_exp_F", "O_Soldier_GL_F", "O_soldier_M_F", "O_soldier_AA_F", "O_soldier_AT_F", "O_officer_F", "O_soldier_repair_F", "O_Soldier_F", "O_soldier_LAT_F", "O_Soldier_lite_F", "O_Soldier_SL_F", "O_Soldier_TL_F", "O_soldier_AAR_F", "O_soldier_AAA_F", "O_soldier_AAT_F"];
+_redMenArray2 = ["O_recon_exp_F", "O_recon_JTAC_F", "O_recon_M_F", "O_recon_medic_F", "O_recon_F", "O_recon_LAT_F", "O_recon_TL_F", "O_soldier_AAR_F", "O_soldier_AAA_F", "O_soldier_AAT_F"];
 _OPFarrays = [_redMenArray,_redMenArray2];
-_greenMenArray = ["I_Soldier_A_F","I_soldier_AR_F","I_medic_F","I_engineer_F","I_soldier_exp_F","I_Soldier_GL_F","I_soldier_M_F","I_soldier_AA_F","I_soldier_AT_F","I_officer_F","I_soldier_repair_F","I_Soldier_F","I_soldier_LAT_F","I_Soldier_lite_F","I_Soldier_SL_F","I_Soldier_TL_F","I_soldier_AAR_F","I_soldier_AAA_F","I_soldier_AAT_F"];
+_greenMenArray = ["I_Soldier_A_F", "I_soldier_AR_F", "I_medic_F", "I_engineer_F", "I_soldier_exp_F", "I_Soldier_GL_F", "I_soldier_M_F", "I_soldier_AA_F", "I_soldier_AT_F", "I_officer_F", "I_soldier_repair_F", "I_Soldier_F", "I_soldier_LAT_F", "I_Soldier_lite_F", "I_Soldier_SL_F", "I_Soldier_TL_F", "I_soldier_AAR_F", "I_soldier_AAA_F", "I_soldier_AAT_F"];
 
 switch (_sideOption) do {
     case 1: {
@@ -108,9 +106,6 @@ while{_i2 < _rat}do{
 	}else{
         	doStop _unit;
     };
-	if(!isNil("_customInit"))then{ 
-		nul = [_unit,_customInit] spawn LV_vehicleInit;
-	};
 };
 
 if(!isNil("_grpId"))then{
@@ -119,7 +114,7 @@ if(!isNil("_grpId"))then{
 	_thisArray = [];
 	{ 
 		if(isNil("_x"))then{
-			_thisArray set[(count _thisArray),"nil0"];
+			_thisArray set[(count _thisArray), "nil0"];
 		}else{
 			_thisArray set[(count _thisArray),_x];
 		};

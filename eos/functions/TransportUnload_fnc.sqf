@@ -8,7 +8,6 @@ _grp = _veh select 2;
 _cargoGrp = _veh select 3;
 _pos = [_mkr, false] call shk_pos;									
 _pad = createVehicle ["Land_HelipadEmpty_F", _pos, [], 0, "NONE"]; 
-if (debugMode == 1) then { 0 = [_mkr, _counter, "Unload Pad", (getPos _pad)] call EOS_debug; };
 
 {_x allowFleeing 0} forEach units _grp;		
 {_x allowFleeing 0} forEach units _cargoGrp;

@@ -48,11 +48,11 @@ _i = 0;
 for "_i" from 0 to _amount do {
 	_man1 = _men select (floor(random(count _men)));
 	_man = _grp createUnit [_man1, _pos, [], 0, "NONE"];
-	_man execVM "insurgency\modules\ai\deathListener.sqf";
+	//_man execVM "insurgency\modules\ai\deathListener.sqf";
 };
 
 if(!isNil("_grpId"))then{
-	call compile format ["LVgroup%1 = _grp",_grpId];
+	call compile format ["LVgroup%1 = _grp", _grpId];
 };
 
 _leader = leader _grp;

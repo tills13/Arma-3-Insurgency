@@ -21,6 +21,7 @@ switch (_type) do {
 	case "all in radius":{
 		_houseObjects = nearestObjects [_center0, ["building"], _radius];
 	};
+	
 	case "nearest one":{
 		_houseObjects = nearestObjects [_center0, ["building"], 500];
 	};

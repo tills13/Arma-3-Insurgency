@@ -54,10 +54,6 @@ while{_i < (count LV_ACS_activeGroups)}do{
 				
 				_unit doMove _nPos;
 				_unit setBehaviour "CARELESS";
-				
-				//_markerstr = createMarker[("markername"+(str _unit)),_nPos];
-				//_markerstr setMarkerShape "ICON";
-				//("markername"+(str _unit)) setMarkerType "mil_dot";
 
 				[_unit,_nPos] spawn LV_deleteOnDestination;
 			};

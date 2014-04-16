@@ -1,5 +1,3 @@
-//ARMA3Alpha function LV_fnc_diveGroup v1.1 - by SPUn / lostvar (included by FX2K)
-//Spawn infantry group and returns leader
 private ["_OPFarrays","_BLUarrays","_INDgrp","_INDhq","_INDmen","_OPFmen2","_BLUmen2","_pos","_side","_size","_BLUmen","_OPFmen","_men","_amount","_BLUhq","_BLUgrp","_OPFhq","_OPFgrp","_grp","_i","_man1","_man","_leader"];
 _pos = _this select 0;
 _side = _this select 1;
@@ -42,7 +40,7 @@ _i = 0;
 for "_i" from 0 to _amount do {
 	_man1 = _men select (floor(random(count _men)));
 	_man = _grp createUnit [_man1, _pos, [], 0, "NONE"];
-	_man execVM "insurgency\modules\ai\deathListener.sqf";
+	//_man execVM "insurgency\modules\ai\deathListener.sqf";
 	sleep 0.3 ;
 };
 

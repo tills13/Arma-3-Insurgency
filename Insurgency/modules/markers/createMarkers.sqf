@@ -1,7 +1,5 @@
 /*---------------------------------------------*/
 
-_cities = call SL_fnc_urbanAreas;
-
 _eosMarkers = server getVariable "EOSmarkers";
 
 {

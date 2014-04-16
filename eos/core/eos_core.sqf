@@ -81,11 +81,11 @@ if (isServer) exitWith {
 	};
 
 	_mkr setMarkerAlpha _mAN;
-	if (!(getMarkerColor _mkr == victoryColor)) then { _mkr setMarkerColor hostileColor; };
+	if (!(getMarkerColor _mkr == "colorGreen")) then { _mkr setMarkerColor "colorRed"; };
 
 	waitUntil { triggerActivated _eosActivated };	//WAIT UNTIL PLAYERS IN ZONE
 	if (!(getMarkerColor _mkr == "ColorBlack")) then {
-		if (!(getMarkerColor _mkr == victoryColor)) then { _mkr setMarkerAlpha _mAH; };
+		if (!(getMarkerColor _mkr == "colorGreen")) then { _mkr setMarkerAlpha _mAH; };
 
 		for "_counter" from 1 to _aGrps do { // SPAWN HOUSE PATROLS
 			if (debugMode == 1) then { player sideChat format ["spawning house %1", random 40]; };
@@ -398,11 +398,11 @@ if (isServer) exitWith {
 				
 				while {triggerActivated _eosActivated AND !(getMarkerColor _mkr == "ColorBlack")} do {
 					if (!triggerActivated _clear) then {
-						_mkr setMarkerColor hostileColor;
+						_mkr setMarkerColor "colorRed";
 						_mkr setMarkerAlpha _mAH;
 						if (debugMode == 1) then { hint "Zone Lost"; };
 					} else {
-						_mkr setMarkerColor victoryColor;
+						_mkr setMarkerColor "colorGreen";
 						_mkr setMarkerAlpha _mAN;
 					};
 

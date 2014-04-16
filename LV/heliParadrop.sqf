@@ -51,8 +51,8 @@ MP			= 	true/false	true = 'drop spot' will automatically be one of alive non-cap
 						 
 EXAMPLE: 	nul = [player, 2, false, true, 1000, "random", true, 500, 200, 6, 1, 50, true, false, true, true, player, false, 0.75, nil, nil, 1,false] execVM "LV\heliParadrop.sqf";
 */
-if (!isServer)exitWith{};
-private ["_mp","_grp","_heliType","_men","_grp2","_center","_man1","_man2","_landingSpot","_side","_flyHeight","_openHeight","_jumpDelay","_jumperAmount","_heliDistance","_heliDirection","_flyBy","_allowDamage","_BLUmen","_OPFmen","_INDmen","_BLUchopper","_OPFchopper","_INDchopper","_landingSpotPos","_spos","_heli","_crew","_dir","_flySpot","_jumpDistanceFromTarget","_captive","_smokes","_flares","_chems","_skls","_cPosition","_cRadius","_patrol","_target","_cycle","_skills","_customInit","_grpId","_wp0","_wp1","_doorHandling"];
+if (!isServer) exitWith {};
+private ["_mp","_grp","_heliType","_men","_grp2","_center","_man1","_man2","_landingSpot","_side","_flyHeight","_openHeight","_jumpDelay","_jumperAmount","_heliDistance","_heliDirection","_flyBy","_allowDamage","_BLUmen","_OPFmen","_INDmen","_BLUchopper","_OPFchopper","_INDchopper","_landingSpotPos","_spos","_heli","_crew","_dir","_flySpot","_jumpDistanceFromTarget","_captive","_smokes","_flares","_chems","_skls","_cPosition","_cRadius","_patrol","_target","_cycle","_skills","_grpId","_wp0","_wp1","_doorHandling"];
 
 //Extra settings:
 _doorHandling = true;
@@ -78,13 +78,11 @@ _target = if (count _this > 16) then {_this select 16; }else{player;};
 _cycle = if (count _this > 17) then {_this select 17; }else{false;};
 _skills = if (count _this > 18) then {_this select 18; }else{"default";};
 _grp2 = if (count _this > 19) then {_this select 19; }else{nil;};
-_customInit = if (count _this > 20) then {_this select 20; }else{nil;};
-_grpId = if (count _this > 21) then { _this select 21;} else {nil};
-_mp = if (count _this > 22) then { _this select 22;} else {false};
+_grpId = if (count _this > 20) then { _this select 20;} else {nil};
+_mp = if (count _this > 21) then { _this select 21;} else {false};
 
 //Prepare functions:
 if(isNil("LV_ACskills"))then{LV_ACskills = compile preprocessFile "LV\LV_functions\LV_fnc_ACskills.sqf";};
-if(isNil("LV_vehicleInit"))then{LV_vehicleInit = compile preprocessFile "LV\LV_functions\LV_fnc_vehicleInit.sqf";};
 if(_mp)then{if(isNil("LV_GetPlayers"))then{LV_GetPlayers = compile preprocessFile "LV\LV_functions\LV_fnc_getPlayers.sqf";};};
 
 //Classnames:
@@ -197,10 +195,7 @@ for "_i" from 1 to _jumperAmount step 1 do{
 	_man2 execVM "insurgency\modules\ai\deathListener.sqf";
 	_man2 setPos [(getPos _heli) select 0,(getPos _heli) select 1, ((getPos _heli) select 2) - 3];
 	if(typeName _skills != "STRING")then{_skls = [_man2,_skills] call LV_ACskills;};
-	if(!isNil("_customInit"))then{ 
-		[_man2,_customInit] spawn LV_vehicleInit;
-	};
-	[_man2,_heli,_openHeight,_smokes,_flares,_chems] spawn{
+	[_man2, _heli, _openHeight, _smokes, _flares, _chems] spawn{
 		private ["_man2","_heli","_openHeight","_para","_smokes","_flares","_chems","_smoke","_flare","_chem"];
 		_man2 = _this select 0;
 		_heli = _this select 1;
