@@ -1,4 +1,5 @@
 #include "core\functions.sqf"
+#include "core\ai_functions.sqf"
 
 if (isServer || isDedicated) then {
 	[] execVM "insurgency\modules\ai\spawnEnemies.sqf";

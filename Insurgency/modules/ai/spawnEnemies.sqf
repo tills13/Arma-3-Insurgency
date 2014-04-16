@@ -2,78 +2,64 @@ addMarkerForPosition = {
 	_pos = _this select 0;
 	_globalPos = _this select 1;
 	_radius = _this select 2;
+	_markers = _this select 3;
 
-	_x = _pos select 0;
- 	_y = _pos select 1;
- 	_x = _x - (_x % 100);
- 	_y = _y - (_y % 100);
-	_pos = [_x + 50, _y + 50, 0];
 	_mkr = str _pos;
+	_mkr = createMarkerLocal[_mkr, _pos];
+	_mkr setMarkerShapeLocal "RECTANGLE";
+	_mkr setMarkerTypeLocal "SOLID";
+	_mkr setMarkerSizeLocal [50, 50];
+	_mkr setMarkerColor "ColorRed";
+	_mkr setMarkerAlphaLocal 0.5;
+	_markers = _markers + [_mkr];
 
-	if (getMarkerPos _mkr select 0 == 0) then {
-		_mkr = createMarkerLocal[_mkr, _pos];
-		_mkr setMarkerShapeLocal "RECTANGLE";
-		_mkr setMarkerTypeLocal "SOLID";
-		_mkr setMarkerSizeLocal [50, 50];
-		_mkr setMarkerColor "ColorRed";
-		_mkr setMarkerAlphaLocal 0.5;
-	};
-
-	_trigE = createTrigger ["EmptyDetector", _pos];
-	_trigE setTriggerActivation ["west", "present", false];
-	_trigE setTriggerArea [_radiusX, _radiusY, 0, false];
-	_trigE setTriggerStatements ["this", format["%1 call SL_fnc_createTriggers", _mkr], ""];
-};
-
-gridPos = {
-	_pos = _this select 0;
-
-	_x = _pos select 0;
- 	_y = _pos select 1;
- 	_x = _x - (_x % 100);
- 	_y = _y - (_y % 100);
-
-	[_x + 50, _y + 50, 0];
+	_markers
 };
 
 if (isServer) then {
-	eos_zone_init = compile preprocessFileLineNumbers "eos\core\eos_launch.sqf";
-	eos_fnc_spawnvehicle = compile preprocessfilelinenumbers "eos\functions\eos_SpawnVehicle.sqf";
-	eos_fnc_grouphandlers = compile preprocessfilelinenumbers "eos\functions\setSkill.sqf";
-	eos_fnc_findsafepos  =compile preprocessfilelinenumbers "eos\functions\findSafePos.sqf";
-	eos_fnc_spawngroup = compile preprocessfile "eos\functions\infantry_fnc.sqf";
-	eos_fnc_setcargo = compile preprocessfile "eos\functions\cargo_fnc.sqf";
-	eos_fnc_taskpatrol = compile preprocessfile "eos\functions\shk_patrol.sqf";
-	shk_pos = compile preprocessfile "eos\functions\shk_pos.sqf";
-	shk_fnc_fillhouse = compile preprocessFileLineNumbers "eos\Functions\SHK_buildingpos.sqf";
-	eos_fnc_getunitpool= compile preprocessfilelinenumbers "eos\UnitPools.sqf";
-	call compile preprocessfilelinenumbers "eos\AI_Skill.sqf";
-	onplayerConnected { [] execVM "eos\Functions\EOS_Markers.sqf"; };
+	//eos_zone_init = compile preprocessFileLineNumbers "eos\core\eos_launch.sqf";
+	//eos_fnc_spawnvehicle = compile preprocessfilelinenumbers "eos\functions\eos_SpawnVehicle.sqf";
+	//eos_fnc_grouphandlers = compile preprocessfilelinenumbers "eos\functions\setSkill.sqf";
+	//eos_fnc_findsafepos  =compile preprocessfilelinenumbers "eos\functions\findSafePos.sqf";
+	//eos_fnc_spawngroup = compile preprocessfile "eos\functions\infantry_fnc.sqf";
+	//eos_fnc_setcargo = compile preprocessfile "eos\functions\cargo_fnc.sqf";
+	//eos_fnc_taskpatrol = compile preprocessfile "eos\functions\shk_patrol.sqf";
+	//shk_pos = compile preprocessfile "eos\functions\shk_pos.sqf";
+	//shk_fnc_fillhouse = compile preprocessFileLineNumbers "eos\Functions\SHK_buildingpos.sqf";
+	//eos_fnc_getunitpool= compile preprocessfilelinenumbers "eos\UnitPools.sqf";
+	//call compile preprocessfilelinenumbers "eos\AI_Skill.sqf";
+	//onplayerConnected { [] execVM "eos\Functions\EOS_Markers.sqf"; };
 
 	{
+		_markers = [];
+		_city = _x;
 		_cityName = _x select 0;
 		_cityPos = _x select 1;
-		_cityRad = _x select 2;
+		_cityRad = (_x select 2) max (_x select 3);
+		//diag_log format["%1 %2 %3", _cityName, _cityPos, _cityRad];
 
-		_buildings = [_cityPos, _cityRad] call SL_fnc_findBuildings;
 		_roads = (_cityPos nearRoads _cityRad);
 
 		for "_i" from 0 to (count _roads) step 1 do {
-			_mkr = str ([getPos _roads[_i]] call gridPos);
-			if (getMarkerPos _mkr select 0 == 0) then {
-				_nearHouses = [getPos _roads[_i], 50] call SO_fnc_findHouse;
+			_mpos = (getPos (_roads select _i) call gridPos);
+			if (isNil "_mpos") then {
+				//if (debugMode == 1) then { diag_log format["error: %1 - %2", _cityName, count _roads]; };
+			} else {
+				_mkr = str _mpos;
+				if (getMarkerPos _mkr select 0 == 0) then {
+					//_nearHouses = [(getPos (_roads select _i)), 50] call SO_fnc_findHouse;
 
-				// do something
+					// do something
 
-				[_pos, _cityPos, _cityRad] call addMarkerForPosition;
+					_markers = [_mpos, _cityPos, _cityRad, _markers] call addMarkerForPosition;
+				};
 			};
 		};
 
-		//_trig = createTrigger [_cityName, _cityPos];
-		//_trig setTriggerActivation ["west", "present", false];
-		//_trig setTriggerArea [_cityRad, _cityRad, 0, false];
-		//_trig setTriggerStatements["this", ]
-		//_trig setTriggerStatements ["{(side _x) == east} count thisList == 0 and {(side _x) == west } count thisList >= 1", format["""%1"" setMarkerColor ""ColorGreen"";",_x], ""];
+		_trigE = createTrigger ["EmptyDetector", _cityPos];
+		_trigE setTriggerActivation ["west", "present", true];
+		_trigE setTriggerArea [_cityRad, _cityRad, 0, false];
+		_trigE setTriggerStatements ["this", format["%1 call SL_fnc_createTriggers; %2 call INS_fn_spawnUnits;", _markers, [_cityName, _cityPos, _cityRad]], format["%1 call INS_fn_despawnUnits;", [_cityName, _cityPos, _cityRad]]];
 	} forEach (call SL_fnc_urbanAreas);
 
 

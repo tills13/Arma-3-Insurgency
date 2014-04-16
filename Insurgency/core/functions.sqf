@@ -22,7 +22,7 @@ SL_fnc_urbanAreas = {
 		};
 	};
 	
-	_cities;
+	_cities
 };
 
 SL_fnc_findBuildings = {
@@ -30,7 +30,7 @@ SL_fnc_findBuildings = {
 	_center = _this select 0;
 	_radius = _this select 1;
 	_buildings = nearestObjects [_center, ["house"], _radius];
-	_buildings;
+	_buildings
 };
 
 SL_fnc_buildingPositions = {
@@ -42,8 +42,8 @@ SL_fnc_buildingPositions = {
 			_cbpos = _cbpos + 1;
 		};
 	};
-	
-	_cbpos;
+
+	_cbpos
 };
 
 SL_fnc_createTriggers = {
@@ -57,7 +57,6 @@ SL_fnc_createTriggers = {
 		_trigE setTriggerStatements ["{(side _x) == east} count thisList == 0 AND {(side _x) == west } count thisList >= 1", format["""%1"" setMarkerColor ""ColorGreen"";",_x], ""];
 
 	} foreach _this;
-
 };
 
 SO_fnc_randomCity = {
@@ -87,23 +86,34 @@ SO_fnc_randomCity = {
 		if (_cityType in _cityTypes) then { _found = 1; };
 	};
 
-	[_randomLoc, _cityName, _cityPos, _cityRadA, _cityRadB, _cityType, _cityAngle];
+	[_randomLoc, _cityName, _cityPos, _cityRadA, _cityRadB, _cityType, _cityAngle]
 };
 
 SO_fnc_findHouse = {
-
 	private ["_found", "_houses", "_house", "_cpos", "_range", "_bpos"];
 
-	_cpos = _this select 1;
-	_range = _this select 2;
+	_cpos = _this select 0;
+	_range = _this select 1;
 
 	_houses = nearestObjects [_cpos, ["house"], _range];
-	_houses;
+	_houses
 };
 
 // ---------------------------------------
 //	position functions
 // ---------------------------------------
+
+gridPos = {
+	_pos = _this;
+
+	_x = _pos select 0;
+ 	_y = _pos select 1;
+ 	_x = _x - (_x % 100);
+ 	_y = _y - (_y % 100);
+ 	_mpos = [_x + 50, _y + 50, 0];
+
+ 	_mpos
+};
 
 getRandomRelativePositionLand = {		
 	private ["_target", "_distance", "_direction", "_position", "_bestPositions"];
