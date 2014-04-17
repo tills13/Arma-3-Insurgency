@@ -1,17 +1,74 @@
 /* ----------------------------------------------------------------------------------------------------
-File: setupRecruitAIMenu.sqf
+File: flagMenu.sqf
 Author: dolan
     
 Description:
-sets all the addAction items for the flagpole
 ---------------------------------------------------------------------------------------------------- */
-_this addAction ["Teleport to AHQ", "scripts\teleport.sqf", [player, AHQ]];
-_this addAction ["Teleport to MHQ", "scripts\teleport.sqf", [player, MHQ]];
+INS_fn_recruitAI = {
+	private ["_unit"];
+	_player = (_this select 3) select 0;
+	_type = (_this select 3) select 1;
 
-_this addAction ["Recruit Sniper", "scripts\recruitai.sqf", [player, "B_sniper_F"]];
-_this addAction ["Recruit Spotter", "scripts\recruitai.sqf", [player, "B_spotter_F"]];
-_this addAction ["Recruit Medic", "scripts\recruitai.sqf", [player, "B_medic_F"]];
-_this addAction ["Recruit Engineer", "scripts\recruitai.sqf", [player, "B_engineer_F"]];
-_this addAction ["Recruit Rifleman", "scripts\recruitai.sqf", [player, "B_soldier_F"]];
-_this addAction ["Recruit Autorifleman", "scripts\recruitai.sqf", [player, "B_soldier_AR_F"]];
-_this addAction ["Recruit AT Soldier", "scripts\recruitai.sqf", [player, "B_soldier_AT_F"]];
+	diag_log str _player;
+	if (leader group _player != _player) then {
+	    hint "Only the group leader can acquire AI, you are not the group leader!";
+	} else {
+        diag_log format ["%1 recruiting %2", name _player, _type];
+	    _unit = _type createUnit [getPos _player, group _player, "", 0.8];
+        _unit call INS_fn_initAIUnit;
+	};
+
+	call FLAG_collapse_menu;
+};
+
+INS_fn_teleport = {
+	diag_log str _this;
+	_player = (_this select 3) select 0;
+	_dest = missionNamespace getVariable ((_this select 3) select 1);
+
+	if (alive _dest) then { 
+		_player setPos (getPos _dest);
+		if (count crew _dest == 0) then { _player moveInDriver _dest; } else { _player moveInCargo _dest; };
+
+		{ _x moveInCargo _dest; } forEach units group _player; // move all in group with you
+	} else {
+		hintSilent format["%1 currently not available", vehicleVarName _dest];
+	};
+};
+
+FLAG_expand_menu = {
+	_object = _this select 0;
+
+	_object removeAction REC_MENU_AID;
+	TITLE_ACTION_ID = _object addAction ["<t color='#6775cf'>Recruit: </t>", "", nil, 1.5, false, false];
+	REC_sniper_AID = _object addAction ["  Sniper", INS_fn_recruitAI, [player, "B_sniper_F"]];
+	REC_spotter_AID = _object addAction ["  Spotter", INS_fn_recruitAI, [player, "B_spotter_F"]];
+	REC_medic_AID = _object addAction ["  Medic", INS_fn_recruitAI, [player, "B_medic_F"]];
+	REC_eng_AID = _object addAction ["  Engineer", INS_fn_recruitAI, [player, "B_engineer_F"]];
+	REC_soldier_AID = _object addAction ["  Rifleman", INS_fn_recruitAI, [player, "B_soldier_F"]];
+	REC_ar_AID = _object addAction ["  Autorifleman", INS_fn_recruitAI, [player, "B_soldier_AR_F"]];
+	REC_at_AID = _object addAction ["  AT Soldier", INS_fn_recruitAI, [player, "B_soldier_AT_F"]];
+	REC_cancel_AID = _object addAction ["  <t color='#ff6347'>Exit Recruit Menu</t>", FLAG_collapse_menu, nil, 1.5, false, false];
+};
+
+FLAG_collapse_menu = {
+	_object = _this select 0;
+
+	_object removeAction TITLE_ACTION_ID;
+	_object removeAction REC_sniper_AID;
+	_object removeAction REC_spotter_AID;
+	_object removeAction REC_medic_AID;
+	_object removeAction REC_eng_AID;
+	_object removeAction REC_soldier_AID;
+	_object removeAction REC_ar_AID;
+	_object removeAction REC_at_AID;
+	_object removeAction REC_cancel_AID;
+
+	REC_MENU_AID = _object addAction ["<t color='#6775cf'>Recruit AI</t>", FLAG_expand_menu, nil, 1.5, false, false];
+};
+
+_object = _this;
+
+TELAHQ_MENU_AID = _object addAction ["Teleport to AHQ", INS_fn_teleport, [player, "AHQ"], 1.00, false, false, "", "alive AHQ"];
+TELMHQ_MENU_AID = _object addAction ["Teleport to MHQ", INS_fn_teleport, [player, "MHQ"], 1.00, false, false, "", "alive MHQ"];
+REC_MENU_AID = _object addAction ["<t color='#6775cf'>Recruit AI</t>", FLAG_expand_menu, nil, 1.5, false, false];

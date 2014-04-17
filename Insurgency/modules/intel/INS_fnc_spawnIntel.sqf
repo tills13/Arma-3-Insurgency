@@ -4,7 +4,7 @@ if (isServer) then {
 
 	addPickupActionMP = {
 		_intel = _this;
-		_intel addaction ["<t color='#FF0000'>Gather Intel</t>", "call intelPickup"];
+		_intel addaction ["Gather Intel", "call intelPickup"];
 	};
 
 	[] spawn {

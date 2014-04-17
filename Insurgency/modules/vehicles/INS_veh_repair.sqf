@@ -4,16 +4,17 @@
 #define DEF_REPAIR_TRUCK_USES 5
 #define DEF_FREE_REPAIRS 1
 
-#define STR_FIELD_REPAIR "Quick Repair"
-#define STR_CANCEL_ACTION "Cancel Action"
-#define STR_SERIOUS_REPAIR "Full Repair"
+#define STR_ACT_FIELD_REPAIR "Quick Repair"
+#define STR_ACT_CANCEL_ACTION "Cancel Action"
+#define STR_ACT_SERIOUS_REPAIR "Full Repair"
+#define STR_ACT_PUSH_APC "Push Vehicle"
 #define STR_REPAIR_CONDITIONS "Bad Conditions for Repair"
-#define STR_ANOTHER_ACTION "Another Action in Progress"
+#define STR_ANOTHER_ACTION "<t size='0.75' color='#ff6347'>Another Action in Progress</t>"
 #define STR_NEED_TOOLKIT "Need ToolKit in Inventory (player or vehicle)"
-#define STR_REPAIR_INTERRUPTED "Repair Interrupted"
-#define STR_REPAIR_FINISHED "Repair Finished"
-#define STR_REPAIR_MSG_STRING "<t color='ff6347'>%1</t> will be repaired in <t color='ff6347'>%2</t> second(s)"
-#define STR_PUSH_APC "Push Vehicle"
+#define STR_REPAIR_INTERRUPTED "<t size='0.75' color='#ff6347'>Repair Interrupted</t>"
+#define STR_REPAIR_FINISHED "<t size='0.75' color='#7ba151'>Repair Finished</t>"
+#define STR_REPAIR_MSG_STRING "<t size='0.75'><t color='#ff6347'>%2</t> will be repaired in <t color='#ff6347'>%1</t> second(s)</t>"
+
 
 INS_veh_repair_loop = [_this, 0, false] call BIS_fnc_param;
 
@@ -151,7 +152,9 @@ INS_veh_fnc_quickRepair = {
 		sleep 0.5;
 
 		_maxlength = _veh getVariable["INS_veh_longrepair", [_veh] call INS_veh_frpr_getPartsRepairTime];
-		_vehname = getText (configFile >> "CfgVehicles" >> typeOf(_veh) >> "displayName");
+		_vehname = "";
+		if (vehicleVarName _veh != "") then { _vehname = vehicleVarName _veh; } 
+		else { _vehname = getText (configFile >> "CfgVehicles" >> typeOf(_veh) >> "displayName"); };
 		_length = _maxlength;
 		_cycle = 0;
 
@@ -204,7 +207,9 @@ INS_veh_fnc_heavyRepair = {
 		INS_veh_mutexAction = true;
 
 		_maxlength = _veh getVariable["INS_veh_longRepairTruck", DEF_FULLREPAIR_LENGTH];
-		_vehname = getText (configFile >> "CfgVehicles" >> typeOf(_veh) >> "displayName");
+		_vehname = "";
+		if (vehicleVarName _veh != "") then { _vehname = vehicleVarName _veh; } 
+		else { _vehname = getText (configFile >> "CfgVehicles" >> typeOf(_veh) >> "displayName"); };
 		_length = _maxlength;
 
 		while { alive player and alive _truck and alive _veh and vehicle _caller != _caller and speed _veh <= 3 and not _repairFinished and INS_veh_mutexAction and _veh distance _truck <= 15 } do {			
@@ -247,19 +252,19 @@ INS_veh_pushAPC = {
 };
 
 if (isNil "INS_veh_cancelActionId") then {
-	INS_veh_cancelActionId = player addAction["<t color='#0000ff'>" + STR_CANCEL_ACTION + "</t>", {INS_veh_mutexAction = false}, [], 10, false, true, '',' INS_veh_mutexAction  '];
+	INS_veh_cancelActionId = player addAction["<t color='#ff6347'>" + STR_ACT_CANCEL_ACTION + "</t>", {INS_veh_mutexAction = false}, [], 10, false, true, '',' INS_veh_mutexAction  '];
 	
-	player addAction["<t color='#5dc183'>" + STR_FIELD_REPAIR + "</t>", INS_veh_fnc_quickRepair, [], -1, false, true, '','[] call INS_veh_fnc_repair_cond'];
-	player addAction["<t color='#cd380e'>" + STR_SERIOUS_REPAIR + "</t>", INS_veh_fnc_heavyRepair, [], -1, false, true, '','_truck=(vehicle player);_truck getVariable ["INS_veh_repair_cargo", -1] != -1 and {alive cursorTarget} and { _truck distance cursorTarget <= 15} and {(cursorTarget isKindOf "LandVehicle" or cursorTarget isKindOf "Ship" or cursorTarget isKindOf "Air")} and {not INS_veh_mutexAction} and {speed cursorTarget <= 3} and {(damage cursorTarget != 0)}'];
-	player addAction["<t color='#ffffff'>" + STR_PUSH_APC + "</t>", INS_veh_pushAPC, [], 5, false, true, "", "canMove (vehicle player) and ((vehicle player) isKindOf 'Wheeled_APC_F') and player == driver (vehicle player) and surfaceIsWater getpos (vehicle player)  and abs(speed (vehicle player)) < 3 and not INS_veh_mutexAction"];   
+	player addAction["<t color='#5dc183'>" + STR_ACT_FIELD_REPAIR + "</t>", INS_veh_fnc_quickRepair, [], -1, false, true, '','[] call INS_veh_fnc_repair_cond'];
+	player addAction["<t color='#cd380e'>" + STR_ACT_SERIOUS_REPAIR + "</t>", INS_veh_fnc_heavyRepair, [], -1, false, true, '','_truck=(vehicle player);_truck getVariable ["INS_veh_repair_cargo", -1] != -1 and {alive cursorTarget} and { _truck distance cursorTarget <= 15} and {(cursorTarget isKindOf "LandVehicle" or cursorTarget isKindOf "Ship" or cursorTarget isKindOf "Air")} and {not INS_veh_mutexAction} and {speed cursorTarget <= 3} and {(damage cursorTarget != 0)}'];
+	player addAction["<t color='#ffffff'>" + STR_ACT_PUSH_APC + "</t>", INS_veh_pushAPC, [], 5, false, true, "", "canMove (vehicle player) and ((vehicle player) isKindOf 'Wheeled_APC_F') and player == driver (vehicle player) and surfaceIsWater getpos (vehicle player)  and abs(speed (vehicle player)) < 3 and not INS_veh_mutexAction"];   
 };
 
 player addEventHandler ["Respawn", {
-	INS_veh_cancelActionId = player addAction["<t color='#0000ff'>" + STR_CANCEL_ACTION + "</t>", {INS_veh_mutexAction = false}, [], 10, false, true, '',' INS_veh_mutexAction  '];
+	INS_veh_cancelActionId = player addAction["<t color='#ff6347'>" + STR_ACT_CANCEL_ACTION + "</t>", {INS_veh_mutexAction = false}, [], 10, false, true, '',' INS_veh_mutexAction  '];
 	
-	player addAction["<t color='#5dc183'>" + STR_FIELD_REPAIR + "</t>", INS_veh_fnc_quickRepair, [], -1, false, true, '','[] call INS_veh_fnc_repair_cond'];
-	player addAction["<t color='#cd380e'>" + STR_SERIOUS_REPAIR+ "</t>", INS_veh_fnc_heavyRepair, [], -1, false, true, '','_truck = (vehicle player);_truck getVariable ["INS_veh_repair_cargo", -1] != -1 and {alive cursorTarget} and { _truck distance cursorTarget <= 15 } and {(cursorTarget isKindOf "LandVehicle" or cursorTarget isKindOf "Ship" or cursorTarget isKindOf "Air")} and {not INS_veh_mutexAction} and {speed cursorTarget <= 3} and {(damage cursorTarget != 0)}'];
-	player addAction["<t color='#ffffff'>" + STR_PUSH_APC + "</t>", INS_veh_pushAPC, [], 5, false,true, "", "canMove (vehicle player) and ((vehicle player) isKindOf 'Wheeled_APC_F') and player == driver (vehicle player) and surfaceIsWater getpos (vehicle player)  and abs(speed (vehicle player)) < 3 and not INS_veh_mutexAction"];   
+	player addAction["<t color='#5dc183'>" + STR_ACT_FIELD_REPAIR + "</t>", INS_veh_fnc_quickRepair, [], -1, false, true, '','[] call INS_veh_fnc_repair_cond'];
+	player addAction["<t color='#cd380e'>" + STR_ACT_SERIOUS_REPAIR+ "</t>", INS_veh_fnc_heavyRepair, [], -1, false, true, '','_truck = (vehicle player);_truck getVariable ["INS_veh_repair_cargo", -1] != -1 and {alive cursorTarget} and { _truck distance cursorTarget <= 15 } and {(cursorTarget isKindOf "LandVehicle" or cursorTarget isKindOf "Ship" or cursorTarget isKindOf "Air")} and {not INS_veh_mutexAction} and {speed cursorTarget <= 3} and {(damage cursorTarget != 0)}'];
+	player addAction["<t color='#ffffff'>" + STR_ACT_PUSH_APC + "</t>", INS_veh_pushAPC, [], 5, false,true, "", "canMove (vehicle player) and ((vehicle player) isKindOf 'Wheeled_APC_F') and player == driver (vehicle player) and surfaceIsWater getpos (vehicle player)  and abs(speed (vehicle player)) < 3 and not INS_veh_mutexAction"];   
 }];
 
 

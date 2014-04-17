@@ -209,7 +209,7 @@ class Mission
 			vehicle="B_Heli_Light_01_F";
 			skill=0.60000002;
 			text="AHQ";
-			init="null = [this, ""AHQ"", 10, 0, ""_this addAction ['Virtual Ammobox', 'vas\open.sqf']; [_this, 500] execVM 'cas\functions\addAction.sqf';""] execVM ""insurgency\modules\vehicles\INS_veh_respawn.sqf"";";
+			init="null = [this, ""AHQ"", 10, 0, ""_this addAction ['Virtual Ammobox', 'vas\open.sqf', nil, 1.5, false]; [_this] execVM 'insurgency\modules\vehicles\INS_heli_lift.sqf';""] execVM ""insurgency\modules\vehicles\INS_veh_respawn.sqf"";";
 		};
 		class Item3
 		{
@@ -219,7 +219,7 @@ class Mission
 			vehicle="O_Truck_03_covered_F";
 			skill=0.60000002;
 			text="MHQ";
-			init="null = [this, ""MHQ"", 10, 10, ""_this addAction ['Virtual Ammobox', 'vas\open.sqf']; [_this, 500] execVM 'cas\functions\addAction.sqf';""] execVM ""insurgency\modules\vehicles\INS_veh_respawn.sqf"";";
+			init="null = [this, ""MHQ"", 10, 10, ""_this addAction ['Virtual Ammobox', 'vas\open.sqf', nil, 1.5, false]; [_this] execVM 'cas\init_cas.sqf';""] execVM ""insurgency\modules\vehicles\INS_veh_respawn.sqf"";";
 		};
 		class Item4
 		{
@@ -229,6 +229,7 @@ class Mission
 			vehicle="Flag_US_F";
 			skill=0.40000001;
 			text="FLAG";
+			init="null = this execVM ""scripts\flagMenu.sqf"";";
 		};
 		class Item5
 		{

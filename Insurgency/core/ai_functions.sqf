@@ -37,24 +37,41 @@ INS_fn_spawnWaterReinforcements = {
 	_cityPos = _this select 1;
 };
 
-INS_fn_initAIUnit = {
-	//if (isNil "INS_AI_onKilledListener") then { INS_AI_onKilledListener = compile preprocessFile "insurgency\modules\ai\INS_fnc_onDeathListener.sqf" };
-	_grp = (_this select 0);
+INS_fn_getAIinGroup = {
+    _group = _this;
+
+    _aiPlayerList = [];
+
+    { 
+    	if (!(isPlayer _x)) then { _aiPlayerList = _aiPlayerList + [_x]; };
+	} forEach units _group;
+
+    _aiPlayerList;
+};
+
+INS_fn_dismissAIFromGroup = {
+	_group = _this;
 
 	{
-		_unit = _x;
-		_unit setSkill ['aimingAccuracy', 0.5];
-		_unit setSkill ['aimingShake', 0.5];
-		_unit setSkill ['aimingSpeed', 0.5];
-		_unit setSkill ['spotDistance', 0.5];
-		_unit setSkill ['spotTime', 0.5];
-		_unit setSkill ['courage', 0.5];
-		_unit setSkill ['reloadSpeed', 0.5];
-		_unit setSkill ['commanding', 0.5];
-		_unit setSkill ['general', 0.5];
+		deleteVehicle _x;
+	} forEach (_group call INS_fn_getAIinGroup);
+};
 
-		_handle = _unit execVM "insurgency\modules\ai\INS_fnc_onDeathListener.sqf";
-	} forEach (units _grp); 
+INS_fn_initAIUnit = {
+	//if (isNil "INS_AI_onKilledListener") then { INS_AI_onKilledListener = compile preprocessFile "insurgency\modules\ai\INS_fnc_onDeathListener.sqf" };
+	_unit = _this;
+
+	_unit setSkill ['aimingAccuracy', 0.5];
+	_unit setSkill ['aimingShake', 0.5];
+	_unit setSkill ['aimingSpeed', 0.5];
+	_unit setSkill ['spotDistance', 0.5];
+	_unit setSkill ['spotTime', 0.5];
+	_unit setSkill ['courage', 0.5];
+	_unit setSkill ['reloadSpeed', 0.5];
+	_unit setSkill ['commanding', 0.5];
+	_unit setSkill ['general', 0.5];
+
+	_handle = _unit execVM "insurgency\modules\ai\INS_fnc_onDeathListener.sqf";
 };
 
 INS_fn_spawnUnits = {
@@ -72,7 +89,7 @@ INS_fn_spawnUnits = {
 			_damage = _x select 2;
 			_group = _x select 3;
 			_type createUnit [_pos, _group];
-			[_group] call INS_fn_initAIUnit;
+			//[_group] call INS_fn_initAIUnit;
 
 			diag_log format ["spawning %1 at %2", _type, _pos];
 		} forEach _cachedEnemies;
@@ -97,7 +114,7 @@ INS_fn_spawnUnits = {
 		            
 		            _group = createGroup east;
 		            "O_SoldierU_SL_F" createUnit [_pos, _group];
-		             [_group] call INS_fn_initAIUnit;
+		            //[_group] call INS_fn_initAIUnit;
 				};
 			};
 		} forEach _buildings;
