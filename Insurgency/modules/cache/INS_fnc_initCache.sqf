@@ -5,5 +5,5 @@ if (isServer || isDedicated) then {
 	INS_west_score = 0;
 	publicVariable "INS_west_score";
 	
-	[] spawn { call generateNewCache; };
+	call generateNewCache;
 };

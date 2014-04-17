@@ -19,15 +19,13 @@ playerConnected ={
 	} forEach allMapMarkers;
 };
 
-/**/
-
 if (isServer) then {
 	//[] execVM "INS_revive\revive_init.sqf";
 	//waitUntil {!isNil "INS_REV_FNCT_init_completed"};
 	
 	[] execVM "insurgency\init_insurgency.sqf";
 	//[] execVM "CAS\init_cas.sqf";
-	//[] execVM "vehicles\zlt_fieldrepair.sqf";
+	[] execVM "insurgency\modules\vehicles\INS_veh_repair.sqf";
 	//[] execVM "LV\ambientCombat.sqf";
 	[] spawn { onPlayerConnected "[_id, _uid, _name] spawn  {call playerConnected;};"; };
 	[] execVM "insurgency\modules\vehicles\INS_veh_respawn.sqf"; // respawn loop

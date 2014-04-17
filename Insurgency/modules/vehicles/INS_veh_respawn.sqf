@@ -38,8 +38,8 @@ addVehtoArray = {
 	publicVariable "vehicleArray";	
 };
 
-if (isServer) then {
-	if (isNil "vehicleArray") then { vehicleArray = []; publicVariable "vehicleArray"; };
+if (isNil "vehicleArray") then { vehicleArray = []; publicVariable "vehicleArray"; };
+if (isServer) then { // server loop
 	if (count _this == 0) then { // called script to loop
 		diag_log format["INS_VEH_RESPAWN: starting respawn loop"];
 		while { true } do {
@@ -84,13 +84,11 @@ if (isServer) then {
 					_veh = _type createVehicle _origLoc;
 					_veh setDir _origDir;
 					[_veh, _name, _destroyedRespawnDelay, _abandonedRespawnDelay, _init] call addVehtoArray;
-					//[[_veh, _name, _init], "initParams", true] spawn BIS_fnc_MP;
 				};
 			} forEach vehicleArray;
 
 			sleep 1;
 		};
-		
 	} else { // called script to add vehicle to loop
 		_attrs = _this;
 		_attrs call addVehtoArray;

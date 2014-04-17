@@ -48,34 +48,36 @@ onCacheDestroyed = {
 };
 
 generateNewCache = {
-	_city = (call SL_fnc_urbanAreas) call BIS_fnc_selectRandom;
-	_building = ([_city select 1, _city select 2] call SL_fnc_findBuildings) call BIS_fnc_selectRandom;
-	_pos = [_building] call getRandomBuildingPosition;
+	[] spawn {
+		_city = (call SL_fnc_urbanAreas) call BIS_fnc_selectRandom;
+		_building = ([_city select 1, _city select 2] call SL_fnc_findBuildings) call BIS_fnc_selectRandom;
+		_pos = [_building] call getRandomBuildingPosition;
 
-	cache = createVehicle ["Box_East_WpsSpecial_F", _pos, [], 0, "None"];
-	cache setPos _pos;
+		cache = createVehicle ["Box_East_WpsSpecial_F", _pos, [], 0, "None"];
+		cache setPos _pos;
 
-	if (debugMode == 1) then {
-		diag_log format ["spawning cache at %1", _pos];
-        _m = createMarker [format ["box%1", random 1000], _pos];
-        _m setMarkerShape "ICON"; 
-        _m setMarkerType "mil_dot";
-        _m setMarkerColor "ColorRed";
+		if (debugMode == 1) then {
+			diag_log format ["spawning cache at %1", _pos];
+	        _m = createMarker [format ["box%1", random 1000], _pos];
+	        _m setMarkerShape "ICON"; 
+	        _m setMarkerType "mil_dot";
+	        _m setMarkerColor "ColorRed";
+		};
+
+		cache addEventHandler ["HandleDamage", {
+			_source = _this select 4;
+			if ((_source == "SatchelCharge_Remote_Mag") or (_source == "DemoCharge_Remote_Mag")) then { cache setDamage 1 } 
+			else { cache setDamage 0 };
+		}];
+
+		cache addEventHandler ["Killed", "call onCacheDestroyed;"];
+
+		clearMagazineCargoGlobal cache;
+	    clearWeaponCargoGlobal cache;
+	    //call fillCacheInventory;
+
+		publicVariable "cache";
 	};
-
-	cache addEventHandler ["HandleDamage", {
-		_source = _this select 4;
-		if ((_source == "SatchelCharge_Remote_Mag") or (_source == "DemoCharge_Remote_Mag")) then { cache setDamage 1 } 
-		else { cache setDamage 0 };
-	}];
-
-	cache addEventHandler ["Killed", "call onCacheDestroyed;"];
-
-	clearMagazineCargoGlobal cache;
-    clearWeaponCargoGlobal cache;
-    //call fillCacheInventory;
-
-	publicVariable "cache";
 };
 
 invItems = ["ItemCompass", "FirstAidKit", "ToolKit", "optic_ACO_grn"];
