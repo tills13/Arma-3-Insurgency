@@ -2,10 +2,10 @@
 #define MAX_SPEED_ROPES_AVAIL 30
 
 #define STR_TOSS_ROPES "<t color='#6775cf'>Toss Ropes</t>"
-#define STR_FAST_ROPE "Fast Rope"
+#define STR_FAST_ROPE "<t color='#7ba151'>Fast Rope</t>"
 #define STR_CUT_ROPES "<t color='#ff6347'>Cut Ropes</t>"
 
-if (isdedicated) exitWith {};
+if (isDedicated) exitWith {};
 waitUntil {player == player};
 
 INS_heli_rope_ropes = [];
@@ -20,7 +20,7 @@ INS_heli_rope_helidata = [[["O_Heli_Light_02_unarmed_F", "O_Heli_Light_02_F"], [
 					 [["B_Heli_Light_01_F"], [0.6,0.5,-25.9], [-0.8,0.5,-25.9]]];
 
 
-INS_heli_fnc_tossropes = {
+INS_heli_fnc_tossRopes = {
 	private ["_heli", "_ropes", "_oropes", "_rope"];
 	_heli = _this;
 	_ropes = [];
@@ -65,21 +65,44 @@ INS_heli_fnc_tossropes = {
 
 INS_heli_fnc_ropes_cond = {
 	_veh = vehicle player;
-	_flag = (_veh != player) and {(not INS_heli_mutexAction)} and {count (_veh getVariable ["INS_heli_ropes", []]) == 0} and { (typeof _veh) in INS_heli_rope_helis } and {alive player and alive _veh and (abs (speed _veh) < MAX_SPEED_ROPES_AVAIL ) };
+	_flag = (_veh != player) and {(not INS_heli_mutexAction)} and {count (_veh getVariable ["INS_heli_ropes", []]) == 0} and { (typeof _veh) in INS_heli_rope_helis } and {alive player and alive _veh and (abs (speed _veh) < MAX_SPEED_ROPES_AVAIL) };
 	_flag;
 };
 
-INS_heli_fnc_fastropeaiunits = {
+INS_heli_fnc_pilotCanFastRope = {
+	_veh = vehicle player;
+	_crew = crew _veh;
+	_aiCrew = _crew call INS_fn_getAIinArray;
+
+	if (count _aiCrew > 0) exitWith { true };
+
+	false
+};
+
+INS_heli_fnc_fastRopeAndSetAIasPilot = {
+	_veh = vehicle player;
+	_crew = crew _veh;
+	_aiCrew = _crew call INS_fn_getAIinArray;
+	_newPilot = _aiCrew call BIS_fnc_selectRandom;
+	_newPilot join grpNull; // so he doesn't leave, too.
+
+	call INS_heli_fnc_fastRope;
+	waitUntil { driver _veh == objNull; }; // empty
+	_newPilot moveInDriver _veh; // get him to hold for a little bit, tho...
+	while {INS_heli_mutexAction} do { // hold };
+};
+
+INS_heli_fnc_fastRopeAIUnits = {
 	private ["_heli", "_grunits"];
-	diag_log ["INS_heli_fnc_fastropeaiunits", _this];
+
 	_heli = _this select 0;
 	_grunits = _this select 1;
 
-	doStop (driver _heli );
+	doStop (driver _heli);
 	(driver _heli) setBehaviour "Careless"; 
 	(driver _heli) setCombatMode "Blue"; 
 	
-	_heli spawn INS_heli_fnc_tossropes;
+	_heli spawn INS_heli_fnc_tossRopes;
 
 	[_heli, _grunits] spawn {
 		private ["_units", "_heli"];
@@ -90,30 +113,29 @@ INS_heli_fnc_fastropeaiunits = {
 		_units = _units - [driver _heli];
 		{if (!alive _x or isPlayer _x or vehicle _x != _heli) then {_units = _units - [_x];}; } forEach _units;
 					
-		{ sleep (0.5 + random 0.7); _x spawn INS_heli_fnc_fastropeUnit; } forEach _units;
+		{ sleep (0.5 + random 0.7); _x spawn INS_heli_fnc_fastRopeUnit; } forEach _units;
 		waitUntil {sleep 0.5; { (getpos _x select 2) < 1 } count _units == count _units; };
 		sleep 10;
 		(driver _heli) doFollow (leader group (driver _heli ));
 		(driver _heli) setBehaviour "Aware"; 
 		(driver _heli) setCombatMode "White"; 
 		_heli call INS_heli_fnc_cutropes;
-		
 	};
 };
 
-
-INS_heli_fnc_fastrope = {
-	diag_log ["fastrope", _this];
+INS_heli_fnc_fastRope = {
 	INS_heli_mutexAction = true;
 	sleep random 0.3;
+
 	if (player == leader group player) then {
-		[vehicle player, units group player] call INS_heli_fnc_fastropeaiunits;
+		[vehicle player, units group player] call INS_heli_fnc_fastRopeAIUnits;
 	};
-	player call INS_heli_fnc_fastropeUnit;
+
+	player call INS_heli_fnc_fastRopeUnit;
 	INS_heli_mutexAction = false;
 };
 
-INS_heli_fnc_fastropeUnit = {
+INS_heli_fnc_fastRopeUnit = {
 	private ["_unit", "_heli", "_ropes", "_rope", "_zmax", "_zdelta", "_zc"];
 	_unit = _this;
 	_heli = vehicle _unit;
@@ -124,7 +146,7 @@ INS_heli_fnc_fastropeUnit = {
 	
 	_rope = _ropes call BIS_fnc_selectRandom;
 	_zmax = 22;
-	_zdelta = 7 / 10  ;
+	_zdelta = 7 / 10;
 	
 	_zc = _zmax;
 	_unit action ["eject", _heli];
@@ -132,7 +154,7 @@ INS_heli_fnc_fastropeUnit = {
 	
 	_unit setpos [(getpos _unit select 0), (getpos _unit select 1), 0 max ((getpos _unit select 2) - 3)];
 	while {alive _unit and (getpos _unit select 2) > 1 and (abs (speed _heli)) < MAX_SPEED_WHILE_FASTROPING  and _zc > -24} do {
-		_unit attachTo [_rope, [0,0,_zc]];
+		_unit attachTo [_rope, [0, 0, _zc]];
 		_zc = _zc - _zdelta;
 		sleep 0.1;
 	};
@@ -140,7 +162,6 @@ INS_heli_fnc_fastropeUnit = {
 	_unit switchMove "";
 	detach _unit;
 };
-
 
 INS_heli_fnc_cutropes = {
 	_veh = _this;
@@ -157,16 +178,16 @@ INS_heli_fnc_removeropes = {
 
 INS_heli_fnc_createropes = {
 	INS_heli_mutexAction = true;
-	(vehicle player) call INS_heli_fnc_tossropes;
+	(vehicle player) call INS_heli_fnc_tossRopes;
 	INS_heli_mutexAction = false;
 };
 
-player addAction["<t color='#00ff00'>" + STR_TOSS_ROPES + "</t>", INS_heli_fnc_createropes, [], 1.5, false, false, '','[] call INS_heli_fnc_ropes_cond'];
-player addAction["<t color='#00ff00'>" + STR_CUT_ROPES + "</t>", INS_heli_fnc_removeropes, [], 1.5, false, false, '','not INS_heli_mutexAction and count ((vehicle player) getVariable ["INS_heli_ropes", []]) != 0'];
-player addAction["<t color='#ffff00'> " + STR_FAST_ROPE + "</t>", INS_heli_fnc_fastrope, [], 1.5, false, false, '','not INS_heli_mutexAction and count ((vehicle player) getVariable ["INS_heli_ropes", []]) != 0 and player != driver vehicle player'];
+player addAction[STR_TOSS_ROPES, INS_heli_fnc_createropes, [], 1.5, false, false, '','[] call INS_heli_fnc_ropes_cond'];
+player addAction[STR_CUT_ROPES, INS_heli_fnc_removeropes, [], 1.5, false, false, '','not INS_heli_mutexAction and count ((vehicle player) getVariable ["INS_heli_ropes", []]) != 0'];
+player addAction[STR_FAST_ROPE, INS_heli_fnc_fastRope, [], 1.5, false, false, '','not INS_heli_mutexAction and count ((vehicle player) getVariable ["INS_heli_ropes", []]) != 0 and ((player != driver vehicle player) or (call INS_heli_fnc_pilotCanFastRope))'];
 
 player addEventHandler ["Respawn", {
-	player addAction["<t color='#00ff00'>" + STR_TOSS_ROPES + "</t>", INS_heli_fnc_createropes, [], 1.5, false, false, '','[] call INS_heli_fnc_ropes_cond'];
-	player addAction["<t color='#00ff00'>" + STR_CUT_ROPES + "</t>", INS_heli_fnc_removeropes, [], 1.5, false, false, '','not INS_heli_mutexAction and count ((vehicle player) getVariable ["INS_heli_ropes", []]) != 0'];
-	player addAction["<t color='#ffff00'> " + STR_FAST_ROPE + "</t>", INS_heli_fnc_fastrope, [], 1.5, false, false, '','not INS_heli_mutexAction and count ((vehicle player) getVariable ["INS_heli_ropes", []]) != 0 and player != driver vehicle player'];
+	player addAction[STR_TOSS_ROPES, INS_heli_fnc_createropes, [], 1.5, false, false, '','[] call INS_heli_fnc_ropes_cond'];
+	player addAction[STR_CUT_ROPES, INS_heli_fnc_removeropes, [], 1.5, false, false, '','not INS_heli_mutexAction and count ((vehicle player) getVariable ["INS_heli_ropes", []]) != 0'];
+	player addAction[STR_FAST_ROPE, INS_heli_fnc_fastRope, [], 1.5, false, false, '','not INS_heli_mutexAction and count ((vehicle player) getVariable ["INS_heli_ropes", []]) != 0 and ((player != driver vehicle player) or (call INS_heli_fnc_pilotCanFastRope))'];
 }];

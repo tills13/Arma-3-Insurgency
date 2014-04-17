@@ -37,6 +37,18 @@ INS_fn_spawnWaterReinforcements = {
 	_cityPos = _this select 1;
 };
 
+INS_fn_getAIArray = {
+    _array = _this;
+
+    _aiPlayerList = [];
+
+    { 
+    	if (!(isPlayer _x)) then { _aiPlayerList = _aiPlayerList + [_x]; };
+	} forEach _array;
+
+    _aiPlayerList;
+};
+
 INS_fn_getAIinGroup = {
     _group = _this;
 
