@@ -188,7 +188,7 @@ class Mission
 			side="EMPTY";
 			vehicle="I_Heli_light_03_unarmed_F";
 			skill=0.60000002;
-			init="null = [this, ""HELLCAT1"", 120, 240] execVM ""vehicles\respawn.sqf"";";
+			init="null = [this, ""HELLCAT1"", 120, 240] execVM ""insurgency\modules\vehicles\INS_veh_respawn.sqf"";";
 		};
 		class Item1
 		{
@@ -199,7 +199,7 @@ class Mission
 			vehicle="I_Heli_light_03_unarmed_F";
 			skill=0.60000002;
 			text="ha";
-			init="null = [this, ""HELLCAT2"", 120, 240] execVM ""vehicles\respawn.sqf"";";
+			init="null = [this, ""HELLCAT2"", 120, 240] execVM ""insurgency\modules\vehicles\INS_veh_respawn.sqf"";";
 		};
 		class Item2
 		{
@@ -209,7 +209,7 @@ class Mission
 			vehicle="B_Heli_Light_01_F";
 			skill=0.60000002;
 			text="AHQ";
-			init="null = [this, ""AHQ"", 10, 0, ""_this addAction ['Virtual Ammobox', 'vas\open.sqf']; [_this, 500] execVM 'cas\functions\addAction.sqf';""] execVM ""vehicles\respawn.sqf"";";
+			init="null = [this, ""AHQ"", 10, 0, ""_this addAction ['Virtual Ammobox', 'vas\open.sqf']; [_this, 500] execVM 'cas\functions\addAction.sqf';""] execVM ""insurgency\modules\vehicles\INS_veh_respawn.sqf"";";
 		};
 		class Item3
 		{
@@ -219,7 +219,7 @@ class Mission
 			vehicle="O_Truck_03_covered_F";
 			skill=0.60000002;
 			text="MHQ";
-			init="null = [this, ""MHQ"", 10, 10, ""_this addAction ['Virtual Ammobox', 'vas\open.sqf']; [_this, 500] execVM 'cas\functions\addAction.sqf';""] execVM ""vehicles\respawn.sqf"";";
+			init="null = [this, ""MHQ"", 10, 10, ""_this addAction ['Virtual Ammobox', 'vas\open.sqf']; [_this, 500] execVM 'cas\functions\addAction.sqf';""] execVM ""insurgency\modules\vehicles\INS_veh_respawn.sqf"";";
 		};
 		class Item4
 		{
@@ -240,7 +240,7 @@ class Mission
 			vehicle="O_Heli_Light_02_F";
 			leader=1;
 			skill=0.5;
-			init="null = [this, ""ORCA1"", 60, 120, """"] execVM ""vehicles\respawn.sqf"";";
+			init="null = [this, ""ORCA1"", 60, 120, """"] execVM ""insurgency\modules\vehicles\INS_veh_respawn.sqf"";";
 		};
 		class Item6
 		{
@@ -263,7 +263,7 @@ class Mission
 			vehicle="B_Heli_Light_01_armed_F";
 			leader=1;
 			skill=0.5;
-			init="null = [this, ""PAWNEE1"", 60, 120] execVM ""vehicles\respawn.sqf"";";
+			init="null = [this, ""PAWNEE1"", 60, 120] execVM ""insurgency\modules\vehicles\INS_veh_respawn.sqf"";";
 		};
 		class Item8
 		{
@@ -275,7 +275,7 @@ class Mission
 			vehicle="B_Heli_Attack_01_F";
 			leader=1;
 			skill=0.5;
-			init="null = [this, ""BF1"", 60, 120] execVM ""vehicles\respawn.sqf"";";
+			init="null = [this, ""BF1"", 60, 120] execVM ""insurgency\modules\vehicles\INS_veh_respawn.sqf"";";
 		};
 		class Item9
 		{
@@ -287,7 +287,7 @@ class Mission
 			vehicle="I_Plane_Fighter_03_AA_F";
 			leader=1;
 			skill=0.5;
-			init="null = [this, ""BUZZ3"", 60, 120] execVM ""vehicles\respawn.sqf"";";
+			init="null = [this, ""BUZZ3"", 60, 120] execVM ""insurgency\modules\vehicles\INS_veh_respawn.sqf"";";
 		};
 		class Item10
 		{
@@ -299,7 +299,7 @@ class Mission
 			vehicle="I_Plane_Fighter_03_AA_F";
 			leader=1;
 			skill=0.5;
-			init="null = [this, ""BUZZ2"", 60, 120] execVM ""vehicles\respawn.sqf"";";
+			init="null = [this, ""BUZZ2"", 60, 120] execVM ""insurgency\modules\vehicles\INS_veh_respawn.sqf"";";
 		};
 		class Item11
 		{
@@ -311,7 +311,7 @@ class Mission
 			vehicle="I_Plane_Fighter_03_AA_F";
 			leader=1;
 			skill=0.5;
-			init="null = [this, ""BUZZ1"", 60, 120] execVM ""vehicles\respawn.sqf"";";
+			init="null = [this, ""BUZZ1"", 60, 120] execVM ""insurgency\modules\vehicles\INS_veh_respawn.sqf"";";
 		};
 		class Item12
 		{
@@ -321,7 +321,7 @@ class Mission
 			side="EMPTY";
 			vehicle="B_MRAP_01_F";
 			skill=0.60000002;
-			init="null = [this, ""H1"", 60, 120] execVM ""vehicles\respawn.sqf"";";
+			init="null = [this, ""H1"", 60, 120] execVM ""insurgency\modules\vehicles\INS_veh_respawn.sqf"";";
 		};
 		class Item13
 		{
@@ -331,7 +331,7 @@ class Mission
 			side="EMPTY";
 			vehicle="B_Plane_CAS_01_F";
 			skill=0.60000002;
-			init="null = [this, ""WIPEOUT1"", 120, 240] execVM ""vehicles\respawn.sqf"";";
+			init="null = [this, ""WIPEOUT1"", 120, 240] execVM ""insurgency\modules\vehicles\INS_veh_respawn.sqf"";";
 		};
 		class Item14
 		{
@@ -341,7 +341,7 @@ class Mission
 			side="EMPTY";
 			vehicle="B_Plane_CAS_01_F";
 			skill=0.60000002;
-			init="null = [this, ""WIPEOUT2"", 120, 240] execVM ""vehicles\respawn.sqf"";";
+			init="null = [this, ""WIPEOUT2"", 120, 240] execVM ""insurgency\modules\vehicles\INS_veh_respawn.sqf"";";
 		};
 		class Item15
 		{
@@ -351,7 +351,7 @@ class Mission
 			side="EMPTY";
 			vehicle="B_Plane_CAS_01_F";
 			skill=0.60000002;
-			init="null = [this, ""WIPEOUT3"", 120, 240] execVM ""vehicles\respawn.sqf"";";
+			init="null = [this, ""WIPEOUT3"", 120, 240] execVM ""insurgency\modules\vehicles\INS_veh_respawn.sqf"";";
 		};
 		class Item16
 		{
@@ -361,7 +361,7 @@ class Mission
 			side="EMPTY";
 			vehicle="O_Heli_Attack_02_black_F";
 			skill=0.60000002;
-			init="null = [this, ""KAJMAN2"", 120, 240] execVM ""vehicles\respawn.sqf"";";
+			init="null = [this, ""KAJMAN2"", 120, 240] execVM ""insurgency\modules\vehicles\INS_veh_respawn.sqf"";";
 		};
 		class Item17
 		{
@@ -371,7 +371,7 @@ class Mission
 			side="EMPTY";
 			vehicle="O_Heli_Attack_02_black_F";
 			skill=0.60000002;
-			init="null = [this, ""KAJMAN1"", 120, 240] execVM ""vehicles\respawn.sqf"";";
+			init="null = [this, ""KAJMAN1"", 120, 240] execVM ""insurgency\modules\vehicles\INS_veh_respawn.sqf"";";
 		};
 		class Item18
 		{
@@ -381,7 +381,7 @@ class Mission
 			side="EMPTY";
 			vehicle="O_APC_Wheeled_02_rcws_F";
 			skill=0.60000002;
-			init="null = [this, ""MARID3"", 120, 240] execVM ""vehicles\respawn.sqf"";";
+			init="null = [this, ""MARID3"", 120, 240] execVM ""insurgency\modules\vehicles\INS_veh_respawn.sqf"";";
 		};
 		class Item19
 		{
@@ -391,7 +391,7 @@ class Mission
 			side="EMPTY";
 			vehicle="O_APC_Wheeled_02_rcws_F";
 			skill=0.60000002;
-			init="null = [this, ""MARID2"", 120, 240] execVM ""vehicles\respawn.sqf"";";
+			init="null = [this, ""MARID2"", 120, 240] execVM ""insurgency\modules\vehicles\INS_veh_respawn.sqf"";";
 		};
 		class Item20
 		{
@@ -401,7 +401,7 @@ class Mission
 			side="EMPTY";
 			vehicle="O_APC_Wheeled_02_rcws_F";
 			skill=0.60000002;
-			init="null = [this, ""MARID1"", 120, 240] execVM ""vehicles\respawn.sqf"";";
+			init="null = [this, ""MARID1"", 120, 240] execVM ""insurgency\modules\vehicles\INS_veh_respawn.sqf"";";
 		};
 		class Item21
 		{
@@ -411,7 +411,7 @@ class Mission
 			side="EMPTY";
 			vehicle="O_MBT_02_cannon_F";
 			skill=0.60000002;
-			init="null = [this, ""T100"", 120, 240] execVM ""vehicles\respawn.sqf"";";
+			init="null = [this, ""T100"", 120, 240] execVM ""insurgency\modules\vehicles\INS_veh_respawn.sqf"";";
 		};
 	};
 	class Markers

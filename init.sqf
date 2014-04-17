@@ -19,24 +19,25 @@ playerConnected ={
 	} forEach allMapMarkers;
 };
 
-for [{_i = 0}, {_i < count(paramsArray)}, {_i = _i + 1}] do {
-	_param = (configName ((missionConfigFile >> "Params") select _i));
-	_value = (paramsArray select _i);
-	format["%1 = %2", _param, _value] call BIS_fnc_log;
-	call compile format ["%1 = %2;", (configName ((missionConfigFile >> "Params") select _i)), (paramsArray select _i)];
-};
+/**/
 
 if (isServer) then {
 	//[] execVM "INS_revive\revive_init.sqf";
 	//waitUntil {!isNil "INS_REV_FNCT_init_completed"};
 	
-	//[] execVM "insurgency\init_insurgency.sqf";
+	[] execVM "insurgency\init_insurgency.sqf";
 	//[] execVM "CAS\init_cas.sqf";
 	//[] execVM "vehicles\zlt_fieldrepair.sqf";
 	//[] execVM "LV\ambientCombat.sqf";
 	[] spawn { onPlayerConnected "[_id, _uid, _name] spawn  {call playerConnected;};"; };
+	[] execVM "insurgency\modules\vehicles\INS_veh_respawn.sqf"; // respawn loop
 };
 
-if (!isDedicated) { // JIP player
-
+if (!isDedicated) then { // JIP player
+	for [{_i = 0}, {_i < count(paramsArray)}, {_i = _i + 1}] do {
+		_param = (configName ((missionConfigFile >> "Params") select _i));
+		_value = (paramsArray select _i);
+		diag_log format["%1 = %2", _param, _value];
+		call compile format ["%1 = %2;", (configName ((missionConfigFile >> "Params") select _i)), (paramsArray select _i)];
+	};
 };

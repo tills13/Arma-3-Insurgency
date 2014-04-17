@@ -6,7 +6,7 @@ if (isServer) {
 		call compile format ["%1 = %2; publicVariable ""%1""", (configName ((missionConfigFile >> "Params") select _i)), (paramsArray select _i)];
 	};
 
-	[] spawn "insurgency\vehicles\INS_veh_respawn.sqf";
+	[] spawn "insurgency\modules\vehicles\INS_veh_respawn.sqf";
 } else {
-		
+	
 };

@@ -1,13 +1,13 @@
 //if !(isServer) then { exitWith {}; };
 
-
 INS_fnc_onDeathListener = {
 	_tempRandom = random 100;
 
-	if (tempRandom > (100 - INS_probOfDrop)) then {
+	if (_tempRandom > (100 - INS_probOfDrop) || debugMode == 1) then {
 		_unit = _this select 0;
 		_pos = position _unit;
 		_intel = "Land_Suitcase_F" createVehicle _pos;
+		_intel setVariable ["INTEL_STRENGTH", (rank _unit) call INS_fn_getRankModifier];
 
 		[_intel] spawn {
 			_listen = true;
@@ -26,7 +26,7 @@ INS_fnc_onDeathListener = {
 				{ 
 					if (side _x == west) then {
 						[nil, "pickedUpIntel", true, false] spawn BIS_fnc_MP;
-						[cache, "createIntel", false, false] spawn BIS_fnc_MP;
+						[_intel, "createIntel", false, false] spawn BIS_fnc_MP;
 						deleteVehicle _intel;
 						_listen = false;
 					}; 
@@ -35,3 +35,6 @@ INS_fnc_onDeathListener = {
 		};	
 	};
 };
+
+_unit = _this;
+_unit addEventHandler ["Killed", INS_fnc_onDeathListener];

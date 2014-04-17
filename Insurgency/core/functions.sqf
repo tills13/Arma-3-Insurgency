@@ -196,13 +196,10 @@ getSideOfRoadPosition = {
 	
 	_roads = _target nearRoads _radius;
 		
-	if(count _roads > 1) then		
-	{
+	if(count _roads > 1) then {
 		_road = getPos (_roads select (random((count _roads)-1)));
 		_position = [(_road select 0) + 6, _road select 1, _road select 2];
-	}
-	else
-	{
+	} else {
 		_position = _target;
 	};
 	
@@ -210,43 +207,11 @@ getSideOfRoadPosition = {
 };
 
 // ---------------------------------------
-//	cache functions
+//	intel functions
 // ---------------------------------------
 
-killedText = {
-	hint parseText format["<t color='#eaeaea' align='center' size='1.2'>%1/%2 ammo caches have been destroyed</t>", INS_west_score, INS_numCaches]
-};
-
 pickedUpIntel = { 
-	hint parseText format["<t color='#eaeaea' align='center' size='1.2'>New intel received on the location of an ammo cache. A marker has been added to the map.</t>"] 	
-};
-
-cacheKilled = {
-	private ["_pos","_x"];
-	
-	_pos = getPos cache;
-	_x = 0;
-	
-	while { _x <= 20 } do {
-		"M_Mo_82mm_AT_LG" createVehicle _pos;
-		_x = _x + 1 + random 4;
-		sleep 1;
-	};
-	
-	[nil, "killedText", nil, false] spawn BIS_fnc_MP;
-};
-
-cacheFake = {
-	private ["_pos","_x"];
-	
-	_pos = getPos cache;
-	_x = 0;
-	
-	while { _x <= 20 } do {
-		"M_Mo_82mm_AT_LG" createVehicle _pos;
-		_x = _x + 1 + random 4;
-		sleep 1;
-	};
+	hint format["New intel received on the location of an ammo cache. A marker has been added to the map."] 	
 };
 
 intelPickup = {
@@ -260,18 +225,16 @@ intelPickup = {
 	
 	_cases = nearestObjects[getPos player, _intelItems, 10];
 	
-	if (count _cases == 0) exitWith { };
+	if (count _cases == 0) exitWith {};
 	
 	_case = _cases select 0;
 	
-	if isNull _case exitWith { };
-	
+	if isNull _case exitWith {};
 	deleteVehicle _case;
-	player groupChat "You retrieved some INTEL on the general location of an ammo cache";
 	
 	_cache = cache;
 	
-	if (isNil "_cache") exitWith { };
+	if (isNil "_cache") exitWith {};
 
 	[nil, "pickedUpIntel", true, false] spawn BIS_fnc_MP;
 	[_cache, "createIntel", false, false] spawn BIS_fnc_MP;
@@ -281,41 +244,30 @@ createIntel = {
     private ["_i","_sign","_sign2","_radius","_cache","_pos","_mkr","_range","_intelRadius"];
     
     _cache = cache;
-	_intelRadius = 500;
+    _intel = _this;
+    _strength = _intel getVariable "INTEL_STRENGTH";
+	if (!isNil "_strength") then { _intelRadius = 500 - ((_strength + 1) * 25); }
+	else { _intelRadius = 500; };
     _i = 0; 
 	
 	while { (getMarkerPos format["%1intel%2", _cache, _i] select 0) != 0} do { _i = _i + 1; }; 	
-	
 	_sign = 1; 
 	
 	if (random 100 > 50) then { _sign = -1; };
-	
 	_sign2 = 1; 
 	
 	if (random 100 > 50) then { _sign2 = -1; };
-	
 	_radius = _intelRadius - _i * 50;
-	
 	if (_radius < 50) then { _radius = 50; };
 	
 	_pos = [(getPosATL _cache select 0) + _sign * (random _radius), (getPosATL _cache select 1) + _sign2 * (random _radius)];
 	_mkr = createMarker[format["%1intel%2", _cache, _i], _pos]; 
 	_mkr setMarkerType "hd_unknown";
-	_range = round sqrt(_radius^2*2);
-	_range = _range - (_range % 50);
+	_range = round sqrt(_radius ^ 2 * 2);
+	_range = _range - (_range % 25);
 	_mkr setMarkerText format["%1m", _range];
 	_mkr setMarkerColor "ColorRed"; 	
 	_mkr setMarkerSize [0.5, 0.5];
 
 	INS_marker_array = INS_marker_array + [_mkr];
-};
-
-addactionMP = {
-	private["_object","_screenMsg"];
-	_object = _this select 0;
-	_screenMsg = _this select 1;
-
-	if (isNull _object) exitWith { };
-
-	_object addaction [_screenMsg, "call intelPickup"];
 };
