@@ -45,5 +45,6 @@ if (!isDedicated) then { // JIP player
 	};
 
 	[player] execVM "insurgency\modules\players\groups\initGroups.sqf";
+	[player] execVM "insurgency\modules\cas\init_cas.sqf";
 	[] execVM "insurgency\modules\vehicles\INS_heli_fastRope.sqf";
 };

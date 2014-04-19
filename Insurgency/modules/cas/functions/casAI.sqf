@@ -26,7 +26,7 @@ _buzz = createVehicle ["I_Plane_Fighter_03_CAS_F", _ranPos, [], 100, "FLY"];
 _buzz setVectorDir [(_loc select 0) - (getPos _buzz select 0), (_loc select 1) - (getPos _buzz select 1), 0];
 
 sleep 0.2;
-
+	
 _dir = getDir _buzz;
 _buzz setVelocity [sin(_dir) * 200, cos(_dir) * 200, 0];
 _pilot = _grp createUnit ["B_Pilot_F", _ranPos, [], 0, "FORM"];
