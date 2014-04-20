@@ -44,7 +44,7 @@ if (!isDedicated) then { // JIP player
 		call compile format ["%1 = %2;", (configName ((missionConfigFile >> "Params") select _i)), (paramsArray select _i)];
 	};
 
-	[player] execVM "insurgency\modules\players\groups\initGroups.sqf";
+	[player] execVM "insurgency\modules\players\groups\INS_groups.sqf";
 	[player] execVM "insurgency\modules\cas\init_cas.sqf";
 	[] execVM "insurgency\modules\vehicles\INS_heli_fastRope.sqf";
 };
