@@ -2,7 +2,7 @@ onLoadName = "Altis Insurgency";
 author = "dolan";
 respawn = BASE;
 respawndelay = 0;
-disabledAI = true;
+//disabledAI = true;
 enableDebugConsole = 2;
 
 #include "VAS\menu.hpp"
@@ -22,9 +22,6 @@ class Params {
 
 	class TitleLineRev { title = "Revive ---------"; values[] = {0, 0}; texts[] = {"", ""}; default = 0; };
 	#include "INS_revive\params.hpp"
-
-	class TitleLineCAS { title = "Close Air Support ---------"; values[] = {0, 0}; texts[] = {"", ""}; default = 0; };
-	#include "cas\params.hpp"
 };
 
 class RscTitles {
