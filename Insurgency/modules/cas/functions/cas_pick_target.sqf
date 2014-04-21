@@ -1,4 +1,4 @@
-if (timeUntilNextCAS > 0) exitWith { hint format["<t color='#6775cf'>%1</t> seconds until CAS is available", timeUntilNextCAS]; };
+if (timeUntilNextCAS > 0) exitWith { hint parseText format["<t color='#6775cf'>%1</t> seconds until CAS is available", timeUntilNextCAS]; };
 
 deleteMarker "maxDist";
 deleteMarker "minDistOrig";
@@ -28,12 +28,13 @@ hint "Indicate CAS target by shift-clicking a position on the map, then alt-clic
 
 targetPos = [0, 0, 0];
 origPos = [0, 0, 0];
+playerPos = getPos player;
 openMap true;
 
 while { mapListen } do {
 	onMapSingleClick {
 		if (_shift) then {
-			if ((player distance (getPos player) > maxDisReq) then {
+			if ((playerPos distance _pos) > maxDisReq) then {
 				hintSilent format ['Max distance to target is limited to %1m', maxDisReq];
 				deleteMarker 'CAS_TARGET';
 			} else { 
@@ -58,7 +59,7 @@ while { mapListen } do {
 			if (str targetPos == '[0,0,0]') then {
 				hintSilent 'Set target position first.'
 			} else {
-				if ((targetPos distance (getPos player)) < 3000) then {
+				if ((_pos distance playerPos) < 3000) then {
 					hintSilent format ['Min distance from target is limited to %1m', 3000];
 					deleteMarker 'CAS_ORIG';
 				} else { 
@@ -92,12 +93,13 @@ deleteMarker "minDistOrig";
 
 if (!INS_CAS_casRequest) then {
 	call INS_CAS_finishCAS;
-} else { 
+} else {
+	call INS_CAS_removeMenuItems;
 	switch (_casType) do {
 		case "JDAM": { [] execVM "insurgency\modules\cas\functions\casJDAM.sqf" };
 		case "CBU": { [] execVM "insurgency\modules\cas\functions\casCBU.sqf" };
 		case "COMBO": { [] execVM "insurgency\modules\cas\functions\casCombo.sqf" };
-		case "GBU": { [] execVM "insurgency\modules\cas\functions\casGBU.sqf" };
+		case "GBU": { [] execVM "insurgency\modules\cas\functions\casGuided.sqf" };
 		case "GAU": { [] execVM "insurgency\modules\cas\functions\casWipeout.sqf" };
 		case "HELO": { [] execVM "insurgency\modules\cas\functions\casHeli.sqf" };
 	};

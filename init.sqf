@@ -3,6 +3,7 @@ if (!isDedicated) then { waitUntil {!isNull player && isPlayer player}; };
 
 #include "insurgency\core\functions.sqf"
 #include "insurgency\core\ai_functions.sqf"
+#include "insurgency\core\cas_functions.sqf"
 #include "insurgency\core\cache_functions.sqf"
 
 playerConnected ={

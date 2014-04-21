@@ -10,8 +10,17 @@ _helo = ["B_Heli_Attack_01_F", _originLoc, _targetLoc] call INS_CAS_spawnAircraf
 _pilot = [_originLoc] call INS_CAS_spawnPilot;
 [_helo, _pilot] call INS_CAS_initPlane;
 
+//_gunner = [_originLoc] call INS_CAS_spawnPilot;
+_originalPosition = getPosASL player;
+player moveInGunner _helo;
+/*
+_op = player;
+selectPlayer _gunner;
+
+INS_cancel_AID = _gunner addAction ["Done CAS", "INS_CAS_abortCAS = true;"];*/
+
 (driver _helo) doMove _targetLoc;
-_wp = group _helo addWaypoint [_targetLoc, 0];
+_wp = group _helo addWaypoint [_targetLoc, 1];
 _wp setWaypointType "LOITER";
 
 // move player into gunner
@@ -27,7 +36,12 @@ while { !INS_CAS_abortCAS && alive _helo } do {
 	else { hint parseText format["<t color='#6775cf'>%1</t> seconds left", (casPlayerTimeLimit - _timeSlept)]; };
 };
 
-// move player back
+_wp setWaypointPosition [getPos _helo, 3];
+deleteWaypoint _wp;
+
+player setPosASL _originalPosition;
+//selectPlayer _op;
+call INS_CAS_finishCAS;
 
 (driver _helo) doMove _originLoc;
 waitUntil{ _helo distance _targetLoc >= 2000 || !alive _helo };

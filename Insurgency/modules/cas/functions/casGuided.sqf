@@ -6,12 +6,12 @@ _originLoc = getMarkerPos "CAS_ORIG";
 
 INS_cancel_AID = player addAction ["Cancel CAS", "INS_CAS_abortCAS = true;"];
 
-_plane = [nil, _originLoc, _targetLoc] call INS_CAS_spawnAircraft;
+_plane = ["", _originLoc, _targetLoc] call INS_CAS_spawnAircraft;
 _pilot = [_originLoc] call INS_CAS_spawnPilot;
 [_plane, _pilot] call INS_CAS_initPlane;
 
 (driver _plane) doMove _targetLoc;
-[_plane] call INS_CAS_notifyETA;
+[_plane, _targetLoc] call INS_CAS_notifyETA;
 
 _laserLoc = locationNULL;
 _notifyLaser = true;
@@ -19,9 +19,9 @@ _notifyTarget = true;
 
 while {true} do {
 	_laserLoc = laserTarget player;
-	if (_plane distance _lockobj <= 1000 && _notifyLaser) then { (leader _grp) sideChat "Laser target..."; _notifyLaser = false; };
-	if (_plane distance _lockobj <= 1000 && !(_notifyLaser) && _notifyTarget && !isNull _laserLoc) then { (leader _grp) sideChat "Target acquired..."; _notifyTarget = false; };
-	if (_plane distance _lockobj <= 1000 && !(_notifyLaser) && !(_notifyTarget) && isNull _laserLoc) then { (leader _grp) sideChat "Target lost!"; _notifyTarget = true; };
+	if (_plane distance _targetLoc <= 1000 && _notifyLaser) then { (leader group driver _plane) sideChat "Laser target..."; _notifyLaser = false; };
+	if (_plane distance _targetLoc <= 1000 && !(_notifyLaser) && _notifyTarget && !isNull _laserLoc) then { (leader group driver _plane) sideChat "Target acquired..."; _notifyTarget = false; };
+	if (_plane distance _targetLoc <= 1000 && !(_notifyLaser) && !(_notifyTarget) && isNull _laserLoc) then { (leader group driver _plane) sideChat "Target lost!"; _notifyTarget = true; };
 
 	if (_plane distance _targetLoc <= 660) exitwith {};
 	if (!alive _plane) exitwith {};
@@ -32,7 +32,7 @@ while {true} do {
 
 if (!alive _plane) exitwith { call INS_CAS_finishCAS; };
 if (INS_CAS_abortCAS) exitWith {
-	(leader _grp) sideChat "CAS mission aborted";
+	(leader group driver _plane) sideChat "CAS mission aborted";
 	call INS_CAS_finishCAS;
 
 	_plane move _originLoc;
@@ -41,12 +41,14 @@ if (INS_CAS_abortCAS) exitWith {
 	{
 		deleteVehicle vehicle _x;
 		deleteVehicle _x;
-	} forEach units _grp;
+	} forEach units group driver _plane;
 };
 
 [_plane] spawn INS_CAS_doCounterMeasure;
-_bomb = [_plane, "Bo_GBU12_LGB"] call INS_CAS_createOrdinance;
+_bomb = [_plane, _targetLoc, "Bo_GBU12_LGB"] call INS_CAS_createOrdinance;
+(leader group driver _plane) sideChat "Ordinance away...";
 [120] spawn INS_CAS_casTimeOut;
+call INS_CAS_finishCAS;
 
 while {alive _bomb} do {
 	if !(isNull (laserTarget player)) then { _laserLoc = laserTarget player; };
@@ -56,7 +58,6 @@ while {alive _bomb} do {
 	sleep 1.0;
 };
 
-deleteWaypoint _wp;
 (driver _plane) doMove _originLoc;
 waitUntil{ _plane distance _targetLoc >= 2000 || !alive _plane };
 
