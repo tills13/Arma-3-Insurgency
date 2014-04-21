@@ -1,9 +1,4 @@
-_object  = _this select 0;
-_caller = _this select 1;
-_id     = _this select 2;
-_argArr = _this select 3;
-
-if (timeUntilNextCAS > 0) exitWith { hint format["%1 seconds until CAS is available", timeUntilNextCAS]; };
+if (timeUntilNextCAS > 0) exitWith { hint format["<t color='#6775cf'>%1</t> seconds until CAS is available", timeUntilNextCAS]; };
 
 deleteMarker "maxDist";
 deleteMarker "minDistOrig";
@@ -11,22 +6,22 @@ deleteMarker "CAS_TARGET";
 deleteMarker "CAS_ORIG";
 
 maxDisReq = (_this select 3) select 0;
-casType = (_this select 3) select 1;
+_casType = (_this select 3) select 1;
 
-_borderMarker = createMarkerLocal["maxDist", getPos _object];
+_borderMarker = createMarkerLocal["maxDist", getPos player];
 _borderMarker setMarkerShapeLocal "ELLIPSE";
 _borderMarker setMarkerSizeLocal[maxDisReq, maxDisReq];
 _borderMarker setMarkerColorLocal "ColorRed";
 _borderMarker setMarkerBrushLocal "Border";
 
-_borderMarker = createMarkerLocal["minDistOrig", getPos _object];
+_borderMarker = createMarkerLocal["minDistOrig", getPos player];
 _borderMarker setMarkerShapeLocal "ELLIPSE";
 _borderMarker setMarkerSizeLocal[3000, 3000];
 _borderMarker setMarkerColorLocal "ColorBlue";
 _borderMarker setMarkerBrushLocal "Border";
 
 mapListen = true;
-casRequest = false;
+INS_CAS_casRequest = false;
 
 timeSlept = 0;
 hint "Indicate CAS target by shift-clicking a position on the map, then alt-click to choose where the CAS will originate from (straight line from that point)";
@@ -36,9 +31,9 @@ origPos = [0, 0, 0];
 openMap true;
 
 while { mapListen } do {
-	onMapSingleClick "
+	onMapSingleClick {
 		if (_shift) then {
-			if ((player distance _pos) > maxDisReq) then {
+			if ((player distance (getPos player) > maxDisReq) then {
 				hintSilent format ['Max distance to target is limited to %1m', maxDisReq];
 				deleteMarker 'CAS_TARGET';
 			} else { 
@@ -52,23 +47,23 @@ while { mapListen } do {
 				_marker setMarkerText ' TARGET';
 
 				if (!(str targetPos == '[0,0,0]') && !(str origPos == '[0,0,0]')) then {
-					mapListen = false; casRequest = true; abortCAS = false;
+					mapListen = false; INS_CAS_casRequest = true; INS_CAS_abortCAS = false;
 				}; 
 			};
 
-			onMapSingleClick '';
+			onMapSingleClick "";
 		};
 
 		if (_alt) then {
 			if (str targetPos == '[0,0,0]') then {
 				hintSilent 'Set target position first.'
 			} else {
-				if ((targetPos distance _pos) < 3000) then {
+				if ((targetPos distance (getPos player)) < 3000) then {
 					hintSilent format ['Min distance from target is limited to %1m', 3000];
 					deleteMarker 'CAS_ORIG';
 				} else { 
 					origPos = _pos;
-					origPos set [2, 500];
+					//origPos set [2, 500];
 
 					deleteMarker 'CAS_ORIG';
 					_marker = createMarker['CAS_ORIG', _pos];
@@ -78,36 +73,32 @@ while { mapListen } do {
 					_marker setMarkerText ' ORIGIN';
 					
 					if (!(str targetPos == '[0,0,0]') && !(str origPos == '[0,0,0]')) then {
-						mapListen = false; casRequest = true; abortCAS = false;
+						mapListen = false; INS_CAS_casRequest = true; INS_CAS_abortCAS = false;
 					};
 				};
 			};
 			
-			onMapSingleClick '';
+			onMapSingleClick "";
 		}; 
-
-		true;
-	";
-
-	sleep 0.2;
-	timeSlept = timeSlept + 0.2;
-	if (timeSlept > 30) then { 
-		hint "CAS request timed out";
-		mapListen = false; 
 	};
+
+	sleep 0.1;
+	timeSlept = timeSlept + 0.1;
+	if (timeSlept > 30) then { hint "CAS request timed out"; mapListen = false;  };
 };
 
-sleep 0.123;
 deleteMarker "maxDist";
 deleteMarker "minDistOrig";
 
-if (!casRequest) then {
-	deleteMarker "CAS_TARGET";
-	deleteMarker "CAS_ORIG";
+if (!INS_CAS_casRequest) then {
+	call INS_CAS_finishCAS;
 } else { 
-	if (casType != "GAU" and casType != "HELO") then { [_object, maxDisReq, casType, "CAS_TARGET", "CAS_ORIG", _id] execVM "cas\functions\casAI.sqf"; };
-	if (casType == "GAU") then { [_object, maxDisReq, "CAS_TARGET", "CAS_ORIG", _id] execVM "cas\functions\casPlayer.sqf"; };
-	if (casType == "HELO") then { [_object, maxDisReq, "CAS_TARGET", "CAS_ORIG", _id] execVM "cas\functions\casHeli.sqf"; };
+	switch (_casType) do {
+		case "JDAM": { [] execVM "insurgency\modules\cas\functions\casJDAM.sqf" };
+		case "CBU": { [] execVM "insurgency\modules\cas\functions\casCBU.sqf" };
+		case "COMBO": { [] execVM "insurgency\modules\cas\functions\casCombo.sqf" };
+		case "GBU": { [] execVM "insurgency\modules\cas\functions\casGBU.sqf" };
+		case "GAU": { [] execVM "insurgency\modules\cas\functions\casWipeout.sqf" };
+		case "HELO": { [] execVM "insurgency\modules\cas\functions\casHeli.sqf" };
+	};
 };
-
-[_object] call removeActions;

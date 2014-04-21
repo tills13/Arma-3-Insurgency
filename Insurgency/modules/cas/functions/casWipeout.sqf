@@ -6,20 +6,18 @@ _originLoc = getMarkerPos "CAS_ORIG";
 
 INS_cancel_AID = player addAction ["Done CAS", "INS_CAS_abortCAS = true;"];
 
-_helo = ["B_Heli_Attack_01_F", _originLoc, _targetLoc] call INS_CAS_spawnAircraft;
-_pilot = [_originLoc] call INS_CAS_spawnPilot;
-[_helo, _pilot] call INS_CAS_initPlane;
+_plane = ["B_Plane_CAS_01_F", _originLoc, _targetLoc] call INS_CAS_spawnAircraft;
 
-(driver _helo) doMove _targetLoc;
-_wp = group _helo addWaypoint [_targetLoc, 0];
+(driver _plane) doMove _targetLoc;
+_wp = group _plane addWaypoint [_targetLoc, 0];
 _wp setWaypointType "LOITER";
 
-// move player into gunner
+// move player into aircraft
 
-waitUntil { _helo distance _targetLoc < 900 or INS_CAS_abortCAS or !alive _helo };
+waitUntil { _plane distance _targetLoc < 900 or INS_CAS_abortCAS or !alive _plane };
 
 _timeSlept = 0;
-while { !INS_CAS_abortCAS && alive _helo } do {
+while { !INS_CAS_abortCAS && alive _plane } do {
 	sleep 1;
 	_timeSlept = _timeSlept + 1;
 
@@ -28,11 +26,13 @@ while { !INS_CAS_abortCAS && alive _helo } do {
 };
 
 // move player back
+_pilot = [getPos _plane] call INS_CAS_spawnPilot;
+[_plane, _pilot] call INS_CAS_initPlane;
 
-(driver _helo) doMove _originLoc;
-waitUntil{ _helo distance _targetLoc >= 2000 || !alive _helo };
+(driver _plane) doMove _originLoc;
+waitUntil{ _plane distance _targetLoc >= 2000 || !alive _plane };
 
 {
 	deleteVehicle vehicle _x;
 	deleteVehicle _x;
-} forEach units group _helo;
+} forEach units group _plane;
