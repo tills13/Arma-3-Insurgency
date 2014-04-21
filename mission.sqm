@@ -19,11 +19,14 @@ class Mission
 		"A3_Air_F_Beta_Heli_Attack_02",
 		"A3_Armor_F_Marid",
 		"A3_Armor_F_T100K",
-		"A3_Characters_F_BLUFOR"
+		"A3_Characters_F_BLUFOR",
+		"A3_Air_F_Beta_Heli_Transport_02",
+		"a3_characters_f_beta"
 	};
 	addOnsAuto[]=
 	{
 		"A3_Characters_F_BLUFOR",
+		"a3_characters_f_beta",
 		"A3_Air_F_EPB_Heli_Light_03",
 		"A3_Air_F_Heli_Light_01",
 		"A3_Soft_F_EPC_Truck_03",
@@ -38,6 +41,7 @@ class Mission
 		"A3_Armor_F_Marid",
 		"A3_Armor_F_T100K",
 		"ac_130X_a3",
+		"A3_Air_F_Beta_Heli_Transport_02",
 		"a3_map_altis"
 	};
 	randomSeed=9788479;
@@ -87,31 +91,88 @@ class Mission
 			side="WEST";
 			class Vehicles
 			{
-				items=1;
+				items=8;
 				class Item0
 				{
-					position[]={14615.568,17.91,16648.74};
-					azimut=227.37859;
-					special="NONE";
+					position[]={3080.314,10.766236,18273.67};
 					id=1;
 					side="WEST";
-					vehicle="B_Soldier_F";
+					vehicle="B_Soldier_SL_F";
 					player="PLAYER COMMANDER";
 					leader=1;
 					rank="SERGEANT";
 					skill=0.5;
+				};
+				class Item1
+				{
+					position[]={3085.314,10.677714,18268.67};
+					id=2;
+					side="WEST";
+					vehicle="B_soldier_TL_F";
+					rank="SERGEANT";
+					skill=0.5;
+				};
+				class Item2
+				{
+					position[]={3075.314,11.078563,18268.67};
+					id=3;
+					side="WEST";
+					vehicle="B_soldier_AR_F";
+					rank="CORPORAL";
+					skill=0.44999999;
+				};
+				class Item3
+				{
+					position[]={3090.314,10.366504,18263.67};
+					id=4;
+					side="WEST";
+					vehicle="B_soldier_AR_F";
+					skill=0.40000001;
+				};
+				class Item4
+				{
+					position[]={3070.314,10.793773,18263.67};
+					id=5;
+					side="WEST";
+					vehicle="B_soldier_AAR_F";
+					skill=0.40000001;
+				};
+				class Item5
+				{
+					position[]={3095.314,10.166095,18258.67};
+					id=6;
+					side="WEST";
+					vehicle="B_soldier_LAT_F";
+					rank="CORPORAL";
+					skill=0.44999999;
+				};
+				class Item6
+				{
+					position[]={3065.314,10.289698,18258.67};
+					id=7;
+					side="WEST";
+					vehicle="B_medic_F";
+					skill=0.40000001;
+				};
+				class Item7
+				{
+					position[]={3100.314,10.014136,18253.67};
+					id=8;
+					side="WEST";
+					vehicle="B_soldier_A_F";
+					skill=0.40000001;
 				};
 			};
 		};
 	};
 	class Vehicles
 	{
-		items=24;
+		items=25;
 		class Item0
 		{
 			position[]={26778.732,22.136076,24614.938};
 			azimut=135.125;
-			id=2;
+			id=9;
 			side="EMPTY";
 			vehicle="I_Heli_light_03_unarmed_F";
 			skill=0.60000002;
@@ -121,7 +182,7 @@ class Mission
 		{
 			position[]={26798.75,21.83786,24635.541};
 			azimut=135.125;
-			id=3;
+			id=10;
 			side="EMPTY";
 			vehicle="I_Heli_light_03_unarmed_F";
 			skill=0.60000002;
@@ -131,7 +192,7 @@ class Mission
 		class Item2
 		{
 			position[]={3087.3589,10.439077,18278.031};
-			id=4;
+			id=11;
 			side="EMPTY";
 			vehicle="B_Heli_Light_01_F";
 			skill=0.60000002;
@@ -141,7 +202,7 @@ class Mission
 		class Item3
 		{
 			position[]={3073.8982,10.491521,18280.916};
-			id=5;
+			id=12;
 			side="EMPTY";
 			vehicle="O_Truck_03_covered_F";
 			skill=0.60000002;
@@ -151,7 +212,7 @@ class Mission
 		class Item4
 		{
 			position[]={3080.6509,10.393884,18281.969};
-			id=6;
+			id=13;
 			side="EMPTY";
 			vehicle="Flag_US_F";
 			skill=0.40000001;
@@ -163,7 +224,7 @@ class Mission
 			position[]={20799.15,29.11031,7225.8218};
 			azimut=149.80299;
 			special="NONE";
-			id=7;
+			id=14;
 			side="EMPTY";
 			vehicle="O_Heli_Light_02_F";
 			leader=1;
@@ -175,7 +236,7 @@ class Mission
 			position[]={20789.936,29.150558,7207.855};
 			azimut=149.80299;
 			special="NONE";
-			id=8;
+			id=15;
 			side="EMPTY";
 			vehicle="B_Truck_01_box_F";
 			leader=1;
@@ -186,7 +247,7 @@ class Mission
 			position[]={23080.07,48.148464,7298.6533};
 			azimut=149.80299;
 			special="NONE";
-			id=9;
+			id=16;
 			side="EMPTY";
 			vehicle="B_Heli_Light_01_armed_F";
 			leader=1;
@@ -198,7 +259,7 @@ class Mission
 			position[]={17550.361,13.060825,13241.682};
 			azimut=149.80299;
 			special="NONE";
-			id=10;
+			id=17;
 			side="EMPTY";
 			vehicle="B_Heli_Attack_01_F";
 			leader=1;
@@ -210,7 +271,7 @@ class Mission
 			position[]={14779.672,17.91,16841.252};
 			azimut=149.80299;
 			special="NONE";
-			id=11;
+			id=18;
 			side="EMPTY";
 			vehicle="I_Plane_Fighter_03_AA_F";
 			leader=1;
@@ -222,7 +283,7 @@ class Mission
 			position[]={14769.493,17.91,16831.514};
 			azimut=149.80299;
 			special="NONE";
-			id=12;
+			id=19;
 			side="EMPTY";
 			vehicle="I_Plane_Fighter_03_AA_F";
 			leader=1;
@@ -234,7 +295,7 @@ class Mission
 			position[]={14757.92,17.91,16820.994};
 			azimut=149.80299;
 			special="NONE";
-			id=13;
+			id=20;
 			side="EMPTY";
 			vehicle="I_Plane_Fighter_03_AA_F";
 			leader=1;
@@ -245,7 +306,7 @@ class Mission
 		{
 			position[]={14611.011,17.91,16645.262};
 			azimut=134.069;
-			id=14;
+			id=21;
 			side="EMPTY";
 			vehicle="B_MRAP_01_F";
 			skill=0.60000002;
@@ -255,7 +316,7 @@ class Mission
 		{
 			position[]={14403.076,19.275509,16311.14};
 			azimut=204.06;
-			id=15;
+			id=22;
 			side="EMPTY";
 			vehicle="B_Plane_CAS_01_F";
 			skill=0.60000002;
@@ -265,7 +326,7 @@ class Mission
 		{
 			position[]={14344.267,18.768406,16325.689};
 			azimut=183.44901;
-			id=16;
+			id=23;
 			side="EMPTY";
 			vehicle="B_Plane_CAS_01_F";
 			skill=0.60000002;
@@ -275,7 +336,7 @@ class Mission
 		{
 			position[]={14264.362,19.365074,16301.194};
 			azimut=150.326;
-			id=17;
+			id=24;
 			side="EMPTY";
 			vehicle="B_Plane_CAS_01_F";
 			skill=0.60000002;
@@ -285,7 +346,7 @@ class Mission
 		{
 			position[]={9197.457,15.09957,21618.178};
 			azimut=187.351;
-			id=18;
+			id=25;
 			side="EMPTY";
 			vehicle="O_Heli_Attack_02_black_F";
 			skill=0.60000002;
@@ -295,7 +356,7 @@ class Mission
 		{
 			position[]={9179.7295,14.98215,21613.094};
 			azimut=187.351;
-			id=19;
+			id=26;
 			side="EMPTY";
 			vehicle="O_Heli_Attack_02_black_F";
 			skill=0.60000002;
@@ -305,7 +366,7 @@ class Mission
 		{
 			position[]={9095.1025,15.219282,21560.063};
 			azimut=141.145;
-			id=20;
+			id=27;
 			side="EMPTY";
 			vehicle="O_APC_Wheeled_02_rcws_F";
 			skill=0.60000002;
@@ -315,7 +376,7 @@ class Mission
 		{
 			position[]={9102.1943,15.176941,21565.764};
 			azimut=141.145;
-			id=21;
+			id=28;
 			side="EMPTY";
 			vehicle="O_APC_Wheeled_02_rcws_F";
 			skill=0.60000002;
@@ -325,7 +386,7 @@ class Mission
 		{
 			position[]={9109.5928,15.125342,21571.008};
 			azimut=141.145;
-			id=22;
+			id=29;
 			side="EMPTY";
 			vehicle="O_APC_Wheeled_02_rcws_F";
 			skill=0.60000002;
@@ -335,7 +396,7 @@ class Mission
 		{
 			position[]={14209.944,74.110626,21228.994};
 			azimut=380.01199;
-			id=23;
+			id=30;
 			side="EMPTY";
 			vehicle="O_MBT_02_cannon_F";
 			skill=0.60000002;
@@ -343,24 +404,37 @@ class Mission
 		};
 		class Item22
 		{
-			position[]={14622.737,19.331614,16635.264};
-			azimut=132.397;
-			special="NONE";
-			id=24;
-			side="EMPTY";
-			vehicle="ac_130X_grey";
-			skill=0.5;
-			init="null = [this] execVM ""insurgency\modules\vehicles\INS_plane_lift.sqf""; DMM_orbit_active = false; DMM_height = 0;";
-		};
-		class Item23
-		{
-			position[]={14603.796,17.91,16651.811};
+			position[]={14618.291,17.91,16661.785};
 			azimut=134.069;
-			id=25;
+			id=31;
 			side="EMPTY";
 			vehicle="B_MRAP_01_F";
 			skill=0.60000002;
-			init="null = [this, ""H2"", 60, 120] execVM ""insurgency\modules\vehicles\INS_veh_respawn.sqf"";";
+			init="null = [this, ""H2"", 60, 0] execVM ""insurgency\modules\vehicles\INS_veh_respawn.sqf"";";
+		};
+		class Item23
+		{
+			position[]={14622.379,17.91,16634.709};
+			azimut=132.397;
+			special="NONE";
+			id=32;
+			side="EMPTY";
+			vehicle="ac_130X_desert";
+			skill=0.5;
+			text="AC130";
+			init="null = [this] execVM ""insurgency\modules\vehicles\INS_plane_lift.sqf""; DMM_orbit_active = false; DMM_height = 0;";
+		};
+		class Item24
+		{
+			position[]={14625.431,17.91,16662.596};
+			azimut=132.397;
+			special="NONE";
+			id=33;
+			side="EMPTY";
+			vehicle="I_Heli_Transport_02_F";
+			skill=0.5;
+			text="bitchass";
+			init="null = [this] execVM ""insurgency\modules\vehicles\INS_plane_lift.sqf""";
 		};
 	};
 	class Markers

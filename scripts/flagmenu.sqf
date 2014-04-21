@@ -6,15 +6,15 @@ Description:
 ---------------------------------------------------------------------------------------------------- */
 INS_fn_recruitAI = {
 	private ["_unit"];
-	_player = (_this select 3) select 0;
+	_caller = _this select 1;;
 	_type = (_this select 3) select 1;
 
-	diag_log str _player;
-	if (leader group _player != _player) then {
+	diag_log str _caller;
+	if (leader group _caller != _caller) then {
 	    hint "Only the group leader can acquire AI, you are not the group leader!";
 	} else {
-        diag_log format ["%1 recruiting %2", name _player, _type];
-	    _unit = _type createUnit [getPos _player, group _player, "", 0.8];
+        diag_log format ["%1 recruiting %2", name _caller, _type];
+        _unit = group _caller createUnit [_type, getPos _caller, [], 10, "FORM"];
         _unit call INS_fn_initAIUnit;
 	};
 

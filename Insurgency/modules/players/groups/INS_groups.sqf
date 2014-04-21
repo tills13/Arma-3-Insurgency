@@ -30,7 +30,7 @@ INS_groups_leaveGroup = {
 
 	[player] join grpNull;
 	hint parseText format ["Left group <t color='#6775cf'>%1</t>", _cGroup];
-	[nil, player] call GRPMNU_removeActions;
+	[nil, player] call INS_groups_removeActions;
 };
 
 INS_groups_leadGroup = {
@@ -48,16 +48,14 @@ INS_groups_quitLead = {
 
 	(group player) selectLeader _newLead;
 	hint parseText format ["No longer leading <t color='#6775cf'>%1</t>", group player];
-	[nil, player] call GRPMNU_removeActions;	
+	[nil, player] call INS_groups_removeActions;	
 };
 
 INS_groups_removeActions = {
-	player = _this select 1;
-
 	player removeAction INS_groups_title;
 	player removeAction INS_groups_joinGroup;
 	player removeAction INS_groups_dismissAI;
-	player removeAction INS_groups_leaveGroup
+	player removeAction INS_groups_leaveGroup;
 	player removeAction INS_groups_leadGroup;
 	player removeAction INS_groups_quitLead;
 	
@@ -66,7 +64,7 @@ INS_groups_removeActions = {
 	player removeAction INS_groups_leadDecline;
 	player removeAction INS_groups_exitMenu;
 
-	INS_groups_groupActions = player addAction["<t color='#6775cf'>Groups Menu</t>", "insurgency\modules\players\groups\groupActions.sqf", nil, 1.05, false, false, "", "_target == vehicle _this || _target == _this"];
+	INS_groups_groupActions = player addAction["<t color='#6775cf'>Groups Menu</t>", INS_groups_addActions, nil, 1.05, false, false, "", "_target == vehicle _this || _target == _this"];
 };
 
 INS_groups_addActions = {
