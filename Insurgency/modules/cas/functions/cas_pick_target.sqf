@@ -94,13 +94,11 @@ deleteMarker "minDistOrig";
 if (!INS_CAS_casRequest) then {
 	call INS_CAS_finishCAS;
 } else {
-	call INS_CAS_removeMenuItems;
-
 	_proceed = true;
 	switch (side player) do {
 		case west: { 
 			if (casNumRequestsBLUFOR > 0) then {
-				casNumRequestsBLUFOR = casNumRequestsBLUFOR - 1;
+				casNumRequestsBLUFOR = casNumRequestsBLUFOR - 1; publicVariable "casNumRequestsBLUFOR";
 				hint parseText format ["<t color='#6775cf'>%1<\t> CAS mission(s) remaining", casNumRequestsBLUFOR];
 			} else {
 				if (casNumRequestsBLUFOR != -1) then { _proceed = false; };
@@ -108,7 +106,7 @@ if (!INS_CAS_casRequest) then {
 		};
 		case east: {
 			if (casNumRequestsOPFOR > 0) then {
-				casNumRequestsOPFOR = casNumRequestsOPFOR - 1;
+				casNumRequestsOPFOR = casNumRequestsOPFOR - 1; publicVariable "casNumRequestsOPFOR";
 				hint parseText format ["<t color='#6775cf'>%1<\t> CAS mission(s) remaining", casNumRequestsOPFOR];
 			} else {
 				if (casNumRequestsOPFOR != -1) then { _proceed = false; };
@@ -116,7 +114,9 @@ if (!INS_CAS_casRequest) then {
 		};
 	};
 
-	if (!_proceed) exitWith { hint "No more CAS missions available"; };
+	if (!_proceed) exitWith { hint "No more CAS missions available"; call INS_CAS_finishCAS; };
+	call INS_CAS_removeMenuItems;
+
 	switch (_casType) do {
 		case "JDAM": { [] execVM "insurgency\modules\cas\functions\casJDAM.sqf" };
 		case "CBU": { [] execVM "insurgency\modules\cas\functions\casCBU.sqf" };
