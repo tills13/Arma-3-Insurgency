@@ -10,19 +10,19 @@ if (isNil "INS_CAS_waitCAS") then { INS_CAS_waitCAS = false; };
 if (isNil "timeUntilNextCAS") then { timeUntilNextCAS = 0; publicVariable "timeUntilNextCAS"; };
 
 INS_CAS_canCallCAS = {
-	_can_call = true;
+	_can_call = false;
 	switch (side player) do {
 		case west: { 
 			if (casNumRequestsBLUFOR > 0) then { _can_call = true; } 
 			else {
-				if (casNumRequestsBLUFOR != -1) then { _can_call = false; };
+				if (casNumRequestsBLUFOR == -1) then { _can_call = true; };
 			};
 		};
-		
+
 		case east: {
 			if (casNumRequestsOPFOR > 0) then { _can_call = true; } 
 			else {
-				if (casNumRequestsOPFOR != -1) then { _can_call = false; };
+				if (casNumRequestsOPFOR == -1) then { _can_call = true; };
 			};
 		};
 	};
