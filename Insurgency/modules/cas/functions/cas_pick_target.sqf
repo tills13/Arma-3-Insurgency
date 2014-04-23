@@ -95,6 +95,28 @@ if (!INS_CAS_casRequest) then {
 	call INS_CAS_finishCAS;
 } else {
 	call INS_CAS_removeMenuItems;
+
+	_proceed = true;
+	switch (side player) do {
+		case west: { 
+			if (casNumRequestsBLUFOR > 0) then {
+				casNumRequestsBLUFOR = casNumRequestsBLUFOR - 1;
+				hint parseText format ["<t color='#6775cf'>%1<\t> CAS mission(s) remaining", casNumRequestsBLUFOR];
+			} else {
+				if (casNumRequestsBLUFOR != -1) then { _proceed = false; };
+			};
+		};
+		case east: {
+			if (casNumRequestsOPFOR > 0) then {
+				casNumRequestsOPFOR = casNumRequestsOPFOR - 1;
+				hint parseText format ["<t color='#6775cf'>%1<\t> CAS mission(s) remaining", casNumRequestsOPFOR];
+			} else {
+				if (casNumRequestsOPFOR != -1) then { _proceed = false; };
+			};
+		};
+	};
+
+	if (!_proceed) exitWith { hint "No more CAS missions available"; };
 	switch (_casType) do {
 		case "JDAM": { [] execVM "insurgency\modules\cas\functions\casJDAM.sqf" };
 		case "CBU": { [] execVM "insurgency\modules\cas\functions\casCBU.sqf" };

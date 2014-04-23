@@ -46,14 +46,16 @@ class casAITimeout {
 	default = CAS_DEF_casAITimeout;
 };
 
-class casNumRequestsOPFOR {
-	title = "		Time in between AI CAS requests (in seconds)";
-	values[] = {10, 20, 30, 40, 50, 60, 70, 80};
-	default = CAS_DEF_casAITimeout;
+class casNumRequestsBLUFOR {
+	title = "		Number of times BLUFOR can call CAS";
+	values[] = {-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+	texts[] = {"Unlimited", "Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten"};
+	default = CAS_DEF_casNumRequestsBLUFOR;
 };
 
-class casNumRequestsBLUFOR {
-	title = "		Time in between AI CAS requests (in seconds)";
-	values[] = {10, 20, 30, 40, 50, 60, 70, 80};
-	default = CAS_DEF_casAITimeout;
+class casNumRequestsOPFOR {
+	title = "		Number of times OPFOR can call CAS";
+	values[] = {-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+	texts[] = {"Unlimited", "Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten"};
+	default = CAS_DEF_casNumRequestsOPFOR;
 };

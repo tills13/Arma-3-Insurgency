@@ -1,3 +1,10 @@
+if (isServer) then {
+	onPlayerConnected {
+		publicVariable "casNumRequestsBLUFOR";
+		publicVariable "casNumRequestsOPFOR";
+	};
+};
+
 if (isNil "INS_CAS_abortCAS") then { INS_CAS_abortCAS = true; };
 if (isNil "INS_CAS_waitCAS") then { INS_CAS_waitCAS = false; };
 if (isNil "timeUntilNextCAS") then { timeUntilNextCAS = 0; publicVariable "timeUntilNextCAS"; };
