@@ -2,7 +2,7 @@ respawnMessage = {
 	hint parseText _this;
 };
 
-initParams = { // should be executed on every client
+INS_veh_initParams = { // should be executed on every client
 	_vehicle = (_this select 0);
 	_name = (_this select 1);
 	_init = (_this select 2);
@@ -12,7 +12,7 @@ initParams = { // should be executed on every client
 	_vehicle setVehicleVarName _name;
 };
 
-addVehtoArray = {
+INS_veh_addVehtoArray = {
 	_vehicle = (_this select 0);
 	_name = (_this select 1);
 	_destroyedRespawnDelay = (_this select 2);
@@ -32,7 +32,7 @@ addVehtoArray = {
 	_vehicle setVariable ["RES_ORIG_LOC", getPos _vehicle];
 	_vehicle setVariable ["RES_ORIG_DIR", getDir _vehicle];
 
-	[[_vehicle, _name, _init], "initParams", true, true] spawn BIS_fnc_MP; // init parameters
+	[[_vehicle, _name, _init], "INS_veh_initParams", true, true] spawn BIS_fnc_MP; // init parameters
 	diag_log format["INS_VEH_RESPAWN: adding %1 to respawn array", _name];
 	vehicleArray = vehicleArray + [_vehicle];
 	publicVariable "vehicleArray";	
@@ -83,7 +83,7 @@ if (isServer) then { // server loop
 
 					_veh = _type createVehicle _origLoc;
 					_veh setDir _origDir;
-					[_veh, _name, _destroyedRespawnDelay, _abandonedRespawnDelay, _init] call addVehtoArray;
+					[_veh, _name, _destroyedRespawnDelay, _abandonedRespawnDelay, _init] call INS_veh_addVehtoArray;
 				};
 			} forEach vehicleArray;
 
@@ -91,7 +91,7 @@ if (isServer) then { // server loop
 		};
 	} else { // called script to add vehicle to loop
 		_attrs = _this;
-		_attrs call addVehtoArray;
+		_attrs call INS_veh_addVehtoArray;
 	};
 };
 
