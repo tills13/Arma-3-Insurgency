@@ -63,7 +63,7 @@ class Rtags {
         idc = 64436;
         style = 0x00;
         x = safeZoneX;
-        y = safeZoneY+safeZoneH/2+0.2;
+        y = safeZoneY + safeZoneH / 2 + 0.2;
         w = safeZoneW;
         h = safeZoneH;
         font = "EtelkaNarrowMediumPro";

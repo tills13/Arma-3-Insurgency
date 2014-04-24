@@ -1,23 +1,22 @@
 SL_fnc_urbanAreas = {
-	private ["_locations","_cityTypes","_randomLoc","_x","_i","_cities"];
+	private ["_locations", "_cityTypes", "_randomLoc", "_x", "_i", "_cities"];
 	_i = 0;
 	_cities = [];
 
 	_locations = configfile >> "CfgWorlds" >> worldName >> "Names";
-	_cityTypes = ["NameVillage","NameCity","NameCityCapital"];
+	_cityTypes = ["NameVillage", "NameCity", "NameCityCapital", "NameLocal"];
 
 	for "_x" from 0 to (count _locations - 1) do {
-		_randomLoc = _locations select _x;
-		// get city info
-		private["_cityName","_cityPos","_cityRadA","_cityRadB","_cityType","_cityAngle"];
-		_cityName = getText(_randomLoc >> "name");
-		_cityPos = getArray(_randomLoc >> "position");
-		_cityRadA = getNumber(_randomLoc >> "radiusA");
-		_cityRadB = getNumber(_randomLoc >> "radiusB");
-		_cityType = getText(_randomLoc >> "type");
-		_cityAngle = getNumber(_randomLoc >> "angle");
+		private["_cityName", "_cityPos", "_cityRadA", "_cityRadB", "_cityType", "_cityAngle"];
+		_cityClassName = _locations select _x;
+		_cityName = getText(_cityClassName >> "name");
+		_cityPos = getArray(_cityClassName >> "position");
+		_cityRadA = getNumber(_cityClassName >> "radiusA");
+		_cityRadB = getNumber(_cityClassName >> "radiusB");
+		_cityType = getText(_cityClassName >> "type");
+		_cityAngle = getNumber(_cityClassName >> "angle");
 		if (_cityType in _cityTypes) then {
-			_cities set [_i,[_cityName, _cityPos, _cityRadA, _cityRadB, _cityType, _cityAngle]];
+			_cities set [_i,[(_cityClassName call INS_fnc_getCityNameFromPath), _cityName, _cityPos, _cityRadA, _cityRadB, _cityType, _cityAngle]];
 			_i = _i + 1;
 		};
 	};
@@ -26,7 +25,7 @@ SL_fnc_urbanAreas = {
 };
 
 SL_fnc_findBuildings = {
-	private ["_center","_radius","_buildings"];
+	private ["_center", "_radius", "_buildings"];
 	_center = _this select 0;
 	_radius = _this select 1;
 	_buildings = nearestObjects [_center, ["house"], _radius];
@@ -46,29 +45,38 @@ SL_fnc_buildingPositions = {
 	_cbpos
 };
 
+// todo: make sure the condition works...
 SL_fnc_createTriggers = {
-	private ["_markers","_pos","_trigE"];
+	private ["_markers", "_pos", "_trigger"];
 
 	{
 		_pos = getMarkerPos _x;
-		_trigE = createTrigger ["EmptyDetector", _pos ];
-		_trigE setTriggerActivation ["ANY", "PRESENT", false];
-		_trigE setTriggerArea [50, 50, 0, true];
-		_trigE setTriggerStatements ["{(side _x) == east} count thisList == 0 AND {(side _x) == west } count thisList >= 1", format["""%1"" setMarkerColor ""ColorGreen"";",_x], ""];
+		_trigger = createTrigger ["EmptyDetector", _pos ];
+		_trigger setTriggerActivation ["ANY", "PRESENT", false];
+		_trigger setTriggerArea [50, 50, 0, true];
+		_trigger setTriggerStatements ["", {
+			_curColor = getMarkerColor _x;
 
+			if ({(side _x) == east} count thisList == 0 and {(side _x) == west } count thisList >= 1) then {
+				if (_curColor == "ColorRed" || _curColor == "ColorYellow") then { _x setMarkerColor "ColorGreen" };
+			};
+
+			if ({(side _x) == east} count thisList >= 1 and {(side _x) == west } count thisList == 0) then {
+				if (_curColor == "ColorGreen") then { _x setMarkerColor "ColorYellow" };
+			};
+		}, ""];
 	} foreach _this;
 };
 
 SO_fnc_randomCity = {
-
-	private ["_randomLoc", "_cityName", "_cityPos", "_cityRadA", "_cityRadB", "_cityType", "_cityAngle", "_cityTypes","_found"];
+	private ["_randomLoc", "_cityName", "_cityPos", "_cityRadA", "_cityRadB", "_cityType", "_cityAngle", "_cityTypes", "_found"];
 
 	_cityName = "";
 
 	// Stuff we need
 	_locations = configfile >> "CfgWorlds" >> worldName >> "Names";
-	//_cityTypes = ["Name","NameLocal","NameVillage","NameCity","NameCityCapital"];
-	_cityTypes = ["NameVillage","NameCity","NameCityCapital"];
+	//_cityTypes = ["Name", "NameLocal", "NameVillage", "NameCity", "NameCityCapital"];
+	_cityTypes = ["NameVillage", "NameCity", "NameCityCapital"];
 	_found = 0;
 
 
@@ -127,7 +135,7 @@ getRandomRelativePositionLand = {
 	if(surfaceIsWater [_position select 0,_position select 1]) then
 	{
 		// handy! http://forums.bistudio.com/showthread.php?93897-selectBestPlaces-(do-it-yourself-documentation)
-		_bestPositions = selectbestplaces [[_position select 0,_position select 1],200,"(1 + houses)",10,1];
+		_bestPositions = selectbestplaces [[_position select 0,_position select 1],200, "(1 + houses)",10,1];
 		
 		_position = _bestPositions select 0;
 		_position = _position select 0;
@@ -215,7 +223,7 @@ pickedUpIntel = {
 };
 
 intelPickup = {
-    private ["_intelItems","_intel","_used","_ID","_cases","_case","_cache"];
+    private ["_intelItems", "_intel", "_used", "_ID", "_cases", "_case", "_cache"];
 	
 	_intelItems = ["Land_Laptop_unfolded_F", "Land_HandyCam_F", "Land_SatellitePhone_F", "Land_SurvivalRadio_F", "Box_East_Ammo_F", "Land_Suitcase_F"];
 	_intel = _this select 0;
@@ -241,7 +249,7 @@ intelPickup = {
 };
 
 createIntel = { 
-    private ["_i","_sign","_sign2","_radius","_cache","_pos","_mkr","_range","_intelRadius"];
+    private ["_i", "_sign", "_sign2", "_radius", "_cache", "_pos", "_mkr", "_range", "_intelRadius"];
     
     _cache = cache;
     _intel = _this;
@@ -270,4 +278,23 @@ createIntel = {
 	_mkr setMarkerSize [0.5, 0.5];
 
 	INS_marker_array = INS_marker_array + [_mkr];
+};
+
+// ---------------------------------------
+//	other functions
+// ---------------------------------------
+
+INS_fnc_getCityNameFromPath = {
+	_path = _this;
+	_array = toArray _path;
+
+	_cityName = [];
+	for "_i" from (count _array - 1) to 0 step -1 do {
+		if ((_array select _i) != 47) then { _cityName = [(_array select _i)] + _cityName; }
+		else { _break = true; };
+
+		if (_break) exitWith {};
+	};
+
+	toString _cityName;
 };

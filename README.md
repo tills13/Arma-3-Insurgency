@@ -8,5 +8,6 @@ Credit:
 * eos
 * INS_Revive
 * reddit.com/r/armadev
+* LV
 
 I try to rewrite code to my liking/what I think is required for the mission. Code is borrowed, and created, and I don't mind if you use code found here as is or modified. 

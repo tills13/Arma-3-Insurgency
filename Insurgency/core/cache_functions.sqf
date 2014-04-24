@@ -50,7 +50,7 @@ onCacheDestroyed = {
 generateNewCache = {
 	[] spawn {
 		_city = (call SL_fnc_urbanAreas) call BIS_fnc_selectRandom;
-		_building = ([_city select 1, _city select 2] call SL_fnc_findBuildings) call BIS_fnc_selectRandom;
+		_building = ([_city select 2, _city select 3] call SL_fnc_findBuildings) call BIS_fnc_selectRandom;
 		_pos = [_building] call getRandomBuildingPosition;
 
 		cache = createVehicle ["Box_East_WpsSpecial_F", _pos, [], 0, "None"];

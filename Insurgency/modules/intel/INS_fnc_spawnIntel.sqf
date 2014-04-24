@@ -12,12 +12,13 @@ if (isServer) then {
 		_intelItems = ["Land_Laptop_unfolded_F", "Land_HandyCam_F", "Land_SatellitePhone_F", "Land_SurvivalRadio_F", "Box_East_Ammo_F", "Land_Suitcase_F"];
 		
 		{
-			_cityName = _x select 0;
-			_cityPos = _x select 1;
-			_cityRadA = _x select 2;
-			_cityRadB = _x select 3;
-			_cityType = _x select 4;
-			_cityAngle = _x select 5;
+			_cityClassName = _x select 0;
+			_cityName = _x select 1;
+			_cityPos = _x select 2;
+			_cityRadA = _x select 3;
+			_cityRadB = _x select 4;
+			_cityType = _x select 5;
+			_cityAngle = _x select 6;
 
 			if(_cityRadB > _cityRadA) then { _cityRadA = _cityRadB; };
 

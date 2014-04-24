@@ -16,8 +16,6 @@ addMarkerForPosition = {
 	_markers
 };
 
-INS_fnc_
-
 if (isServer) then {
 	//eos_zone_init = compile preprocessFileLineNumbers "eos\core\eos_launch.sqf";
 	//eos_fnc_spawnvehicle = compile preprocessfilelinenumbers "eos\functions\eos_SpawnVehicle.sqf";
@@ -35,9 +33,10 @@ if (isServer) then {
 	{
 		_markers = [];
 		_city = _x;
-		_cityName = _city select 0;
-		_cityPos = _city select 1;
-		_cityRad = (_city select 2) max (_city select 3);
+		_cityClassName = _city select 0;
+		_cityName = _city select 1;
+		_cityPos = _city select 2;
+		_cityRad = (_city select 3) max (_city select 4);
 		_roads = (_cityPos nearRoads _cityRad);
 
 		for "_i" from 0 to (count _roads) step 1 do {
@@ -56,10 +55,11 @@ if (isServer) then {
 			};
 		};
 
-		_trigE = createTrigger ["EmptyDetector", _cityPos];
-		_trigE setTriggerActivation ["west", "present", true];
-		_trigE setTriggerArea [_cityRad, _cityRad, 0, false];
-		_trigE setTriggerStatements ["this", format["%1 call SL_fnc_createTriggers; %2 call INS_fn_spawnUnits;", _markers, [_cityName, _cityPos, _cityRad]], format["%1 call INS_fn_despawnUnits;", [_cityName, _cityPos, _cityRad]]];
+		_trigger = createTrigger ["EmptyDetector", _cityPos];
+		_trigger setTriggerActivation ["west", "present", true];
+		_trigger setTriggerArea [_cityRad, _cityRad, 0, false];
+		_trigger setTriggerStatements ["this", format["%1 call SL_fnc_createTriggers; %2 call INS_fn_spawnUnits;", _markers, [_cityName, _cityPos, _cityRad]], format["%1 call INS_fn_despawnUnits;", [_cityName, _cityPos, _cityRad]]];
+		missionNamespace setVariable [format["%1_trigger", _cityClassName], _trigger];
 	} forEach (call SL_fnc_urbanAreas);
 
 
