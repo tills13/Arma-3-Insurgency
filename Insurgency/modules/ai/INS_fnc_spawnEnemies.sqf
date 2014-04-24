@@ -16,6 +16,8 @@ addMarkerForPosition = {
 	_markers
 };
 
+INS_fnc_
+
 if (isServer) then {
 	//eos_zone_init = compile preprocessFileLineNumbers "eos\core\eos_launch.sqf";
 	//eos_fnc_spawnvehicle = compile preprocessfilelinenumbers "eos\functions\eos_SpawnVehicle.sqf";
@@ -33,22 +35,20 @@ if (isServer) then {
 	{
 		_markers = [];
 		_city = _x;
-		_cityName = _x select 0;
-		_cityPos = _x select 1;
-		_cityRad = (_x select 2) max (_x select 3);
-		//diag_log format["%1 %2 %3", _cityName, _cityPos, _cityRad];
-
+		_cityName = _city select 0;
+		_cityPos = _city select 1;
+		_cityRad = (_city select 2) max (_city select 3);
 		_roads = (_cityPos nearRoads _cityRad);
 
 		for "_i" from 0 to (count _roads) step 1 do {
 			_mpos = (getPos (_roads select _i) call gridPos);
 			if (isNil "_mpos") then {
-				//if (debugMode == 1) then { diag_log format["error: %1 - %2", _cityName, count _roads]; };
+				if (debugMode == 1) then { diag_log format["error: %1 - %2", _cityName, count _roads]; };
 			} else {
 				_mkr = str _mpos;
 				if (getMarkerPos _mkr select 0 == 0) then {
-					//_nearHouses = [(getPos (_roads select _i)), 50] call SO_fnc_findHouse;
-
+					_nearHouses = [(getPos (_roads select _i)), 100] call SO_fnc_findHouse;
+					
 					// do something
 
 					_markers = [_mpos, _cityPos, _cityRad, _markers] call addMarkerForPosition;

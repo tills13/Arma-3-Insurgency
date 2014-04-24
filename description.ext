@@ -2,7 +2,7 @@ onLoadName = "Altis Insurgency";
 author = "dolan";
 respawn = BASE;
 respawndelay = 0;
-//disabledAI = true;
+disabledAI = true;
 enableDebugConsole = 2;
 
 #include "VAS\menu.hpp"
@@ -20,12 +20,12 @@ class Params {
 	class TitleLineIns { title = "Insurgency ---------"; values[] = {0, 0}; texts[] = {"", ""}; default = 0; };
 	#include "insurgency\params.hpp"
 
-	class TitleLineRev { title = "Revive ---------"; values[] = {0, 0}; texts[] = {"", ""}; default = 0; };
-	#include "INS_revive\params.hpp"
+	//class TitleLineRev { title = "Revive ---------"; values[] = {0, 0}; texts[] = {"", ""}; default = 0; };
+	//#include "INS_revive\params.hpp"
 };
 
 class RscTitles {
-	#include "INS_revive\rsctitles.hpp"
+	#include "insurgency\rsctitles.hpp"
 };
 
 class CfgFunctions {

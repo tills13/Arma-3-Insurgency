@@ -14,21 +14,21 @@ _player = player;
 _injured = (_this select 3) select 0;
 _load_vehicle = (_this select 3) select 1;
 
-if (!isNull _injured && alive _injured && _injured getVariable "INS_REV_PVAR_is_unconscious") then {
+if (!isNull _injured && alive _injured && _injured getVariable "INS_rev_PVAR_is_unconscious") then {
 	if (_load_vehicle emptyPositions "Cargo" > 0) then {
 		// Load injured to vehicle
 		detach _injured;
-		[_injured, _load_vehicle] call INS_REV_FNCT_moveInCargo;
-		//[_injured, "kia_hmmwv_driver"] call INS_REV_FNCT_switchMove;
-		[_injured, "AinjPpneMstpSnonWrflDnon"] call INS_REV_FNCT_switchMove;
-		//[_injured, "kia_passenger_mrap_01_front"] call INS_REV_FNCT_switchMove;
+		[_injured, _load_vehicle] call INS_rev_fnct_moveInCargo;
+		//[_injured, "kia_hmmwv_driver"] call INS_rev_fnct_switchMove;
+		[_injured, "AinjPpneMstpSnonWrflDnon"] call INS_rev_fnct_switchMove;
+		//[_injured, "kia_passenger_mrap_01_front"] call INS_rev_fnct_switchMove;
 		_player playMoveNow "AmovPknlMstpSrasWrflDnon";
 		
 		// Add unload action
-		INS_REV_GVAR_add_unload = [_load_vehicle, _injured];
-		publicVariable "INS_REV_GVAR_add_unload";
-		["INS_REV_GVAR_add_unload", INS_REV_GVAR_add_unload] spawn INS_REV_FNCT_add_unload_action;
-		_injured setVariable ["INS_REV_PVAR_who_taking_care_of_injured", nil, true];
+		INS_rev_GVAR_add_unload = [_load_vehicle, _injured];
+		publicVariable "INS_rev_GVAR_add_unload";
+		["INS_rev_GVAR_add_unload", INS_rev_GVAR_add_unload] spawn INS_rev_fnct_add_unload_action;
+		_injured setVariable ["INS_rev_PVAR_who_taking_care_of_injured", nil, true];
 		
 		sleep 0.5;
 		
@@ -37,18 +37,18 @@ if (!isNull _injured && alive _injured && _injured getVariable "INS_REV_PVAR_is_
 			player sidechat format["'%1' loaded into '%2'", name _injured, getText(configFile >> 'CfgVehicles' >> typeOf _load_vehicle >> 'displayname')];
 		} else {
 			// Swtich move
-			if (_injured getVariable "INS_REV_PVAR_is_unconscious") then {
-				[_injured, "AinjPpneMstpSnonWrflDnon"] call INS_REV_FNCT_switchMove;
+			if (_injured getVariable "INS_rev_PVAR_is_unconscious") then {
+				[_injured, "AinjPpneMstpSnonWrflDnon"] call INS_rev_fnct_switchMove;
 				while {animationState _injured != "AinjPpneMstpSnonWrflDnon"} do {
 					sleep 0.1;
-					[_injured, "AinjPpneMstpSnonWrflDnon"] call INS_REV_FNCT_switchMove;
+					[_injured, "AinjPpneMstpSnonWrflDnon"] call INS_rev_fnct_switchMove;
 				};
 			};
 			
 			// Remove unload action
-			INS_REV_GVAR_del_unload = [_load_vehicle, _injured];
-			publicVariable "INS_REV_GVAR_del_unload";
-			["INS_REV_GVAR_del_unload", INS_REV_GVAR_del_unload] spawn INS_REV_FNCT_remove_unload_action;
+			INS_rev_GVAR_del_unload = [_load_vehicle, _injured];
+			publicVariable "INS_rev_GVAR_del_unload";
+			["INS_rev_GVAR_del_unload", INS_rev_GVAR_del_unload] spawn INS_rev_fnct_remove_unload_action;
 			
 			player sidechat format["Failed loading", name _injured, getText(configFile >> 'CfgVehicles' >> typeOf _load_vehicle >> 'displayname')];
 		};

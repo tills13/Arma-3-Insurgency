@@ -5,27 +5,27 @@ _injured = _this select 0;
 _player = player;
 _wrong_moves = ["helper_switchtocarryrfl","acinpknlmstpsraswrfldnon_amovppnemstpsraswrfldnon","acinpknlmstpsraswrfldnon_acinpercmrunsraswrfldnon","acinpercmrunsraswrfldnon","acinpercmrunsraswrfldf"];
 _prone_moves = ["amovppnemstpsraswrfldnon","amovppnemrunslowwrfldf","amovppnemsprslowwrfldfl","amovppnemsprslowwrfldfr","amovppnemrunslowwrfldb","amovppnemsprslowwrfldbl","amovppnemsprslowwrfldr","amovppnemstpsraswrfldnon_turnl","amovppnemstpsraswrfldnon_turnr","amovppnemrunslowwrfldl","amovppnemrunslowwrfldr","amovppnemsprslowwrfldb","amovppnemrunslowwrfldbl","amovppnemsprslowwrfldl","amovppnemsprslowwrfldbr"];
-INS_REV_GVAR_do_release_body = false;
-INS_REV_GVAR_is_carring = false;
-INS_REV_GVAR_injured = _injured;
+INS_rev_GVAR_do_release_body = false;
+INS_rev_GVAR_is_carring = false;
+INS_rev_GVAR_injured = _injured;
 
 // Infrom player is taking care of injured
-_injured setVariable ["INS_REV_PVAR_who_taking_care_of_injured", _player, true];
+_injured setVariable ["INS_rev_PVAR_who_taking_care_of_injured", _player, true];
 
 // Add release body action
-_release_body_action = _player addAction [STR_INS_REV_action_release_body, "INS_revive\revive\act_release_body.sqf", _injured, 10, false, true, "", ""];
+_release_body_action = _player addAction [STR_INS_rev_action_release_body, "insurgency\modules\revive\act_release_body.sqf", _injured, 10, false, true, "", ""];
 
 // Add load body action
-if (INS_REV_CFG_medevac) then {
+if (INS_rev_medevac == 1) then {
 	if (isNil "FNC_check_load_vehicle") then {
 		FNC_check_load_vehicle = {
 			private ["_objs","_vcl","_result"];
 			_result = false;
 			_objs = nearestObjects [player, ["Car","Tank","Helicopter","Plane","Boat"], 5];
-			INS_REV_GVAR_load_vehicle = nil;
+			INS_rev_GVAR_load_vehicle = nil;
 			if (count _objs > 0) then {
-				INS_REV_GVAR_load_vehicle = _objs select 0;
-				if (alive INS_REV_GVAR_load_vehicle) then {
+				INS_rev_GVAR_load_vehicle = _objs select 0;
+				if (alive INS_rev_GVAR_load_vehicle) then {
 					_result = true;
 				};
 			};
@@ -38,54 +38,54 @@ if (INS_REV_CFG_medevac) then {
 	_trigger setTriggerActivation ["NONE", "PRESENT", true];
 	_trigger setTriggerStatements[
 		"call FNC_check_load_vehicle",
-		"INS_REV_GVAR_loadActionID = player addAction [format[STR_INS_REV_action_load_body,name INS_REV_GVAR_injured,getText(configFile >> 'CfgVehicles' >> typeOf INS_REV_GVAR_load_vehicle >> 'displayname')], 'INS_revive\revive\act_load_body.sqf',[INS_REV_GVAR_injured,INS_REV_GVAR_load_vehicle],10,false];",
-		"player removeAction INS_REV_GVAR_loadActionID; INS_REV_GVAR_loadActionID = nil;"
+		"INS_rev_GVAR_loadActionID = player addAction [format[STR_INS_rev_action_load_body,name INS_rev_GVAR_injured,getText(configFile >> 'CfgVehicles' >> typeOf INS_rev_GVAR_load_vehicle >> 'displayname')], 'insurgency\modules\revive\act_load_body.sqf',[INS_rev_GVAR_injured,INS_rev_GVAR_load_vehicle],10,false];",
+		"player removeAction INS_rev_GVAR_loadActionID; INS_rev_GVAR_loadActionID = nil;"
 	];
 };
 
-INS_REV_FNCT_drag_prone_keydown = {
+INS_rev_fnct_drag_prone_keydown = {
 	if ((_this select 1) in (actionKeys "moveForward" + actionKeys "moveFastForward")) exitWith {true};
 	false
 };
 
 // Add KeyDown event handler
-INS_REV_GVAR_keydown_event = (findDisplay 46) displayAddEventHandler ["KeyDown", "_this call INS_REV_FNCT_drag_prone_keydown"];
+INS_rev_GVAR_keydown_event = (findDisplay 46) displayAddEventHandler ["KeyDown", "_this call INS_rev_fnct_drag_prone_keydown"];
 
 // Attach player to injured
 _injured attachTo [_player, [0, 1.5, 0.092]];
-[_injured, 180] call INS_REV_FNCT_setDir;
+[_injured, 180] call INS_rev_fnct_setDir;
 
 
-[_injured, "AinjPpneMstpSnonWrflDnon"] call INS_REV_FNCT_playMoveNow; // Start dragging move
+[_injured, "AinjPpneMstpSnonWrflDnon"] call INS_rev_fnct_playMoveNow; // Start dragging move
 
 // Wait until dragging is finished
-while {!(call INS_REV_FNCT_is_finished_dragging_prone) || INS_REV_GVAR_is_carring} do {
+while {!(call INS_rev_fnct_is_finished_dragging_prone) || INS_rev_GVAR_is_carring} do {
 	sleep 0.5;
 };
 
-if (INS_REV_GVAR_is_carring) exitWith {};
+if (INS_rev_GVAR_is_carring) exitWith {};
 
 // If injured is not disconnected, release body
 if !(isNull _injured) then {
 	detach _injured; // Detach injured
 	
-	if (_injured getVariable "INS_REV_PVAR_is_unconscious") then {
-		[_injured, "AinjPpneMstpSnonWrflDnon"] call INS_REV_FNCT_switchMove;
+	if (_injured getVariable "INS_rev_PVAR_is_unconscious") then {
+		[_injured, "AinjPpneMstpSnonWrflDnon"] call INS_rev_fnct_switchMove;
 	};
 	
-	_injured setVariable ["INS_REV_PVAR_who_taking_care_of_injured", nil, true];
+	_injured setVariable ["INS_rev_PVAR_who_taking_care_of_injured", nil, true];
 };
 
 // Finish dragging
 if !(isNull _player) then {
 	// If player is dead, terminate move
 	if (!alive _player) then {
-		//[_player, "amovppnemstpsraswrfldnon"] call INS_REV_FNCT_switchMove;
+		//[_player, "amovppnemstpsraswrfldnon"] call INS_rev_fnct_switchMove;
 	} else {
 		// If player stand up, terminate move
 		if ((animationState _player) in _wrong_moves) then {
 			while {(animationState _player) in _wrong_moves} do {
-				[_player, "amovppnemstpsraswrfldnon"] call INS_REV_FNCT_switchMove;
+				[_player, "amovppnemstpsraswrfldnon"] call INS_rev_fnct_switchMove;
 				sleep 0.5;
 			};
 		};
@@ -95,10 +95,10 @@ if !(isNull _player) then {
 // Remove  actions
 _player removeAction _release_body_action;
 _player removeAction _carry_body_action;
-if (INS_REV_CFG_medevac) then {
-	if (!isNil "INS_REV_GVAR_loadActionID") then {
-		_player removeAction INS_REV_GVAR_loadActionID;
-		INS_REV_GVAR_loadActionID = nil;
+if (INS_rev_medevac == 1) then {
+	if (!isNil "INS_rev_GVAR_loadActionID") then {
+		_player removeAction INS_rev_GVAR_loadActionID;
+		INS_rev_GVAR_loadActionID = nil;
 	};
 	
 	// Remove trigger
@@ -108,11 +108,11 @@ if (INS_REV_CFG_medevac) then {
 	};
 };
 
-if (!isNil {INS_REV_GVAR_keydown_event}) then {
-	(findDisplay 46) displayRemoveEventHandler ["KeyDown", INS_REV_GVAR_keydown_event];
+if (!isNil {INS_rev_GVAR_keydown_event}) then {
+	(findDisplay 46) displayRemoveEventHandler ["KeyDown", INS_rev_GVAR_keydown_event];
 };
 
 // Clear variable
-INS_REV_GVAR_do_release_body = nil;
-INS_REV_GVAR_injured = nil;
-INS_REV_GVAR_keydown_event = nil;
+INS_rev_GVAR_do_release_body = nil;
+INS_rev_GVAR_injured = nil;
+INS_rev_GVAR_keydown_event = nil;

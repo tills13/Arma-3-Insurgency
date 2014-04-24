@@ -10,11 +10,11 @@ if (vehicle _injured == _loaded_vehicle) then {
 	_injured action ["EJECT", vehicle _injured];
 	
 	// Swtich move
-	if (_injured getVariable "INS_REV_PVAR_is_unconscious") then {
-		[_injured, "AinjPpneMstpSnonWrflDnon"] call INS_REV_FNCT_switchMove;
+	if (_injured getVariable "INS_rev_PVAR_is_unconscious") then {
+		[_injured, "AinjPpneMstpSnonWrflDnon"] call INS_rev_fnct_switchMove;
 		while {animationState _injured != "AinjPpneMstpSnonWrflDnon"} do {
 			sleep 0.1;
-			[_injured, "AinjPpneMstpSnonWrflDnon"] call INS_REV_FNCT_switchMove;
+			[_injured, "AinjPpneMstpSnonWrflDnon"] call INS_rev_fnct_switchMove;
 		};
 	};
 
@@ -22,7 +22,7 @@ if (vehicle _injured == _loaded_vehicle) then {
 };
 
 // Remove unload action
-INS_REV_GVAR_del_unload = [_loaded_vehicle, _injured];
-publicVariable "INS_REV_GVAR_del_unload";
-["INS_REV_GVAR_del_unload", INS_REV_GVAR_del_unload] spawn INS_REV_FNCT_remove_unload_action;
+INS_rev_GVAR_del_unload = [_loaded_vehicle, _injured];
+publicVariable "INS_rev_GVAR_del_unload";
+["INS_rev_GVAR_del_unload", INS_rev_GVAR_del_unload] spawn INS_rev_fnct_remove_unload_action;
 _loaded_vehicle removeAction _id;

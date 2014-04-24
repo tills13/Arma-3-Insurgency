@@ -2,7 +2,19 @@ respawnMessage = {
 	hint parseText _this;
 };
 
+INS_veh_updateLocation = {
+	private ["_vehicle"];
+
+	_vehicle = _this select 0;
+	_newPos = _this select 1;
+	_newDir = _this select 2;
+	_vehicle setVariable ["RES_ORIG_LOC", _newPos];
+	_vehicle setVariable ["RES_ORIG_DIR", _newDir];
+	diag_log format ["updated %1's location to %2 (%3)", vehicleVarName _vehicle, _newPos, _newDir];
+};
+
 INS_veh_initParams = { // should be executed on every client
+	private ["_vehicle"];
 	_vehicle = (_this select 0);
 	_name = (_this select 1);
 	_init = (_this select 2);
@@ -38,6 +50,7 @@ INS_veh_addVehtoArray = {
 	publicVariable "vehicleArray";	
 };
 
+waitUntil { !isNil "INS_params_doneInit"; };
 if (isNil "vehicleArray") then { vehicleArray = []; publicVariable "vehicleArray"; };
 if (isServer) then { // server loop
 	if (count _this == 0) then { // called script to loop
@@ -94,4 +107,3 @@ if (isServer) then { // server loop
 		_attrs call INS_veh_addVehtoArray;
 	};
 };
-
