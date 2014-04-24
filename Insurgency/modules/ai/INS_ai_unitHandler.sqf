@@ -1,69 +1,88 @@
 if (!isServer) exitWith {}; // server handles all spawning
 
-_city = _this select 0;
-_trigger = (missionNamespace getVariable format["%1_trigger", (_city select 0)]);
-if (!isNil "_trigger") exitWith {};
+_area = _this;
+_trigger = (missionNamespace getVariable format["%1_trigger", (_area select 0)]);
 
 // args: [trigger, [house, area, vehicles, static]]
 INS_ai_fnc_cacheUnits = {
 	_trigger = _this select 0;
+	_area = _this select 1;
+	_cache = _this select 2;
 
-	_cache = _this select 1;
-	_hpatrols = _cache select 1;
-	_patrols = _cache select 2;
-	_lightvehicles = _cache select 3;
-	_static = _cache select 4;
+	_hpatrols = _cache select 0;
+	_patrols = _cache select 1;
+	_lightvehicles = _cache select 2;
+	_statics = _cache select 3;
 
 	_hpcache = _hpatrols call INS_fn_cacheHousePatrols;
 	_apcache = _patrols call INS_fn_cacheAreaPatrols;
 	_lvcache = _lightvehicles call INS_fn_cacheLightVehicles;
 	_spcache = _statics call INS_fn_cacheStaticPlacements;
 
-	_trigger setVariable [format["%1_cache", _cityClassName], true];
-	_trigger setVariable [format["%1_cache_hp", _cityClassName], _hpcache];
-	_trigger setVariable [format["%1_cache_ap", _cityClassName], _apcache];
-	_trigger setVariable [format["%1_cache_lv", _cityClassName], _lvcache];
-	_trigger setVariable [format["%1_cache_sp", _cityClassName], _spcache];
+	diag_log format["%1, %2, %3, %4", _hpatrols, _patrols, _lightvehicles, _statics];
+	diag_log format["%1, %2, %3, %4", _hpcache, _apcache, _lvcache, _spcache];
+
+	_trigger setVariable [format["%1_cache", (_area select 0)], true];
+	_trigger setVariable [format["%1_cache_hp", (_area select 0)], _hpcache];
+	_trigger setVariable [format["%1_cache_ap", (_area select 0)], _apcache];
+	_trigger setVariable [format["%1_cache_lv", (_area select 0)], _lvcache];
+	_trigger setVariable [format["%1_cache_sp", (_area select 0)], _spcache];
 };
 
-// args: [trigger, [house, area, vehicles, static]]
+// args: [trigger, _area]
 INS_ai_fnc_spawnUnits = {
-	_areacache = _trigger getVariable format["%1_cache", _cityClassName];
-	_cityName = _this select 0;
-	_cityPos = _this select 1;
-	_cityRad = _this select 2;
+	private ["_trigger", "_area"];
 
+	_trigger = _this select 0;
+	_area = _this select 1;
+
+	_areacache = _trigger getVariable format["%1_cache", (_area select 0)];
+	_areaClassName = _area select 0;
+	_areaPos = _area select 2;
+	_areaRad = _area select 3;
+
+	_hpatrols = [];
+	_patrols = [];
+	_lightvehicles = [];
+	_statics = [];
 	if (!isNil "_areacache") then {  // load from cache
-		_hpatrols = _trigger getVariable format["%1_cache_hp", _cityClassName];
-		_patrols = _trigger getVariable format["%1_cache_ap", _cityClassName];
-		_lightvehicles = _trigger getVariable format["%1_cache_lv", _cityClassName];
-		_statics = _trigger getVariable format["%1_cache_sp", _cityClassName];
+		_hpatrols = _trigger getVariable format["%1_cache_hp", (_area select 0)];
+		_patrols = _trigger getVariable format["%1_cache_ap", (_area select 0)];
+		_lightvehicles = _trigger getVariable format["%1_cache_lv", (_area select 0)];
+		_statics = _trigger getVariable format["%1_cache_sp", (_area select 0)];
 
-		 
+		_hpatrols = [_hpatrols] call INS_fn_spawnHousePatrolsCached;
+		_patrols = [_patrols] call INS_fn_spawnAreaPatrolsCached;
+		_lightvehicles = [_lightvehicles] call INS_fn_spawnLightVehiclesCached;
+		_statics = [_statics] call INS_fn_spawnStaticUnitsCached;
 	} else {
-		_hpatrols = [_cityName, _cityPos, _cityRad] call INS_fn_spawnHousePatrols;
-		_patrols = [_cityName, _cityPos, _cityRad] call INS_fn_spawnAreaPatrols;
-		_lightvehicles = [_cityName, _cityPos, _cityRad] call INS_fn_spawnLightVehicles
-		_statics = [_cityName, _cityPos, _cityRad] call INS_fn_spawnStaticUnits
-
-		exitWith { [_hpatrols, _patrols, _lightvehicles, _statics] };
+		_hpatrols = [_areaClassName, _areaPos, _areaRad] call INS_fn_spawnHousePatrols;
+		_patrols = [_areaClassName, _areaPos, _areaRad] call INS_fn_spawnAreaPatrols;
+		_lightvehicles = [_areaClassName, _areaPos, _areaRad] call INS_fn_spawnLightVehicles;
+		_statics = [_areaClassName, _areaPos, _areaRad] call INS_fn_spawnStaticUnits;
 	};
+
+	[_hpatrols, _patrols, _lightvehicles, _statics]
 };
 
 waitUntil { triggerActivated _trigger };
 _timeStart = time;
 
-_cache = [(_city select 0), (_city select 1), (_city select 2)] call INS_ai_fnc_spawnUnits;
+diag_log format["%1 zone activated", _area select 0];
+_cache = [_trigger, _area] call INS_ai_fnc_spawnUnits;
 
 while { triggerActivated _trigger } do {
-	if (_timeStart - time > 60) then { // one minute };
-	if (_timeStart - time > 300) then { // five minutes };	
-	if (_timeStart - time > 600) then { // ten minutes };	
+	diag_log format["%1 zone activated (%2)", _area select 0, time - _timeStart];
+	if (time - _timeStart > 60) then {}; // one minute
+	if (time - _timeStart > 300) then {}; // five minutes
+	if (time - _timeStart > 600) then {}; // ten minutes 	
 
-	sleep 1;
+	sleep 10;
 };
 
-[_trigger, _cache] call INS_ai_fnc_cacheUnits;
+diag_log format["%1 zone deactivated (%2)", _area select 0, time - _timeStart];
+
+[_trigger, _area, _cache] call INS_ai_fnc_cacheUnits;
 
 /* we should only load if the unit is either
  * visible or within 200 meters. 

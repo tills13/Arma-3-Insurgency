@@ -16,7 +16,7 @@ SL_fnc_urbanAreas = {
 		_cityType = getText(_cityClassName >> "type");
 		_cityAngle = getNumber(_cityClassName >> "angle");
 		if (_cityType in _cityTypes) then {
-			_cities set [_i,[(_cityClassName call INS_fnc_getCityNameFromPath), _cityName, _cityPos, _cityRadA, _cityRadB, _cityType, _cityAngle]];
+			_cities set [_i, [((str _cityClassName) call INS_fnc_getCityNameFromPath), ((str _cityClassName) call INS_fnc_getCityNameFromPath), _cityPos, _cityRadA, _cityRadB, _cityType, _cityAngle]];
 			_i = _i + 1;
 		};
 	};
@@ -54,17 +54,17 @@ SL_fnc_createTriggers = {
 		_trigger = createTrigger ["EmptyDetector", _pos ];
 		_trigger setTriggerActivation ["ANY", "PRESENT", false];
 		_trigger setTriggerArea [50, 50, 0, true];
-		_trigger setTriggerStatements ["", {
+		_trigger setTriggerStatements ["", "
 			_curColor = getMarkerColor _x;
 
 			if ({(side _x) == east} count thisList == 0 and {(side _x) == west } count thisList >= 1) then {
-				if (_curColor == "ColorRed" || _curColor == "ColorYellow") then { _x setMarkerColor "ColorGreen" };
+				if (_curColor == 'ColorRed' || _curColor == 'ColorYellow') then { _x setMarkerColor 'ColorGreen' };
 			};
 
 			if ({(side _x) == east} count thisList >= 1 and {(side _x) == west } count thisList == 0) then {
-				if (_curColor == "ColorGreen") then { _x setMarkerColor "ColorYellow" };
+				if (_curColor == 'ColorGreen') then { _x setMarkerColor 'ColorYellow' };
 			};
-		}, ""];
+		", ""];
 	} foreach _this;
 };
 
@@ -284,17 +284,49 @@ createIntel = {
 //	other functions
 // ---------------------------------------
 
+INS_fnc_addMarkerForPosition = {
+	_pos = _this select 0;
+	_markers = _this select 1;
+
+	_mkr = str _pos;
+	_mkr = createMarkerLocal[_mkr, _pos];
+	_mkr setMarkerShapeLocal "RECTANGLE";
+	_mkr setMarkerTypeLocal "SOLID";
+	_mkr setMarkerSizeLocal [50, 50];
+	_mkr setMarkerColor "ColorRed";
+	_mkr setMarkerAlphaLocal 0.5;
+	_markers = _markers + [_mkr];
+
+	_markers
+};
+
+INS_fn_addMarkerIfNotAlready = {
+	_pos = _this;
+	_mpos = _pos call gridPos;
+
+	_mkr = str _mpos;
+	if (getMarkerPos _mkr select 0 == 0) then {
+		_mkr = createMarkerLocal[_mkr, _mpos];
+		_mkr setMarkerShapeLocal "RECTANGLE";
+		_mkr setMarkerTypeLocal "SOLID";
+		_mkr setMarkerSizeLocal [50, 50];
+		_mkr setMarkerColor "ColorRed";
+		_mkr setMarkerAlphaLocal 0.5;
+	};	
+};
+
 INS_fnc_getCityNameFromPath = {
 	_path = _this;
-	_array = toArray _path;
+    _array = toArray _path;
 
-	_cityName = [];
-	for "_i" from (count _array - 1) to 0 step -1 do {
-		if ((_array select _i) != 47) then { _cityName = [(_array select _i)] + _cityName; }
-		else { _break = true; };
+    _cityName = [];
+    _break = false;
+    for "_i" from (count _array - 1) to 0 step -1 do {
+        if ((_array select _i) != 47) then { _cityName = [(_array select _i)] + _cityName; }
+        else { _break = true; };
 
-		if (_break) exitWith {};
-	};
+        if (_break) exitWith {};
+    };
 
-	toString _cityName;
+    toString _cityName;
 };

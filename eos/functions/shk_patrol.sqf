@@ -37,7 +37,7 @@ if (isServer) then {
 		_wp setWaypointType "MOVE";
 		_wp setWaypointCompletionRadius (5 + _slack);
 		[_grp,_i] setWaypointTimeout [0, 2, 16];
-		[_grp, _i] setWaypointStatements ["true", "if ((random 3) > 2) then { group this setCurrentWaypoint [(group this), (floor (random (count (waypoints (group this)))))];};"]; // When completing waypoint have 33% chance to choose a random next wp
+		[_grp, _i] setWaypointStatements ["true", "if ((random 3) > 2) then { group this setCurrentWaypoint [(group this), (floor (random (count (waypoints (group this)))))];};"];
 
 		if (debugMode == 1) then {
 			private "_m";

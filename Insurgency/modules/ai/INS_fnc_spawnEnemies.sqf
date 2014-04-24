@@ -1,8 +1,6 @@
 addMarkerForPosition = {
 	_pos = _this select 0;
-	_globalPos = _this select 1;
-	_radius = _this select 2;
-	_markers = _this select 3;
+	_markers = _this select 1;
 
 	_mkr = str _pos;
 	_mkr = createMarkerLocal[_mkr, _pos];
@@ -23,7 +21,6 @@ if (isServer) then {
 	//eos_fnc_findsafepos  =compile preprocessfilelinenumbers "eos\functions\findSafePos.sqf";
 	//eos_fnc_spawngroup = compile preprocessfile "eos\functions\infantry_fnc.sqf";
 	//eos_fnc_setcargo = compile preprocessfile "eos\functions\cargo_fnc.sqf";
-	//eos_fnc_taskpatrol = compile preprocessfile "eos\functions\shk_patrol.sqf";
 	//shk_pos = compile preprocessfile "eos\functions\shk_pos.sqf";
 	//shk_fnc_fillhouse = compile preprocessFileLineNumbers "eos\Functions\SHK_buildingpos.sqf";
 	//eos_fnc_getunitpool= compile preprocessfilelinenumbers "eos\UnitPools.sqf";
@@ -32,67 +29,41 @@ if (isServer) then {
 
 	{
 		_markers = [];
-		_city = _x;
-		_cityClassName = _city select 0;
-		_cityName = _city select 1;
-		_cityPos = _city select 2;
-		_cityRad = (_city select 3) max (_city select 4);
-		_roads = (_cityPos nearRoads _cityRad);
+		_area = _x;
+		_areaClassName = _area select 0;
+		_areaName = _area select 1;
+		_areaPos = _area select 2;
+		_areaRad = (_area select 3) max (_area select 4);
+		_buildings = [_areaPos, _areaRad] call SL_fnc_findBuildings;
 
-		for "_i" from 0 to (count _roads) step 1 do {
-			_mpos = (getPos (_roads select _i) call gridPos);
+		{
+			_building = _x;
+			_mpos = (getPos _building) call gridPos;
 			if (isNil "_mpos") then {
-				if (debugMode == 1) then { diag_log format["error: %1 - %2", _cityName, count _roads]; };
+				if (debugMode == 1) then { diag_log format["error: %1 - %2", _areaName, _building]; };
 			} else {
 				_mkr = str _mpos;
 				if (getMarkerPos _mkr select 0 == 0) then {
-					_nearHouses = [(getPos (_roads select _i)), 100] call SO_fnc_findHouse;
+					//_nearHouses = [(getPos (_roads select _i)), 100] call SO_fnc_findHouse;
 					
 					// do something
 
-					_markers = [_mpos, _cityPos, _cityRad, _markers] call addMarkerForPosition;
+					_markers = [_mpos, _markers] call INS_fnc_addMarkerForPosition;
 				};
 			};
-		};
+		} forEach _buildings;
 
-		_trigger = createTrigger ["EmptyDetector", _cityPos];
+
+		_m = createMarker [format ["box%1", random 1000], _areaPos];
+        _m setMarkerShape "ELLIPSE";
+        _m setMarkerSize [_areaRad, _areaRad];
+        _m setMarkerColor "ColorRed";
+
+		_trigger = createTrigger ["EmptyDetector", _areaPos];
 		_trigger setTriggerActivation ["west", "present", true];
-		_trigger setTriggerArea [_cityRad, _cityRad, 0, false];
-		_trigger setTriggerStatements ["this", format["%1 call SL_fnc_createTriggers; %2 call INS_fn_spawnUnits;", _markers, [_cityName, _cityPos, _cityRad]], format["%1 call INS_fn_despawnUnits;", [_cityName, _cityPos, _cityRad]]];
-		missionNamespace setVariable [format["%1_trigger", _cityClassName], _trigger];
+		_trigger setTriggerArea [_areaRad, _areaRad, 0, false];
+		_trigger setTriggerStatements ["this", format["%1 call SL_fnc_createTriggers; %2 execVM 'insurgency\modules\ai\INS_ai_unitHandler.sqf';", _markers, _area], ""];
+		missionNamespace setVariable [format["%1_trigger", _areaClassName], _trigger];
 	} forEach (call SL_fnc_urbanAreas);
-
-
-
-
-
-
-
-	/*{
-		_cityName = _x select 0;
-		_cityPos = _x select 1;
-		_cityRadA = _x select 2;
-
-		_numSpawns = 10 max random (_cityRadA / 30);
-		_mkr = str _cityName;
-		if (getMarkerPos _mkr select 0 == 0) then {
-			_marker = format["%1", _cityPos];
-			_mkr = createMarker [_marker, _cityPos];
-			_mkr setMarkerShape "ELLIPSE";
-			_mkr setMarkerType "SOLID";
-			_mkr setMarkerSize [_cityRadA, _cityRadA];
-			_mkr setMarkerColor "ColorRed";
-
-			//null = [[_mkr], [3, 2], [5, 2], [3, 3], [0, 0], [2, 50], [2, 3, 5], [0, 1, _cityRadA/2, EAST, TRUE, TRUE]] call eos_zone_init;
-		};
-
-
-	} forEach (call SL_fnc_urbanAreas);*/
-
-	//null = [["MAINAIRFIELD"], [3, 2], [6, 2], [3, 3], [2, 50], [3, 75], [2, 2, 75], [0, 1, 500, EAST, TRUE, TRUE]] call eos_zone_init; // EXTREME
-	//null = [["MZONE", "MZONE1", "MZONE2", "MZONE3", "MZONEIMP", "EASTPP"], [4, 2], [4, 2], [3, 2], [2, 50], [3, 75], [2, 3, 25], [0, 1, 500, EAST, TRUE, TRUE]] call eos_zone_init; // HARD
-	//null = [["NEAIRFIELD", "SAIRFIELD", "AACAIRFIELD", "DESERTAIRFIELD", "MPP", "NISLAND", "MZONE6", "MZONE8", "MZONE9"], [3, 2], [3, 2], [1, 3], [0, 0], [2, 50], [1, 3, 25], [0, 1, 500, EAST, TRUE, TRUE]] call eos_zone_init; // MEDIUM
-	//null = [["NAIRFIELD", "DAM", "STADIUM", "SWAMP", "MZONE4", "MZONE7", "ERUINS", "WINDFARM", "MZONE5", "CHAPEL", "PPWEST", "CASTLE", "WINDFARM1", "NORTHTIP"], [2, 1], [3, 1], [0, 0], [0, 0], [1, 50], [0, 0, 0], [0, 1, 500, EAST, TRUE, TRUE]] call eos_zone_init; // EASY
-	//null = [["RADIOTOWER", "QUARRY", "MINE", "SLUMS"], [2, 1], [2, 1], [0, 0], [0, 0], [0, 0], [2, 2, 5], [0, 1, 500, EAST, TRUE, TRUE]] call eos_zone_init; // JOKE
 };
 

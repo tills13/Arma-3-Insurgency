@@ -1,4 +1,5 @@
 // unit pools
+INS_ai_patrol = compile preprocessfile "insurgency\modules\ai\INS_ai_unitPatrol.sqf";
 
 infantryPool = ["O_SoldierU_SL_F", "O_soldierU_repair_F", "O_soldierU_medic_F", "O_sniper_F", "O_Soldier_A_F", "O_Soldier_AA_F", "O_Soldier_AAA_F", "O_Soldier_AAR_F", "O_Soldier_AAT_F", "O_Soldier_AR_F", "O_Soldier_AT_F", "O_soldier_exp_F", "O_Soldier_F", "O_engineer_F", "O_engineer_U_F", "O_medic_F", "O_recon_exp_F", "O_recon_F", "O_recon_JTAC_F", "O_recon_LAT_F", "O_recon_M_F", "O_recon_medic_F", "O_recon_TL_F"];	
 armoredPool = ["O_APC_Tracked_02_AA_F", "O_APC_Tracked_02_cannon_F", "O_APC_Wheeled_02_rcws_F", "O_MBT_02_arty_F", "O_MBT_02_cannon_F"];
@@ -31,6 +32,7 @@ INS_fn_spawnUnit = {
 	_special = _this select 5;
 
 	_unit = _group createUnit [_type, _position, _markers, _placement, _special];
+	_position call INS_fn_addMarkerIfNotAlready;
 	_unit call INS_fn_initAIUnit;
 	_unit	
 };
@@ -42,32 +44,38 @@ INS_fn_spawnGroup = {
 
 	_group = createGroup east;
 
-	_mGroup = [];
-	for "_i" from 0 to _size do {
+	for "_i" from 0 to (_size - 1) do {
 		_unit = [nil, _group, _position, [], 4, "FORM"] call INS_fn_spawnUnit;
-		_mGroup = _mGroup + [_unit];
 	};
 
-	_mGroup
+	_group spawn INS_ai_patrol;
+	_group
 };
 
 INS_fn_fillVehicleSeats = {
-	_vehicle = _this;
-	_emptySeats = _vehicle emptyPositions "cargo";
+	_vehicle = _this select 0;
+	_crew = _this select 1;
 
-	_group = [(random _emptySeats) + 2, getPos _vehicle] call INS_fn_spawnGroup;
-	{ _x moveincargo _vehicle } forEach units _group;
+	_emptySeats = _vehicle emptyPositions "cargo";
+	_seatsToFill = if (_crew == -1) then { ((random _emptySeats) + 2) } else { _crew };
+
+	_group = [_seatsToFill, getPos _vehicle] call INS_fn_spawnGroup;
+	_vehicle setVariable ["group", _group];
+	{ _x moveincargo _vehicle } forEach (units _group);
 };
 
 INS_fn_spawnVehicle = {
-	_type = if (isNil {_this select 0}) then { (motorPool + armoredPool) call BIS_fnc_selectRandom; } else { _this select 0; };
+	private ["_crew"];
+	_type = if (isNil {_this select 0}) then { motorPool call BIS_fnc_selectRandom; } else { _this select 0; };
 	_position = _this select 1;
 	_markers = _this select 2;
 	_placement = _this select 3;
 	_special = _this select 4;
+	_crew = if ((count _this) > 5) then { _this select 5; } else { -1; };
 
 	_vehicle = createVehicle [_type, _position, _markers, _placement, _special];
-	_vehicle call INS_fn_fillVehicleSeats;
+	_position call INS_fn_addMarkerIfNotAlready;
+	[_vehicle, _crew] call INS_fn_fillVehicleSeats;
 
 	_vehicle
 };
@@ -77,8 +85,11 @@ INS_fn_cacheHousePatrols = {
 	_hpgroups = [];
 
 	{
-		_numUnits = { alive _x } count units _x;
-		_hpgroups = _hpgroups + [_numUnits];
+		_alive = { alive _x } count units _x;
+		if (_alive != 0) then { 
+			_hpgroups = _hpgroups + [[_alive, getPos leader _x]]; 
+			{ deleteVehicle _x } forEach units _x;
+		};
 	} forEach _hpatrols;
 
 	_hpgroups
@@ -86,39 +97,49 @@ INS_fn_cacheHousePatrols = {
 
 // todo: make them patrol
 INS_fn_spawnHousePatrols = {
-	private ["_group", "_units", "_cityName", "_cityPos", "_cityRad"];
-	_cityName = _this select 0;
-	_cityPos = _this select 1;
-	_cityRad = _this select 2;
+	private ["_group", "_units", "_areaClassName", "_areaPos", "_areaRad"];
+	_areaClassName = _this select 0;
+	_areaPos = _this select 1;
+	_areaRad = _this select 2;
 
 	_groups = [];
+	_buildings = [_areaPos, _areaRad] call SL_fnc_findBuildings;
+	for "_i" from 0 to (round ((count _buildings) * 0.50)) do {
+		_building = _buildings call BIS_fnc_selectRandom;
 
-	{
-		_building = _x;
 		_buildingPositions = [_building] call getRandomBuildingPosition;
 		_pos = _buildingPositions select (floor(random count _buildingPositions));
 		_gridPos = getPos _building call gridPos;
 
 		if (getMarkerColor str _gridPos == "ColorRed") then {
-			_eCount = count nearestObjects[_pos, ["Man", "CAR"], 15];
+			_eCount = count nearestObjects[_pos, ["Man", "CAR"], 100];
 			if (_eCount < 5) then {
-				_mGroup = [(random 3) + 1, _pos] call INS_fn_spawnGroup;
+				_mGroup = [2, _pos] call INS_fn_spawnGroup;
 				_groups = _groups + [_mGroup];
 			};
 		};
-	} forEach ([_cityPos, _cityRad + 40] call SL_fnc_findBuildings);
+	};
 
+	diag_log format["spawned %1 hps: %2", count _groups, _groups];
 	_groups
 };
 
 // todo: make them patrol
 INS_fn_spawnHousePatrolsCached = {
-	private ["_group", "_units", "_cityName", "_cityPos", "_cityRad"];
-	_cityName = _this select 0;
-	_cityPos = _this select 1;
-	_cityRad = _this select 2;
+	private ["_group", "_units", "_areaClassName", "_areaPos", "_areaRad"];
+	_hpcache = _this select 0;
+	_groups = [];
 
-	
+	{
+		diag_log str _x;
+		_groupSize = _x select 0;
+		_position = _x select 1;
+
+		_group = [_groupSize, _position] call INS_fn_spawnGroup;
+		_groups = _groups + [_group];
+	} forEach _hpcache;
+
+	_groups
 };
 
 INS_fn_cacheAreaPatrols = {
@@ -126,38 +147,74 @@ INS_fn_cacheAreaPatrols = {
 	_apgroups = [];
 
 	{
-		_numUnits = { alive _x } count units _x;
-		_hpgroups = _hpgroups + [_numUnits];
+		_alive = { alive _x } count units _x;
+		if (_alive != 0) then { 
+			_apgroups = _apgroups + [[_alive, getPos leader _x]]; 
+			{ deleteVehicle _x } forEach units _x;
+		};
 	} forEach _apatrols;
 
 	_apgroups
 };
 
 INS_fn_spawnAreaPatrols = {
-	private ["_group", "_units", "_cityName", "_cityPos", "_cityRad"];
-	_cityName = _this select 0;
-	_cityPos = _this select 1;
-	_cityRad = _this select 2;
+	private ["_group", "_units", "_areaClassName", "_areaPos", "_areaRad"];
+	_areaClassName = _this select 0;
+	_areaPos = _this select 1;
+	_areaRad = _this select 2;
 
 	_groups = [];
 
 	for "_i" from 0 to ((random 3) + 1) do {
-		_spawnPos = [_cityPos, 0, _cityRad, 0, 1, 20, 0] call BIS_fnc_findSafePos;
-		_mGroup = [(random 5) + 1, _spawnPos] call INS_fn_spawnGroup;
-		_groups = _groups + [_mGroup];
+		_spawnPos = [_areaPos, 0, _areaRad, 0, 1, 20, 0] call BIS_fnc_findSafePos;
+		_spawnPos = _spawnPos call gridPos;
+
+		if (getMarkerColor str _spawnPos == "ColorRed") then {
+			_eCount = count nearestObjects[_spawnPos, ["Man", "CAR"], 100];
+			if (_eCount < 5) then {
+				_mGroup = [(random 4) + 1, _spawnPos] call INS_fn_spawnGroup;
+				_groups = _groups + [_mGroup];
+			};
+		};
 	};
+
+	diag_log format["spawned %1 aps: %2", count _groups, _groups];
+	_groups
+};
+
+// todo: make them patrol
+INS_fn_spawnAreaPatrolsCached = {
+	private ["_group", "_units", "_areaClassName", "_areaPos", "_areaRad"];
+	_apcache = _this select 0;
+	_groups = [];
+
+	{
+		diag_log str _x;
+		_groupSize = _x select 0;
+		_position = _x select 1;
+
+		_group = [_groupSize, _position] call INS_fn_spawnGroup;
+		_groups = _groups + [_group];
+	} forEach _apcache;
 
 	_groups
 };
 
 // todo: figure this shit out
+// use _vehicle setVariable to store the units associated with this veh.
 INS_fn_cacheLightVehicles = {
 	_lvatrols = _this;
 	_lvgroups = [];
 
 	{
-		_numUnits = { alive _x } count units _x;
-		_lvgroups = _lvgroups + [_numUnits];
+		_group = _x getVariable "group";
+		_alive = { alive _x } count units _group;
+		if (_alive != 0) then { 
+			_lvgroups = _lvgroups + [[_alive, typeOf _x, getPos _x]];
+		};
+
+		{ deleteVehicle _x; } forEach units _group;
+		if ((damage _x) < 0.5) then { deleteVehicle _x; };
 	} forEach _lvatrols;
 
 	_lvgroups
@@ -166,30 +223,57 @@ INS_fn_cacheLightVehicles = {
 // todo: cache group with vehicle... right now we're just returning the vehicle
 // todo: make the vehicles patrol psuedo-randomly
 INS_fn_spawnLightVehicles = {
-	private ["_group", "_units", "_cityName", "_cityPos", "_cityRad"];
-	_cityName = _this select 0;
-	_cityPos = _this select 1;
-	_cityRad = _this select 2;
+	private ["_group", "_units", "_areaClassName", "_areaPos", "_areaRad"];
+	_areaClassName = _this select 0;
+	_areaPos = _this select 1;
+	_areaRad = _this select 2;
 
 	_vehicles = [];
 
-	for "_i" from 0 to ((random 1) + 1) do {
-		_spawnPos = [_cityPos, 0, _cityRad, 0, 1, 20, 0] call BIS_fnc_findSafePos;
+	for "_i" from 0 to (random 1) do {
+		_spawnPos = [_areaPos, 0, _areaRad, 0, 1, 20, 0] call BIS_fnc_findSafePos;
 		_vehicle = [nil, _spawnPos, [], 5, "None"] call INS_fn_spawnVehicle;
 		_vehicles = _vehicles + [_vehicle];
 	};
+
+	diag_log format["spawned %1 lvs: %2", count _vehicles, _vehicles];
+	_vehicles
+};
+
+// todo: make them patrol
+INS_fn_spawnLightVehiclesCached = {
+	private ["_group", "_units", "_areaClassName", "_areaPos", "_areaRad"];
+	_lvcache = _this select 0;
+	_vehicles = [];
+
+	{
+		diag_log str _x;
+		_crew = _x select 0;
+		_type = _x select 1;
+		_pos = _x select 2;
+
+		_vehicle = [_type, _pos, [], 5, "None", _crew] call INS_fn_spawnVehicle;
+		_vehicles = _vehicles + [_vehicle];
+	} forEach _lvcache;
 
 	_vehicles
 };
 
 // todo: figure this shit out
+// use _vehicle setVariable to store the units associated with this veh.
 INS_fn_cacheStaticPlacements = {
 	_spatrols = _this;
 	_spgroups = [];
 
 	{
-		_numUnits = { alive _x } count units _x;
-		_spgroups = _spgroups + [_numUnits];
+		_group = _x getVariable "group";
+		_alive = { alive _x } count units _group;
+		if (_alive != 0) then { 
+			_spgroups = _spgroups + [[_alive, typeOf _x, getPos _x]];
+		};
+
+		{ deleteVehicle _x; } forEach units _group;
+		if (_alive != 0) then { deleteVehicle _x };
 	} forEach _spatrols;
 
 	_spgroups
@@ -197,35 +281,54 @@ INS_fn_cacheStaticPlacements = {
 
 // todo: ... do units enter the static placement?
 INS_fn_spawnStaticUnits = {
-	private ["_group", "_units", "_cityName", "_cityPos", "_cityRad"];
-	_cityName = _this select 0;
-	_cityPos = _this select 1;
-	_cityRad = _this select 2;
+	private ["_group", "_units", "_areaClassName", "_areaPos", "_areaRad"];
+	_areaClassName = _this select 0;
+	_areaPos = _this select 1;
+	_areaRad = _this select 2;
 
 	_statics = [];
 
-	for "_i" from 0 to ((random 1) + 1) do {
-		_spawnPos = [_cityPos, 0, _cityRad, 0, 1, 20, 0] call BIS_fnc_findSafePos;
+	for "_i" from 0 to (random 1) do {
+		_spawnPos = [_areaPos, 0, _areaRad, 0, 1, 20, 0] call BIS_fnc_findSafePos;
 		_static = [(staticPool call BIS_fnc_selectRandom), _spawnPos, [], 5, "None"] call INS_fn_spawnVehicle;
 		_statics = _statics + [_static];
 	};
+
+	diag_log format["spawned %1 sps: %2", count _statics, _statics];
+	_statics
+};
+
+INS_fn_spawnStaticUnitsCached = {
+	private ["_group", "_units", "_areaClassName", "_areaPos", "_areaRad"];
+	_spcache = _this select 0;
+	_statics = [];
+
+	{	
+		diag_log str _x;
+		_crew = _x select 0;
+		_type = _x select 1;
+		_pos = _x select 2;
+
+		_static = [_type, _pos, [], 5, "None", _crew] call INS_fn_spawnVehicle;
+		_statics = _statics + [_static];
+	} forEach _spcache;
 
 	_statics
 };
 
 INS_fn_spawnGroundReinforcements = {
-	_cityName = _this select 0;
-	_cityPos = _this select 1;
+	_areaClassName = _this select 0;
+	_areaPos = _this select 1;
 };
 
 INS_fn_spawnAirReinforcements = {
-	_cityName = _this select 0;
-	_cityPos = _this select 1;
+	_areaClassName = _this select 0;
+	_areaPos = _this select 1;
 };
 
 INS_fn_spawnWaterReinforcements = {
-	_cityName = _this select 0;
-	_cityPos = _this select 1;
+	_areaClassName = _this select 0;
+	_areaPos = _this select 1;
 };
 
 INS_fn_getAIArray = {
@@ -278,14 +381,14 @@ INS_fn_initAIUnit = {
 };
 
 INS_fn_spawnUnits = {
-	_cityName = _this select 0;
-	_cityPos = _this select 1;
-	_cityRad = _this select 2;
+	_areaClassName = _this select 0;
+	_areaPos = _this select 1;
+	_areaRad = _this select 2;
 
-	if (!isNil {missionNamespace getVariable _cityName}) then {
-		diag_log format ["spawning cached units in %1", _cityName];
+	if (!isNil {missionNamespace getVariable _areaClassName}) then {
+		diag_log format ["spawning cached units in %1", _areaClassName];
 
-		_cachedEnemies = missionNamespace getVariable _cityName;
+		_cachedEnemies = missionNamespace getVariable _areaClassName;
 		{
 			_type = _x select 0;
 			_pos = _x select 1;
@@ -297,8 +400,8 @@ INS_fn_spawnUnits = {
 			diag_log format ["spawning %1 at %2", _type, _pos];
 		} forEach _cachedEnemies;
 	} else {
-		diag_log format ["spawning units in %1", _cityName];
-		_buildings = [_cityPos, _cityRad + 40] call SL_fnc_findBuildings;
+		diag_log format ["spawning units in %1", _areaClassName];
+		_buildings = [_areaPos, _areaRad + 40] call SL_fnc_findBuildings;
 
 		{
 			_building = _x;
@@ -325,12 +428,12 @@ INS_fn_spawnUnits = {
 };
 
 INS_fn_despawnUnits = {
-	_cityName = _this select 0;
-	_cityPos = _this select 1;
-	_cityRad = _this select 2;
-	diag_log format ["deleting units in %1", _cityName];
+	_areaClassName = _this select 0;
+	_areaPos = _this select 1;
+	_areaRad = _this select 2;
+	diag_log format ["deleting units in %1", _areaClassName];
 
-	_enemies = nearestObjects[_cityPos, ["Man", "Car"], _cityRad + 50];
+	_enemies = nearestObjects[_areaPos, ["Man", "Car"], _areaRad + 50];
 	_cachedEnemies = [];
 
 	{
@@ -347,5 +450,5 @@ INS_fn_despawnUnits = {
 	} forEach _enemies;
 
 	diag_log str _cachedEnemies;
-	missionNamespace setVariable [_cityName, _cachedEnemies];
+	missionNamespace setVariable [_areaClassName, _cachedEnemies];
 };

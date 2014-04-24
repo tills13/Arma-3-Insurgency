@@ -13,7 +13,7 @@ loadParams = {
 	for [{_i = 0}, {_i < count(paramsArray)}, {_i = _i + 1}] do {
 		_param = (configName ((missionConfigFile >> "Params") select _i));
 		_value = (paramsArray select _i);
-		diag_log format["%1 = %2", _param, _value];
+		//diag_log format["%1 = %2", _param, _value];
 		call compile format ["%1 = %2;", (configName ((missionConfigFile >> "Params") select _i)), (paramsArray select _i)];
 	};
 
@@ -22,17 +22,17 @@ loadParams = {
 
 // server and players
 call loadParams;
-call compile preprocessFile "insurgency\modules\spawn\INS_fnc_spawn.sqf";
-call compile preprocessFile "insurgency\modules\revive\init_revive.sqf";
+//call compile preprocessFile "insurgency\modules\spawn\INS_fnc_spawn.sqf";
+//call compile preprocessFile "insurgency\modules\revive\init_revive.sqf";
 
 //server only
 if (isServer) then {
 	[] execVM "insurgency\init_insurgency.sqf";
-	[] execVM "insurgency\modules\vehicles\INS_veh_repair.sqf";
-	[] execVM "insurgency\modules\vehicles\INS_veh_respawn.sqf"; // respawn loop
+	//[] execVM "insurgency\modules\vehicles\INS_veh_repair.sqf";
+	//[] execVM "insurgency\modules\vehicles\INS_veh_respawn.sqf"; // respawn loop
 	//[] execVM "LV\ambientCombat.sqf";
 
-	[] spawn { 
+	/*[] spawn { 
 		onPlayerConnected {
 			diag_log format ["player connected: %1 (%2)", _name, _id];
 			sleep 20;
@@ -50,12 +50,12 @@ if (isServer) then {
 				_x setMarkerType markerType _x;
 			} forEach allMapMarkers;
 		};
-	};	
+	};*/
 };
 
 // players only
 if (!isDedicated) then {
-	[] execVM "insurgency\modules\players\groups\INS_groups.sqf";
-	[] execVM "insurgency\modules\cas\init_cas.sqf";
-	[] execVM "insurgency\modules\vehicles\INS_heli_fastRope.sqf";
+	//[] execVM "insurgency\modules\players\groups\INS_groups.sqf";
+	//[] execVM "insurgency\modules\cas\init_cas.sqf";
+	//[] execVM "insurgency\modules\vehicles\INS_heli_fastRope.sqf";
 };
