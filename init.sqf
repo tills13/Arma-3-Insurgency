@@ -27,7 +27,7 @@ call loadParams;
 
 //server only
 if (isServer) then {
-	[] execVM "insurgency\init_insurgency.sqf";
+	//[] execVM "insurgency\init_insurgency.sqf";
 	//[] execVM "insurgency\modules\vehicles\INS_veh_repair.sqf";
 	//[] execVM "insurgency\modules\vehicles\INS_veh_respawn.sqf"; // respawn loop
 	//[] execVM "LV\ambientCombat.sqf";
@@ -55,7 +55,7 @@ if (isServer) then {
 
 // players only
 if (!isDedicated) then {
-	//[] execVM "insurgency\modules\players\groups\INS_groups.sqf";
-	//[] execVM "insurgency\modules\cas\init_cas.sqf";
-	//[] execVM "insurgency\modules\vehicles\INS_heli_fastRope.sqf";
+	[] execVM "insurgency\modules\players\groups\INS_groups.sqf";
+	[] execVM "insurgency\modules\cas\init_cas.sqf";
+	[] execVM "insurgency\modules\vehicles\INS_heli_fastRope.sqf";
 };
