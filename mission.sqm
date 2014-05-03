@@ -101,7 +101,7 @@ class Mission
 				items=9;
 				class Item0
 				{
-					position[]={13784.778,16.562757,18324.857};
+					position[]={13850.064,19.780001,18614.615};
 					id=1;
 					side="WEST";
 					vehicle="B_Soldier_SL_F";
@@ -113,7 +113,7 @@ class Mission
 				};
 				class Item1
 				{
-					position[]={13788.669,16.691446,18314.912};
+					position[]={13853.955,19.780001,18604.67};
 					id=2;
 					side="WEST";
 					vehicle="B_Soldier_TL_F";
@@ -124,7 +124,7 @@ class Mission
 				};
 				class Item2
 				{
-					position[]={13778.669,16.466917,18314.912};
+					position[]={13843.955,19.780001,18604.67};
 					id=3;
 					side="WEST";
 					vehicle="B_soldier_AR_F";
@@ -135,7 +135,7 @@ class Mission
 				};
 				class Item3
 				{
-					position[]={13793.669,16.670034,18309.912};
+					position[]={13858.955,19.780001,18599.67};
 					id=4;
 					side="WEST";
 					vehicle="B_soldier_AR_F";
@@ -145,7 +145,7 @@ class Mission
 				};
 				class Item4
 				{
-					position[]={13773.669,16.741592,18309.912};
+					position[]={13838.955,19.780001,18599.67};
 					id=5;
 					side="WEST";
 					vehicle="B_soldier_AAR_F";
@@ -155,7 +155,7 @@ class Mission
 				};
 				class Item5
 				{
-					position[]={13798.669,16.532568,18304.912};
+					position[]={13863.955,19.780001,18594.67};
 					id=6;
 					side="WEST";
 					vehicle="B_soldier_LAT_F";
@@ -166,7 +166,7 @@ class Mission
 				};
 				class Item6
 				{
-					position[]={13768.669,16.685461,18304.912};
+					position[]={13833.955,19.780001,18594.67};
 					id=7;
 					side="WEST";
 					vehicle="B_medic_F";
@@ -176,7 +176,7 @@ class Mission
 				};
 				class Item7
 				{
-					position[]={13803.669,16.627108,18299.912};
+					position[]={13868.955,19.780001,18589.67};
 					id=8;
 					side="WEST";
 					vehicle="B_Soldier_A_F";
@@ -186,7 +186,7 @@ class Mission
 				};
 				class Item8
 				{
-					position[]={13784.948,16.593349,18320.914};
+					position[]={13850.234,19.780001,18610.672};
 					id=9;
 					side="WEST";
 					vehicle="B_Soldier_F";

@@ -1120,9 +1120,9 @@ INS_rev_fnct_onKeyPress = {
 	if (_key in (actionKeys 'showmap')) then {
 		//if isNull respawnCamera exitWith {};
 		INS_rev_GVAR_camMap = !INS_rev_GVAR_camMap;
-		openMap [INS_rev_GVAR_camMap,INS_rev_GVAR_camMap];
+		openMap [INS_rev_GVAR_camMap, INS_rev_GVAR_camMap];
 		if INS_rev_GVAR_camMap then {
-			mapAnimAdd [0,0.1,getPosATL INS_rev_GVAR_camPlayer];
+			mapAnimAdd [0, 0.1, getPosATL INS_rev_GVAR_camPlayer];
 			mapAnimCommit;
 		};
 	};

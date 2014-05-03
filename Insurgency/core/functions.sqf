@@ -1,3 +1,96 @@
+// ---------------------------------------
+//	core functions
+// ---------------------------------------
+
+INS_prepareZones = {
+	{
+		_markers = [];
+		_area = _x;
+		_areaClassName = _area select 0;
+		_areaName = _area select 1;
+		_areaPos = _area select 2;
+		_areaRad = (_area select 3) max (_area select 4);
+		_buildings = [_areaPos, _areaRad] call SL_fnc_findBuildings;
+
+		{
+			_building = _x;
+			_mpos = (getPos _building) call gridPos;
+			if (isNil "_mpos") then {
+				if (debugMode == 1) then { diag_log format["error: %1 - %2", _areaName, _building]; };
+			} else {
+				_mkr = str _mpos;
+				if (getMarkerPos _mkr select 0 == 0) then {
+					//_nearHouses = [(getPos (_roads select _i)), 100] call SO_fnc_findHouse;
+					
+					// do something
+
+					_markers = [_mpos, _markers] call INS_fnc_addMarkerForPosition;
+				};
+			};
+		} forEach _buildings;
+
+		//_m = createMarker [format ["box%1", random 1000], _areaPos];
+        //_m setMarkerShape "ELLIPSE";
+        //_m setMarkerSize [_areaRad, _areaRad];
+        //_m setMarkerColor "ColorRed";
+
+		_trigger = createTrigger ["EmptyDetector", _areaPos];
+		_trigger setTriggerActivation ["west", "present", true];
+		_trigger setTriggerArea [_areaRad, _areaRad, 0, false];
+		_trigger setTriggerStatements ["this", format["%1 call SL_fnc_createTriggers; %2 execVM 'insurgency\modules\ieds\INS_ieds.sqf';", _markers, _area], ""];
+		//_trigger setTriggerStatements ["this", format["%1 call SL_fnc_createTriggers; %2 execVM 'insurgency\modules\ai\INS_ai_unitHandler.sqf';", _markers, _area], ""];
+		missionNamespace setVariable [format["%1_trigger", _areaClassName], _trigger];
+	} forEach (call SL_fnc_urbanAreas);
+};
+
+// ---------------------------------------
+//	helper functions
+// ---------------------------------------
+
+addActionMP = {
+	private ["_object", "_title", "_script", "_args", "_showInWindow", "_hideOnUse", "_condition"];
+
+	_object = _this select 0;
+	_title = _this select 1;
+	_script = _this select 2;
+	_args = _this select 3;
+	_showInWindow = _this select 4;
+	_hideOnUse = _this select 5;
+	_condition = _this select 6;
+
+	_object addAction [_title, _script, _args, 1, _showInWindow, _hideOnUse, "", _condition];
+};
+
+addActionMPHelper = {
+	private ["_object", "_title", "_script", "_args", "_showInWindow", "_hideOnUse", "_condition"];
+
+	_object = _this select 0;
+	_title = _this select 1;
+	_script = _this select 2;
+	_args = _this select 3;
+	_showInWindow = _this select 4;
+	_hideOnUse = _this select 5;
+	_condition = _this select 6;
+
+	[[_object, _title, _script, _args, _showInWindow, _hideOnUse, _condition], "addActionMP", true, true] spawn BIS_fnc_MP;
+};
+
+INS_fnc_getCityNameFromPath = {
+	_path = _this;
+    _array = toArray _path;
+
+    _cityName = [];
+    _break = false;
+    for "_i" from (count _array - 1) to 0 step -1 do {
+        if ((_array select _i) != 47) then { _cityName = [(_array select _i)] + _cityName; }
+        else { _break = true; };
+
+        if (_break) exitWith {};
+    };
+
+    toString _cityName;
+};
+
 SL_fnc_urbanAreas = {
 	private ["_locations", "_cityTypes", "_randomLoc", "_x", "_i", "_cities"];
 	_i = 0;
@@ -50,61 +143,42 @@ SL_fnc_createTriggers = {
 	private ["_markers", "_pos", "_trigger"];
 
 	{
-		_pos = getMarkerPos _x;
-		_trigger = createTrigger ["EmptyDetector", _pos ];
+		pos = getMarkerPos _x;
+		_trigger = createTrigger ["EmptyDetector", pos];
 		_trigger setTriggerActivation ["ANY", "PRESENT", false];
 		_trigger setTriggerArea [50, 50, 0, true];
-		_trigger setTriggerStatements ["", "
-			_curColor = getMarkerColor _x;
+		_trigger setTriggerStatements ["", format["
+			_curColor = getMarkerColor '%1';
 
 			if ({(side _x) == east} count thisList == 0 and {(side _x) == west } count thisList >= 1) then {
-				if (_curColor == 'ColorRed' || _curColor == 'ColorYellow') then { _x setMarkerColor 'ColorGreen' };
+				if (_curColor == 'ColorRed' || _curColor == 'ColorYellow') then { '%1' setMarkerColor 'ColorGreen' };
 			};
 
 			if ({(side _x) == east} count thisList >= 1 and {(side _x) == west } count thisList == 0) then {
-				if (_curColor == 'ColorGreen') then { _x setMarkerColor 'ColorYellow' };
+				if (_curColor == 'ColorGreen') then { '%1' setMarkerColor 'ColorYellow' };
 			};
-		", ""];
+		", _x], ""];
 	} foreach _this;
 };
 
-SO_fnc_randomCity = {
-	private ["_randomLoc", "_cityName", "_cityPos", "_cityRadA", "_cityRadB", "_cityType", "_cityAngle", "_cityTypes", "_found"];
-
-	_cityName = "";
-
-	// Stuff we need
-	_locations = configfile >> "CfgWorlds" >> worldName >> "Names";
-	//_cityTypes = ["Name", "NameLocal", "NameVillage", "NameCity", "NameCityCapital"];
-	_cityTypes = ["NameVillage", "NameCity", "NameCityCapital"];
-	_found = 0;
-
-
-	while { _found == 0 } do {
-			_randomLoc = _locations call BIS_fnc_selectRandom;
-
-			// get city info
-			_cityName = getText(_randomLoc >> "name");
-			_cityPos = getArray(_randomLoc >> "position");
-			_cityRadA = getNumber(_randomLoc >> "radiusA");
-			_cityRadB = getNumber(_randomLoc >> "radiusB");
-			_cityType = getText(_randomLoc >> "type");
-			_cityAngle = getNumber(_randomLoc >> "angle");
-
-		if (_cityType in _cityTypes) then { _found = 1; };
-	};
-
-	[_randomLoc, _cityName, _cityPos, _cityRadA, _cityRadB, _cityType, _cityAngle]
-};
-
 SO_fnc_findHouse = {
-	private ["_found", "_houses", "_house", "_cpos", "_range", "_bpos"];
+	private ["_found", "_houses", "_cpos", "_range", "_bpos"];
 
 	_cpos = _this select 0;
 	_range = _this select 1;
 
 	_houses = nearestObjects [_cpos, ["house"], _range];
 	_houses
+};
+
+dl_fnc_velocityToSpeed = {
+	_vel = _this;
+	_dx = _vel select 0;
+	_dy = _vel select 1;
+	_dz = _vel select 2;
+
+	_speed = sqrt (_dx * _dx + _dy * _dy + _dz * _dz);
+	_speed
 };
 
 // ---------------------------------------
@@ -132,8 +206,7 @@ getRandomRelativePositionLand = {
 	_direction = random 360;
 	_position = [_target, _distance, _direction] call BIS_fnc_relPos;
 		
-	if(surfaceIsWater [_position select 0,_position select 1]) then
-	{
+	if(surfaceIsWater [_position select 0,_position select 1]) then {
 		// handy! http://forums.bistudio.com/showthread.php?93897-selectBestPlaces-(do-it-yourself-documentation)
 		_bestPositions = selectbestplaces [[_position select 0,_position select 1],200, "(1 + houses)",10,1];
 		
@@ -200,7 +273,7 @@ getSideOfRoadPosition = {
 	private ["_target", "_radius", "_roads", "_road", "_position"];
 	
 	_target = _this select 0;
-	_radius = if(count _this > 1) then {_this select 1} else {100;};
+	_radius = if(count _this > 1) then { _this select 1 } else { 100 };
 	
 	_roads = _target nearRoads _radius;
 		
@@ -281,7 +354,7 @@ createIntel = {
 };
 
 // ---------------------------------------
-//	other functions
+//	marker functions
 // ---------------------------------------
 
 INS_fnc_addMarkerForPosition = {
@@ -313,20 +386,4 @@ INS_fn_addMarkerIfNotAlready = {
 		_mkr setMarkerColor "ColorRed";
 		_mkr setMarkerAlphaLocal 0.5;
 	};	
-};
-
-INS_fnc_getCityNameFromPath = {
-	_path = _this;
-    _array = toArray _path;
-
-    _cityName = [];
-    _break = false;
-    for "_i" from (count _array - 1) to 0 step -1 do {
-        if ((_array select _i) != 47) then { _cityName = [(_array select _i)] + _cityName; }
-        else { _break = true; };
-
-        if (_break) exitWith {};
-    };
-
-    toString _cityName;
 };
