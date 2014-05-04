@@ -14,31 +14,26 @@ INS_prepareZones = {
 
 		{
 			_building = _x;
-			_mpos = (getPos _building) call gridPos;
+			_mpos = (getPos _building) call dl_fnc_gridPos;
 			if (isNil "_mpos") then {
 				if (debugMode == 1) then { diag_log format["error: %1 - %2", _areaName, _building]; };
 			} else {
-				_mkr = str _mpos;
-				if (getMarkerPos _mkr select 0 == 0) then {
-					//_nearHouses = [(getPos (_roads select _i)), 100] call SO_fnc_findHouse;
-					
-					// do something
-
-					_markers = [_mpos, _markers] call INS_fnc_addMarkerForPosition;
-				};
+				_marker = [_mpos] call dl_fnc_addGridMarkerIfNotAlready;
+				if (!isNil "_marker") then { _markers = _markers + [_marker]; }; // if nil then already added
 			};
 		} forEach _buildings;
 
 		_m = createMarker [format ["box%1", random 1000], _areaPos];
         _m setMarkerShape "ELLIPSE";
+        _m setMarkerAlpha 0.1;
         _m setMarkerSize [_areaRad + 300, _areaRad + 300];
         _m setMarkerColor "ColorRed";
 
 		_trigger = createTrigger ["EmptyDetector", _areaPos];
 		_trigger setTriggerActivation ["west", "present", true];
 		_trigger setTriggerArea [_areaRad + 300, _areaRad + 300, 0, false];
-		//_trigger setTriggerStatements ["this", format["%1 call SL_fnc_createTriggers; %2 execVM 'insurgency\modules\ieds\INS_ieds.sqf';", _markers, _area], ""];
-		_trigger setTriggerStatements ["this", format["%1 call SL_fnc_createTriggers; %2 execVM 'insurgency\modules\ai\INS_ai_unitHandler.sqf';", _markers, _area], ""];
+		_trigger setTriggerStatements ["this", format["%1 call SL_fnc_createTriggers; %2 execVM 'insurgency\modules\ai\INS_ai_unitHandler.sqf'; %2 execVM 'insurgency\modules\ieds\INS_ieds.sqf';", _markers, _area], ""];
+
 		missionNamespace setVariable [format["%1_trigger", _areaClassName], _trigger];
 	} forEach (call SL_fnc_urbanAreas);
 };
@@ -47,7 +42,7 @@ INS_prepareZones = {
 //	helper functions
 // ---------------------------------------
 
-addEventHandlerMP = {
+dl_fnc_addEventHandlerMPHelper = {
 	_object = _this select 0;
 	_type = _this select 1;
 	_action = _this select 2;
@@ -55,15 +50,15 @@ addEventHandlerMP = {
 	_object addEventHandler [_type, _action];
 };
 
-addEventHandlerMPHelper = {
+dl_fnc_addEventHandlerMP = {
 	_object = _this select 0;
 	_type = _this select 1;
 	_action = _this select 2;
 
-	[[_object, _type, _action], "addEventHandlerMP", true, true] spawn BIS_fnc_MP;
+	[[_object, _type, _action], "dl_fnc_addEventHandlerMPHelper", true, true] spawn BIS_fnc_MP;
 };
 
-addActionMP = {
+dl_fnc_addActionMPHelper = {
 	private ["_object", "_title", "_script", "_args", "_showInWindow", "_hideOnUse", "_condition"];
 
 	_object = _this select 0;
@@ -77,7 +72,7 @@ addActionMP = {
 	_object addAction [_title, _script, _args, 1, _showInWindow, _hideOnUse, "", _condition];
 };
 
-addActionMPHelper = {
+dl_fnc_addActionMP = {
 	private ["_object", "_title", "_script", "_args", "_showInWindow", "_hideOnUse", "_condition"];
 
 	_object = _this select 0;
@@ -88,10 +83,22 @@ addActionMPHelper = {
 	_hideOnUse = _this select 5;
 	_condition = _this select 6;
 
-	[[_object, _title, _script, _args, _showInWindow, _hideOnUse, _condition], "addActionMP", true, true] spawn BIS_fnc_MP;
+	[[_object, _title, _script, _args, _showInWindow, _hideOnUse, _condition], "dl_fnc_addActionMPHelper", true, true] spawn BIS_fnc_MP;
 };
 
-INS_fnc_getCityNameFromPath = {
+dl_fnc_hintMP = {
+	_message = _this select 0;
+	_obj = _this select 1;
+	_jip = _this select 2;
+
+	[_message, "dl_fnc_hintMPHelper", _obj, _jip] spawn BIS_fnc_MP;
+};
+
+dl_fnc_hintMPHelper = {
+	hint _this;
+};
+
+dl_fnc_getCityNameFromPath = {
 	_path = _this;
     _array = toArray _path;
 
@@ -105,6 +112,16 @@ INS_fnc_getCityNameFromPath = {
     };
 
     toString _cityName;
+};
+
+dl_fnc_velocityToSpeed = {
+	_vel = _this;
+	_dx = _vel select 0;
+	_dy = _vel select 1;
+	_dz = _vel select 2;
+
+	_speed = sqrt (_dx * _dx + _dy * _dy + _dz * _dz);
+	_speed
 };
 
 SL_fnc_urbanAreas = {
@@ -125,7 +142,7 @@ SL_fnc_urbanAreas = {
 		_cityType = getText(_cityClassName >> "type");
 		_cityAngle = getNumber(_cityClassName >> "angle");
 		if (_cityType in _cityTypes) then {
-			_cities set [_i, [((str _cityClassName) call INS_fnc_getCityNameFromPath), ((str _cityClassName) call INS_fnc_getCityNameFromPath), _cityPos, _cityRadA, _cityRadB, _cityType, _cityAngle]];
+			_cities set [_i, [((str _cityClassName) call dl_fnc_getCityNameFromPath), ((str _cityClassName) call dl_fnc_getCityNameFromPath), _cityPos, _cityRadA, _cityRadB, _cityType, _cityAngle]];
 			_i = _i + 1;
 		};
 	};
@@ -177,31 +194,11 @@ SL_fnc_createTriggers = {
 	} foreach _this;
 };
 
-SO_fnc_findHouse = {
-	private ["_found", "_houses", "_cpos", "_range", "_bpos"];
-
-	_cpos = _this select 0;
-	_range = _this select 1;
-
-	_houses = nearestObjects [_cpos, ["house"], _range];
-	_houses
-};
-
-dl_fnc_velocityToSpeed = {
-	_vel = _this;
-	_dx = _vel select 0;
-	_dy = _vel select 1;
-	_dz = _vel select 2;
-
-	_speed = sqrt (_dx * _dx + _dy * _dy + _dz * _dz);
-	_speed
-};
-
 // ---------------------------------------
 //	position functions
 // ---------------------------------------
 
-gridPos = {
+dl_fnc_gridPos = {
 	_pos = _this;
 
 	_x = _pos select 0;
@@ -307,37 +304,24 @@ getSideOfRoadPosition = {
 //	intel functions
 // ---------------------------------------
 
-pickedUpIntel = { 
-	hint format["New intel received on the location of an ammo cache. A marker has been added to the map."] 	
-};
-
-intelPickup = {
-    private ["_intelItems", "_intel", "_used", "_ID", "_cases", "_case", "_cache"];
+INS_fnc_intelPickup = {
+    private ["_intelItems", "_intel", "_used", "_aid", "_cases", "_case", "_cache"];
 	
-	_intelItems = ["Land_Laptop_unfolded_F", "Land_HandyCam_F", "Land_SatellitePhone_F", "Land_SurvivalRadio_F", "Box_East_Ammo_F", "Land_Suitcase_F"];
 	_intel = _this select 0;
 	_used = _this select 1;
-	_ID = _this select 2;
-	_intel removeAction _ID;
-	
-	_cases = nearestObjects[getPos player, _intelItems, 10];
-	
-	if (count _cases == 0) exitWith {};
-	
-	_case = _cases select 0;
-	
-	if isNull _case exitWith {};
-	deleteVehicle _case;
+	_aid = _this select 2;
+
+	_intel removeAction _aid;
+	deleteVehicle _intel;
 	
 	_cache = cache;
-	
 	if (isNil "_cache") exitWith {};
 
-	[nil, "pickedUpIntel", true, false] spawn BIS_fnc_MP;
-	[_cache, "createIntel", false, false] spawn BIS_fnc_MP;
+	["New intel received on the location of an ammo cache. A marker has been added to the map.", true, true] call dl_fnc_hintMP;
+	[_cache, "INS_fnc_createIntel", false, false] spawn BIS_fnc_MP; // server only
 };
 
-createIntel = { 
+INS_fnc_createIntel = { 
     private ["_i", "_sign", "_sign2", "_radius", "_cache", "_pos", "_mkr", "_range", "_intelRadius"];
     
     _cache = cache;
@@ -351,7 +335,7 @@ createIntel = {
 	_sign = 1; 
 	
 	if (random 100 > 50) then { _sign = -1; };
-	_sign2 = 1; 
+	_sign2 = 1;
 	
 	if (random 100 > 50) then { _sign2 = -1; };
 	_radius = _intelRadius - _i * 50;
@@ -369,37 +353,38 @@ createIntel = {
 	INS_marker_array = INS_marker_array + [_mkr];
 };
 
+unitRanks = ["PRIVATE", "CORPORAL", "SERGEANT", "LIEUTENANT", "CAPTAIN", "MAJOR", "COLONEL"];
+INS_fnc_getRankModifier = {
+	_rank = _this;
+
+	for "_i" from 0 to count unitRanks - 1 do { if (_rank == (unitRanks select _i)) exitWith { _rank = _i }; };
+
+	_rank
+};
+
 // ---------------------------------------
 //	marker functions
 // ---------------------------------------
 
-INS_fnc_addMarkerForPosition = {
+dl_fnc_addGridMarkerForPosition = {
 	_pos = _this select 0;
-	_markers = _this select 1;
 
-	_mkr = str _pos;
 	_mkr = createMarkerLocal[_mkr, _pos];
 	_mkr setMarkerShapeLocal "RECTANGLE";
 	_mkr setMarkerTypeLocal "SOLID";
 	_mkr setMarkerSizeLocal [50, 50];
 	_mkr setMarkerColor "ColorRed";
 	_mkr setMarkerAlphaLocal 0.5;
-	_markers = _markers + [_mkr];
 
-	_markers
+	_marker
 };
 
-INS_fn_addMarkerIfNotAlready = {
+dl_fnc_addGridMarkerIfNotAlready = {
 	_pos = _this;
-	_mpos = _pos call gridPos;
+	_mpos = _pos call dl_fnc_gridPos;
 
 	_mkr = str _mpos;
-	if (getMarkerPos _mkr select 0 == 0) then {
-		_mkr = createMarkerLocal[_mkr, _mpos];
-		_mkr setMarkerShapeLocal "RECTANGLE";
-		_mkr setMarkerTypeLocal "SOLID";
-		_mkr setMarkerSizeLocal [50, 50];
-		_mkr setMarkerColor "ColorRed";
-		_mkr setMarkerAlphaLocal 0.5;
-	};	
+	if (getMarkerPos _mkr select 0 == 0) then { _mkr = _mpos call dl_fnc_addGridMarkerForPosition } else { _mkr = nil };
+
+	_mkr
 };

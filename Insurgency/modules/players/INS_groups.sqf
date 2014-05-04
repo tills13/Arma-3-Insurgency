@@ -12,7 +12,7 @@ INS_groups_joinGroup = {
 };
 
 INS_groups_dismissAI = {
-	(group player) call INS_fn_dismissAIFromGroup;
+	(group player) call dl_fnc_dismissAIFromGroup;
 	hint parseText format ["Dismissed AI in group <t color='#6775cf'>%1</t>", group player];
 	[nil, player] call INS_groups_removeActions;
 };
@@ -72,7 +72,7 @@ INS_groups_addActions = {
 
 	INS_groups_title = player addAction["<t color='#6775cf'>Group Options:</t>", "", nil, 1.05, false, false];
 	INS_groups_joinGroup = player addAction["  Join Group", INS_groups_joinGroup, nil, 1.05, false, false, "", "(cursorTarget distance _this) < 20 && side cursorTarget == side _this && !(group player == group cursorTarget)"];
-	INS_groups_dismissAI = player addAction["  Dismiss AI", INS_groups_dismissAI, nil, 1.05, false, false, "", "count ((group _this) call INS_fn_getAIinGroup) != 0 && (leader group _this == _this)"];
+	INS_groups_dismissAI = player addAction["  Dismiss AI", INS_groups_dismissAI, nil, 1.05, false, false, "", "count ((group _this) call dl_fnc_getAIinGroup) != 0 && (leader group _this == _this)"];
 	INS_groups_leaveGroup = player addAction["  Leave Group", INS_groups_leaveGroup, nil, 1.05, false, false, "", "(count units group _this) > 1"];
 	INS_groups_leadGroup = player addAction["  Become Group Lead", INS_groups_leadGroup, nil, 1.05, false, false, "", "(count units group _this) > 1 && leader group _this != _this && !(isPlayer leader group _this)"];
 	INS_groups_requestLead = player addAction["  Request Group Lead", {

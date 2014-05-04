@@ -38,7 +38,6 @@ switch(_cfg) do
 				_type = _details select 4;
 				_itemInfo = _details select 5;
 				_base = configName(inheritsFrom (configFile >> "CfgWeapons" >> _class));
-				//diag_log format["DEBUG - %1 :: %2",_class,_base];
 				
 				_str = [_class,4] call VAS_fnc_KRON_StrLeft;
 				

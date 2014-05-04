@@ -284,7 +284,6 @@ INS_rev_fnct_getAllPlayers = {
 		};
 	} forEach _playableUnits;
 	
-	diag_log ("all players = " + str _result);
 	_result
 };
 
@@ -303,8 +302,7 @@ INS_rev_fnct_getAlivePlayers = {
 			_result = _result + [_x];
 		};
 	} forEach _allPlayers;
-
-	diag_log ("alive players = " + str _result);
+	
 	_result
 };
 
@@ -1259,13 +1257,10 @@ INS_rev_fnct_onMouseWheel = {
 	};
 };
 
-// On killed event handler
-INS_rev_fnct_onKilled = {
-	diag_log "on killed";
+INS_rev_fnct_onKilled = { // On killed event handler
 	if (_this select 0 != player) exitWith {};
 	
-	// Terminate existing thread
-	terminate INS_rev_thread_exec_wait_revive;
+	terminate INS_rev_thread_exec_wait_revive; // Terminate existing thread
 	
 	player setVariable ["INS_rev_PVAR_is_unconscious", false, true];
 	player setVariable ["INS_rev_PVAR_is_dead", false, true];
@@ -1274,12 +1269,10 @@ INS_rev_fnct_onKilled = {
 		INS_rev_GVAR_is_lifeTime_over = false;
 	};
 	
-	// Spawn new thread
-	INS_rev_thread_exec_wait_revive = [] spawn INS_rev_fnct_onKilled_process;
+	INS_rev_thread_exec_wait_revive = [] spawn INS_rev_fnct_onKilled_process; // Spawn new thread
 };
 
-// Process onKilled event
-INS_rev_fnct_onKilled_process = {
+INS_rev_fnct_onKilled_process = { // Process onKilled event
 	private ["_position_before_dead", "_altitude_ATL_before_dead", "_direction_before_dead", "_magazines_before_dead", "_weapons_before_dead", "_player", "_condition", "_loadout", "_who_taking_care_of_injured"];
 
 	_position_before_dead = getPos INS_rev_GVAR_body_before_dead;

@@ -11,14 +11,13 @@ INS_spawn_chooseSpawnPos = {
 
 	_marker = potentialSpawns call BIS_fnc_selectRandom;
 
-	diag_log format ["spawning at %1 (%2)", _marker, getMarkerPos _marker];
+	if (debugMode == 1) then { diag_log format ["spawning at %1 (%2)", _marker, getMarkerPos _marker]; };
 	(getMarkerPos _marker)
 };
 
 INS_spawn_move = {
 	_pos = _this select 0;
 	_objectsToMove = _this select 1;
-	diag_log str _pos;
 	FLAG setPos _pos;
 
 	{

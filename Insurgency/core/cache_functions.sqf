@@ -1,17 +1,7 @@
-cacheDestroyedText = {
-	hint parseText format["<t color='#7ba151'>%1/%2</t> ammo caches have been destroyed", INS_west_score, INS_numCaches];
-};
-
-gameOverText = {
-	hint "All ammo caches have been destroyed";
-};
-
 onCacheDestroyed = {
 	_cache = _this select 0;
 	_killer = _this select 1;
 	_legit = true;
-
-	diag_log format["%1 %2", _cache, _killer];
 
 	switch (side _killer) do { // check who killed the box
 		case west: { INS_west_score = INS_west_score + 1; };
@@ -29,12 +19,12 @@ onCacheDestroyed = {
 			for "_i" from 0 to random 10 do { "M_Mo_82mm_AT_LG" createVehicle _pos; sleep 1.0; };
 			deleteVehicle cache;
 			
-			[[], "cacheDestroyedText", true, false] spawn BIS_fnc_MP;
+			[(parseText format["<t color='#7ba151'>%1/%2</t> ammo caches have been destroyed"), INS_west_score, INS_numCaches], true, false] call dl_fnc_hintMP;
 
 			if (INS_west_score == INS_numCaches) then { // game over
-				[[], "gameOverText", true, true] spawn BIS_fnc_MP;
-				
+				["All ammo caches have been destroyed", true, true] call dl_fnc_hintMP;
 				sleep 20;
+
 				endMission "END1";
 			} else {
 				{deleteMarker _x} forEach INS_marker_array;

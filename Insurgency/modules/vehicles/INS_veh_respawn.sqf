@@ -1,7 +1,3 @@
-respawnMessage = { 
-	hint parseText _this;
-};
-
 INS_veh_updateLocation = {
 	private ["_vehicle"];
 
@@ -10,7 +6,7 @@ INS_veh_updateLocation = {
 	_newDir = _this select 2;
 	_vehicle setVariable ["RES_ORIG_LOC", _newPos];
 	_vehicle setVariable ["RES_ORIG_DIR", _newDir];
-	diag_log format ["updated %1's location to %2 (%3)", vehicleVarName _vehicle, _newPos, _newDir];
+	if (debugMode == 1) then { diag_log format ["updated %1's location to %2 (%3)", vehicleVarName _vehicle, _newPos, _newDir]; };
 };
 
 INS_veh_initParams = { // should be executed on every client
@@ -45,16 +41,16 @@ INS_veh_addVehtoArray = {
 	_vehicle setVariable ["RES_ORIG_DIR", getDir _vehicle];
 
 	[[_vehicle, _name, _init], "INS_veh_initParams", true, true] spawn BIS_fnc_MP; // init parameters
-	diag_log format["INS_VEH_RESPAWN: adding %1 to respawn array", _name];
+	if (debugMode == 1) then { diag_log format["INS_VEH_RESPAWN: adding %1 to respawn array", _name]; };
+
 	vehicleArray = vehicleArray + [_vehicle];
-	publicVariable "vehicleArray";	
 };
 
 waitUntil { !isNil "INS_params_doneInit"; };
 if (isNil "vehicleArray") then { vehicleArray = []; publicVariable "vehicleArray"; };
 if (isServer) then { // server loop
 	if (count _this == 0) then { // called script to loop
-		diag_log format["INS_VEH_RESPAWN: starting respawn loop"];
+		if (debugMode == 1) then { diag_log format["INS_VEH_RESPAWN: starting respawn loop"]; };
 		while { true } do {
 			{
 				_veh = _x;
@@ -89,9 +85,11 @@ if (isServer) then { // server loop
 					_origDir = _veh getVariable "RES_ORIG_DIR";
 
 					_reason = if (_abandoned) then {"abandoned"} else {"destroyed"};
-					[format["respawning %1 vehicle <t color = '#ff6347'>%2</t>", _reason, _name], "respawnMessage", true] spawn BIS_fnc_MP;
+					[format["respawning %1 vehicle <t color = '#ff6347'>%2</t>", _reason, _name], true, true] call dl_fnc_hintMP;
+
 					vehicleArray = vehicleArray - [_veh];
 					deleteVehicle _veh;
+					
 					sleep 3;
 
 					_veh = _type createVehicle _origLoc;

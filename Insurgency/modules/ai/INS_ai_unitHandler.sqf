@@ -1,27 +1,24 @@
-private ["_group"];
-
 if (isServer) then {
 	_area = _this;
 	_trigger = (missionNamespace getVariable format["%1_trigger", (_area select 0)]);
 
-	// args: [trigger, [house, area, vehicles, static]]
+	// args: [trigger, [spawned infantry, unspawned infantry, vehicles, static]]
 	INS_ai_fnc_cacheUnits = {
 		_trigger = _this select 0;
 		_area = _this select 1;
 		_cache = _this select 2;
+		_unspawnedinfantry = _this select 0;
 
-		_patrols = _cache select 0;
-		_lightvehicles = _cache select 1;
-		_statics = _cache select 2;
+		_spawnedinfantry = _cache select 1;
+		_lightvehicles = _cache select 2;
+		_statics = _cache select 3;
 
-		_infcache = _patrols call INS_fn_cacheInfantry;
-		//_hpcache = _hpatrols call INS_fn_cacheHousePatrols;
-		//_apcache = _patrols call INS_fn_cacheAreaPatrols;
-		_lvcache = _lightvehicles call INS_fn_cacheLightVehicles;
-		_spcache = _statics call INS_fn_cacheStaticPlacements;
+		_infcache = _patrols call INS_fnc_cacheInfantry;
+		_lvcache = _lightvehicles call INS_fnc_cacheLightVehicles;
+		_spcache = _statics call INS_fnc_cacheStaticPlacements;
 
 		_trigger setVariable [format["%1_cache", (_area select 0)], true];
-		_trigger setVariable [format["%1_cache_p", (_area select 0)], _patrols];
+		_trigger setVariable [format["%1_cache_in", (_area select 0)], (_infcache + _unspawnedinfantry)];
 		_trigger setVariable [format["%1_cache_lv", (_area select 0)], _lvcache];
 		_trigger setVariable [format["%1_cache_sp", (_area select 0)], _spcache];
 	};
@@ -38,33 +35,31 @@ if (isServer) then {
 		_areaPos = _area select 2;
 		_areaRad = _area select 3;
 
-		_patrols = [];
+		_ipositions = [];
 		_lightvehicles = [];
 		_statics = [];
 		if (!isNil "_areacache") then {  // load from cache
-			_patrols = _trigger getVariable format["%1_cache_p", (_area select 0)];
+			_ipositions = _trigger getVariable format["%1_cache_in", (_area select 0)];
 			_lightvehicles = _trigger getVariable format["%1_cache_lv", (_area select 0)];
 			_statics = _trigger getVariable format["%1_cache_sp", (_area select 0)];
 
-			_patrols = [_patrols] call INS_fn_spawnInfantryCached;
-			_lightvehicles = [_lightvehicles] call INS_fn_spawnLightVehiclesCached;
-			_statics = [_statics] call INS_fn_spawnStaticUnitsCached;
+			_lightvehicles = [_lightvehicles] call INS_fnc_spawnLightVehiclesCached;
+			_statics = [_statics] call INS_fnc_spawnStaticUnitsCached;
 		} else {
-			_hppositions = [_areaClassName, _areaPos, _areaRad] call INS_fn_genHousePatrols;
-			_appositions = [_areaClassName, _areaPos, _areaRad] call INS_fn_genAreaPatrols;
-			_lightvehicles = [_areaClassName, _areaPos, _areaRad] call INS_fn_spawnLightVehicles;
-			_statics = [_areaClassName, _areaPos, _areaRad] call INS_fn_spawnStaticUnits;
+			_ipositions = [_areaClassName, _areaPos, _areaRad] call INS_fnc_genInfantryPositions;	
+			_lightvehicles = [_areaClassName, _areaPos, _areaRad] call INS_fnc_spawnLightVehicles;
+			_statics = [_areaClassName, _areaPos, _areaRad] call INS_fnc_spawnStaticUnits;
 		};
 
-		[_hppositions + _appositions, _lightvehicles, _statics]
+		[_ipositions, [], _lightvehicles, _statics]
 	};
 
 	waitUntil { triggerActivated _trigger };
 	_timeStart = time;
 
-	diag_log format["%1 zone activated", _area select 0];
+	if (debugMode == 1) then { diag_log format["%1 zone activated", _area select 0]; };
 	_cache = [_trigger, _area] call INS_ai_fnc_spawnUnits;
-	_cache = [[], [], []];
+	_infantry = _cache select 0;
 
 	while { triggerActivated _trigger } do {
 		_playableUnits = playableUnits;
@@ -76,21 +71,20 @@ if (isServer) then {
 			_pos = _x select 1;
 
 			{
-				if (getPos _x distance _pos < 200) then {
-					_patrol = [_size, _pos] call INS_fn_spawnGroup;
-					_mpatrols = _cache select 0;
+				if ((getPos _x distance _pos < 200) or (dl)) then {
+					_patrol = [_size, _pos] call INS_fnc_spawnGroup;
+					_mpatrols = _cache select 1;
 					_mpatrols = _mpatrols + [_patrol];
-					_cache set [0, _mpatrols];
+					_cache set [1, _mpatrols];
 
-					_unspawned set [_index, 0];
-					_unspawned = _unspawned - [0];
+					_infantry set [_index, 0];
+					_infantry = _infantry - [0];
 				};
 			} forEach _playableUnits;
 
 			_index = _index + 1;
-		} forEach _unspawned;
+		} forEach _infantry;
 
-		diag_log str _cache;
 		if (time - _timeStart > 60) then {}; // one minute
 		if (time - _timeStart > 300) then {}; // five minutes
 		if (time - _timeStart > 600) then {}; // ten minutes 	
@@ -98,13 +92,7 @@ if (isServer) then {
 		sleep 1;
 	};
 
-	diag_log format["%1 zone deactivated (%2)", _area select 0, time - _timeStart];
+	if (debugMode == 1) then { diag_log format["%1 zone deactivated (%2)", _area select 0, time - _timeStart]; };
 
-	//[_trigger, _area, _cache] call INS_ai_fnc_cacheUnits;
-
-	/* we should only load if the unit is either
-	 * visible or within 200 meters. 
-	 *
-	 *
-	 */
+	[_trigger, _area, _cache] call INS_ai_fnc_cacheUnits;
 };

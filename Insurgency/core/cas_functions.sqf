@@ -1,18 +1,14 @@
-INS_CAS_pilotTypes = ["B_Pilot_F", "B_helicrew_F"];
-INS_CAS_airCraftTypes = ["B_Plane_CAS_01_F", "O_Plane_CAS_02_F", "I_Plane_Fighter_03_CAS_F", "I_Plane_Fighter_03_AA_F"];
-
 INS_CAS_trackAircraft = {
 	private ["_plane"];
 	_plane = _this;
 
-	_markerName = format ["track%1",random 99999];
-	_marker = createMarker[_markerName, [0, 0, 0]];
-	_markerName setMarkerType "mil_triangle";
-	_markerName setMarkerColor "ColorBLUFOR";
+	_marker = createMarker[format ["track%1",random 99999], [0, 0, 0]];
+	_marker setMarkerType "mil_triangle";
+	_marker setMarkerColor "ColorBLUFOR";
 
 	while { !isNull _plane && alive _plane } do {
-		_markerName setMarkerDir (getDir _plane);
-		_markerName setMarkerPos (getPos _plane);
+		_marker setMarkerDir (getDir _plane);
+		_marker setMarkerPos (getPos _plane);
 		sleep 0.1;
 	};
 
@@ -21,9 +17,10 @@ INS_CAS_trackAircraft = {
 
 INS_CAS_spawnPilot = {
 	private ["_pos", "_squadron", "_type", "_pilot"];
+	_pilotTypes = ["B_Pilot_F", "B_helicrew_F"];
 	_pos = _this select 0;
 	_squadron = createGroup west;
-	_type = INS_CAS_pilotTypes call BIS_fnc_selectRandom;
+	_type = _pilotTypes call BIS_fnc_selectRandom;
 
 	_pilot = _squadron createUnit ["B_Pilot_F", _pos, [], 0, "FORM"];	
 
@@ -36,7 +33,8 @@ INS_CAS_spawnPilot = {
 
 INS_CAS_spawnAircraft = {
 	private ["_type", "_position", "_target", "_vehicle"];
-	_type = if ((_this select 0) != "") then { _this select 0 } else { INS_CAS_airCraftTypes call BIS_fnc_selectRandom };
+	_airCraftTypes = ["B_Plane_CAS_01_F", "O_Plane_CAS_02_F", "I_Plane_Fighter_03_CAS_F", "I_Plane_Fighter_03_AA_F"];
+	_type = if ((_this select 0) != "") then { _this select 0 } else { _airCraftTypes call BIS_fnc_selectRandom };
 	_position = _this select 1;
 	_target = _this select 2;
 
@@ -145,8 +143,10 @@ INS_CAS_casTimeOut = {
 INS_CAS_finishCAS = {
 	player removeAction INS_cancel_AID;
 	call INS_CAS_removeMenuItems;
+	
 	INS_CAS_casRequest = false; publicVariable "INS_CAS_casRequest";
 	INS_CAS_waitCAS = false; publicVariable "INS_CAS_waitCAS";
+
 	deleteMarker "CAS_TARGET";
 	deleteMarker "CAS_ORIG";	
 };

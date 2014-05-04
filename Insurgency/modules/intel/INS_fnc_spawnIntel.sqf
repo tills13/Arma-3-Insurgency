@@ -1,12 +1,4 @@
 if (isServer) then {
-	laptop = [];
-	publicVariable "laptop";
-
-	addPickupActionMP = {
-		_intel = _this;
-		_intel addaction ["Gather Intel", "call intelPickup"];
-	};
-
 	[] spawn {
 		_cities = call SL_fnc_urbanAreas;
 		_intelItems = ["Land_Laptop_unfolded_F", "Land_HandyCam_F", "Land_SatellitePhone_F", "Land_SurvivalRadio_F", "Box_East_Ammo_F", "Land_Suitcase_F"];
@@ -21,7 +13,6 @@ if (isServer) then {
 			_cityAngle = _x select 6;
 
 			if(_cityRadB > _cityRadA) then { _cityRadA = _cityRadB; };
-
 			_cacheBuildings = [_cityPos, _cityRadA] call SL_fnc_findBuildings;
 
 			for "_i" from 1 to INS_intelItems step 1 do {
@@ -31,7 +22,7 @@ if (isServer) then {
 					_intelPosition = [_targetBuilding] call getRandomBuildingPosition; // Take the random building from the above result and pass it through gRBP function to get a single cache position
 
 					_laptop = createVehicle [_selectedItem, _intelPosition, [], 0, "None"];
-					[_laptop, "addPickupActionMP", true, true] spawn BIS_fnc_MP;
+					[_laptop, "Gather Intel", INS_fnc_intelPickup, [], true, true, "true"] call dl_fnc_addActionMP; // might not work - test pls
 					_laptop setPos _intelPosition; // Move the intel to the above select position
 
 					if (debugMode == 1) then {
@@ -40,9 +31,6 @@ if (isServer) then {
 			            _m setMarkerType "mil_dot";
 			            _m setMarkerColor "ColorRed";
 					};
-
-					laptop = laptop + [_laptop];
-					publicVariable "laptop";
 				};
 			};
 		} forEach _cities;

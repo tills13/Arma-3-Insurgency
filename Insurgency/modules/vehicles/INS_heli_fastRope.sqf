@@ -75,7 +75,7 @@ INS_heli_fnc_pilotCanFastRope = {
 	_return = false;
 	if (_veh != player) then {
 		_crew = crew _veh;
-		_aiCrew = _crew call INS_fn_getAIArray;
+		_aiCrew = _crew call dl_fnc_getAIArray;
 
 		if (count _aiCrew > 0) exitWith { _return = true };
 	};
@@ -124,7 +124,7 @@ INS_heli_fnc_fastRope = {
 	if (driver vehicle player == player) then {
 		_veh = vehicle player;
 		_crew = crew _veh;
-		_aiCrew = _crew call INS_fn_getAIArray;
+		_aiCrew = _crew call dl_fnc_getAIArray;
 		_newPilot = _aiCrew call BIS_fnc_selectRandom;
 		[_newPilot] join grpNull; // so he doesn't leave, too.
 

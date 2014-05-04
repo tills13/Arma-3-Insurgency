@@ -8,12 +8,10 @@ enableSaving [false, false];
 #include "insurgency\core\cache_functions.sqf"
 
 loadParams = {
-	if (isServer) then { diag_log "Server : ------------------"};
-	if (!isDedicated) then { diag_log "Player : ------------------" };
+	diag_log "Params : ------------------";
 	for [{_i = 0}, {_i < count(paramsArray)}, {_i = _i + 1}] do {
 		_param = (configName ((missionConfigFile >> "Params") select _i));
 		_value = (paramsArray select _i);
-		diag_log format["%1 = %2", _param, _value];
 		call compile format ["%1 = %2;", (configName ((missionConfigFile >> "Params") select _i)), (paramsArray select _i)];
 	};
 
@@ -35,7 +33,7 @@ if (isServer) then {
 
 // players only
 if (!isDedicated) then 	{
-	[] execVM "insurgency\modules\players\groups\INS_groups.sqf";
+	[] execVM "insurgency\modules\players\INS_groups.sqf";
 	[] execVM "insurgency\modules\cas\init_cas.sqf";
 	[] execVM "insurgency\modules\vehicles\INS_heli_fastRope.sqf";
 };
