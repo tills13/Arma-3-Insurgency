@@ -7,7 +7,7 @@ _group setSpeedMode "LIMITED";
 _group setCombatMode "YELLOW";
 _group setFormation (["STAG COLUMN", "WEDGE", "ECH LEFT", "ECH RIGHT", "VEE", "DIAMOND"] call BIS_fnc_selectRandom);
 
-_count = 4 + (floor random 3) + (floor (_distance / 100)); // number of waypoints
+_count = 1; // number of waypoints
 _waypoints = [];
 _slack = _distance / 5.5;
 if (_slack < 20) then { _slack = 20 };

@@ -29,16 +29,16 @@ INS_prepareZones = {
 			};
 		} forEach _buildings;
 
-		//_m = createMarker [format ["box%1", random 1000], _areaPos];
-        //_m setMarkerShape "ELLIPSE";
-        //_m setMarkerSize [_areaRad, _areaRad];
-        //_m setMarkerColor "ColorRed";
+		_m = createMarker [format ["box%1", random 1000], _areaPos];
+        _m setMarkerShape "ELLIPSE";
+        _m setMarkerSize [_areaRad + 300, _areaRad + 300];
+        _m setMarkerColor "ColorRed";
 
 		_trigger = createTrigger ["EmptyDetector", _areaPos];
 		_trigger setTriggerActivation ["west", "present", true];
-		_trigger setTriggerArea [_areaRad, _areaRad, 0, false];
-		_trigger setTriggerStatements ["this", format["%1 call SL_fnc_createTriggers; %2 execVM 'insurgency\modules\ieds\INS_ieds.sqf';", _markers, _area], ""];
-		//_trigger setTriggerStatements ["this", format["%1 call SL_fnc_createTriggers; %2 execVM 'insurgency\modules\ai\INS_ai_unitHandler.sqf';", _markers, _area], ""];
+		_trigger setTriggerArea [_areaRad + 300, _areaRad + 300, 0, false];
+		//_trigger setTriggerStatements ["this", format["%1 call SL_fnc_createTriggers; %2 execVM 'insurgency\modules\ieds\INS_ieds.sqf';", _markers, _area], ""];
+		_trigger setTriggerStatements ["this", format["%1 call SL_fnc_createTriggers; %2 execVM 'insurgency\modules\ai\INS_ai_unitHandler.sqf';", _markers, _area], ""];
 		missionNamespace setVariable [format["%1_trigger", _areaClassName], _trigger];
 	} forEach (call SL_fnc_urbanAreas);
 };

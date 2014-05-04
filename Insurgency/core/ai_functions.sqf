@@ -48,7 +48,7 @@ INS_fn_spawnGroup = {
 		_unit = [nil, _group, _position, [], 4, "FORM"] call INS_fn_spawnUnit;
 	};
 
-	_group spawn INS_ai_patrol;
+	//_group spawn INS_ai_patrol;
 	_group
 };
 
@@ -95,8 +95,7 @@ INS_fn_cacheHousePatrols = {
 	_hpgroups
 };
 
-// todo: make them patrol
-INS_fn_spawnHousePatrols = {
+INS_fn_genHousePatrols = {
 	private ["_group", "_units", "_areaClassName", "_areaPos", "_areaRad"];
 	_areaClassName = _this select 0;
 	_areaPos = _this select 1;
@@ -109,24 +108,24 @@ INS_fn_spawnHousePatrols = {
 
 		_buildingPositions = [_building] call getRandomBuildingPosition;
 		_pos = _buildingPositions select (floor(random count _buildingPositions));
-		_gridPos = getPos _building call gridPos;
+		_gridPos = (getPos _building) call gridPos;
 
 		if (getMarkerColor str _gridPos == "ColorRed") then {
-			_eCount = count nearestObjects[_pos, ["Man", "CAR"], 100];
-			if (_eCount < 5) then {
-				_mGroup = [2, _pos] call INS_fn_spawnGroup;
-				_groups = _groups + [_mGroup];
-			};
+			_eCount = count nearestObjects[_pos, ["Man", "Car"], 100];
+			if (_eCount < 5) then { _groups = _groups + [[2, _pos]]; };
+
+			_m = createMarker [format ["box%1", random 1000], _pos];
+            _m setMarkerShape "ICON"; 
+           	_m setMarkerType "mil_dot";
+            _m setMarkerColor "ColorRed";
 		};
 	};
 
-	diag_log format["spawned %1 hps: %2", count _groups, _groups];
 	_groups
 };
 
-// todo: make them patrol
 INS_fn_spawnHousePatrolsCached = {
-	private ["_group", "_units", "_areaClassName", "_areaPos", "_areaRad"];
+	private ["_group", "_units", "_areaPos", "_areaRad"];
 	_hpcache = _this select 0;
 	_groups = [];
 
@@ -157,7 +156,7 @@ INS_fn_cacheAreaPatrols = {
 	_apgroups
 };
 
-INS_fn_spawnAreaPatrols = {
+INS_fn_genAreaPatrols = {
 	private ["_group", "_units", "_areaClassName", "_areaPos", "_areaRad"];
 	_areaClassName = _this select 0;
 	_areaPos = _this select 1;
@@ -170,19 +169,19 @@ INS_fn_spawnAreaPatrols = {
 		_spawnPos = _spawnPos call gridPos;
 
 		if (getMarkerColor str _spawnPos == "ColorRed") then {
-			_eCount = count nearestObjects[_spawnPos, ["Man", "CAR"], 100];
-			if (_eCount < 5) then {
-				_mGroup = [(random 4) + 1, _spawnPos] call INS_fn_spawnGroup;
-				_groups = _groups + [_mGroup];
-			};
+			_eCount = count nearestObjects[_spawnPos, ["Man", "Car"], 100];
+			if (_eCount < 5) then { _groups = _groups + [[(random 4) + 1, _spawnPos]]; };
+
+			_m = createMarker [format ["box%1", random 1000], _spawnPos];
+            _m setMarkerShape "ICON"; 
+           	_m setMarkerType "mil_dot";
+            _m setMarkerColor "ColorRed";
 		};
 	};
 
-	diag_log format["spawned %1 aps: %2", count _groups, _groups];
 	_groups
 };
 
-// todo: make them patrol
 INS_fn_spawnAreaPatrolsCached = {
 	private ["_group", "_units", "_areaClassName", "_areaPos", "_areaRad"];
 	_apcache = _this select 0;
@@ -200,8 +199,6 @@ INS_fn_spawnAreaPatrolsCached = {
 	_groups
 };
 
-// todo: figure this shit out
-// use _vehicle setVariable to store the units associated with this veh.
 INS_fn_cacheLightVehicles = {
 	_lvatrols = _this;
 	_lvgroups = [];
@@ -220,7 +217,8 @@ INS_fn_cacheLightVehicles = {
 	_lvgroups
 };
 
-// todo: cache group with vehicle... right now we're just returning the vehicle
+// todo: figure this shit out...
+// todo: spawn them out of the zone and have them drive in...
 // todo: make the vehicles patrol psuedo-randomly
 INS_fn_spawnLightVehicles = {
 	private ["_group", "_units", "_areaClassName", "_areaPos", "_areaRad"];
@@ -232,11 +230,10 @@ INS_fn_spawnLightVehicles = {
 
 	for "_i" from 0 to (random 1) do {
 		_spawnPos = [_areaPos, 0, _areaRad, 0, 1, 20, 0] call BIS_fnc_findSafePos;
-		_vehicle = [nil, _spawnPos, [], 5, "None"] call INS_fn_spawnVehicle;
-		_vehicles = _vehicles + [_vehicle];
+		_vehicle = [nil, _spawnPos, [], 0, "None"] call INS_fn_spawnVehicle;
+		_vehicles = _vehicles + [_vehicle]; // match cached format
 	};
 
-	diag_log format["spawned %1 lvs: %2", count _vehicles, _vehicles];
 	_vehicles
 };
 
@@ -378,77 +375,4 @@ INS_fn_initAIUnit = {
 	_unit setSkill ['general', 0.5];
 
 	if (side _unit == east) then { _handle = _unit execVM "insurgency\modules\ai\INS_fnc_onDeathListener.sqf"; };
-};
-
-INS_fn_spawnUnits = {
-	_areaClassName = _this select 0;
-	_areaPos = _this select 1;
-	_areaRad = _this select 2;
-
-	if (!isNil {missionNamespace getVariable _areaClassName}) then {
-		diag_log format ["spawning cached units in %1", _areaClassName];
-
-		_cachedEnemies = missionNamespace getVariable _areaClassName;
-		{
-			_type = _x select 0;
-			_pos = _x select 1;
-			_damage = _x select 2;
-			_group = _x select 3;
-			_type createUnit [_pos, _group];
-			//[_group] call INS_fn_initAIUnit;
-
-			diag_log format ["spawning %1 at %2", _type, _pos];
-		} forEach _cachedEnemies;
-	} else {
-		diag_log format ["spawning units in %1", _areaClassName];
-		_buildings = [_areaPos, _areaRad + 40] call SL_fnc_findBuildings;
-
-		{
-			_building = _x;
-			_buildingPositions = [_building] call getRandomBuildingPosition;
-			_pos = _buildingPositions select (floor(random count _buildingPositions));
-			_gridPos = getPos _building call gridPos;
-
-			if (getMarkerColor str _gridPos == "ColorRed") then {
-				_eCount = count nearestObjects[_pos, ["Man", "CAR"], 15];
-				if (_eCount < 5) then {
-					//_m = createMarker [format ["box%1", random 1000], getposATL _building];
-					//_m setMarkerText str floor random 1;
-		            //_m setMarkerShape "ICON"; 
-		           	//_m setMarkerType "mil_dot";
-		            //_m setMarkerColor "ColorRed";
-		            
-		            _group = createGroup east;
-		            "O_SoldierU_SL_F" createUnit [_pos, _group];
-		            //[_group] call INS_fn_initAIUnit;
-				};
-			};
-		} forEach _buildings;
-	};
-};
-
-INS_fn_despawnUnits = {
-	_areaClassName = _this select 0;
-	_areaPos = _this select 1;
-	_areaRad = _this select 2;
-	diag_log format ["deleting units in %1", _areaClassName];
-
-	_enemies = nearestObjects[_areaPos, ["Man", "Car"], _areaRad + 50];
-	_cachedEnemies = [];
-
-	{
-		if (alive _x) then {
-			if (_x isKindOf "Car") then {
-				//if (side )
-			};
-			_eInfo = [typeOf _x, getPos _x, damage _x, group _x];
-			deleteVehicle _x;
-			diag_log format ["caching %1 at %2", typeOf _x, getPos _x];
-			_cachedEnemies = _cachedEnemies + [_eInfo];
-		};
-		
-	} forEach _enemies;
-
-	diag_log str _cachedEnemies;
-	missionNamespace setVariable [_areaClassName, _cachedEnemies];
 };
