@@ -47,6 +47,22 @@ INS_prepareZones = {
 //	helper functions
 // ---------------------------------------
 
+addEventHandlerMP = {
+	_object = _this select 0;
+	_type = _this select 1;
+	_action = _this select 2;
+
+	_object addEventHandler [_type, _action];
+};
+
+addEventHandlerMPHelper = {
+	_object = _this select 0;
+	_type = _this select 1;
+	_action = _this select 2;
+
+	[[_object, _type, _action], "addEventHandlerMP", true, true] spawn BIS_fnc_MP;
+};
+
 addActionMP = {
 	private ["_object", "_title", "_script", "_args", "_showInWindow", "_hideOnUse", "_condition"];
 

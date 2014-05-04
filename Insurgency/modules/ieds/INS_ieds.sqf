@@ -29,7 +29,8 @@ generateIED = { // call on server only
 	_type = ied_types call BIS_fnc_selectRandom;
 
 	_ied = createVehicle [_type, _position, [], 3, "None"];
-	[_ied, "Disarm IED", disarmIED, [_ied], true, true, "true"] call addActionMPHelper;
+	[_ied, "Disarm IED", disarmIED, [_ied], true, true, "true"] call addActionMPHelper; // add the action MP
+	[_ied, "HandleDamage", "(position unit) call iedExplode;"] call addEventHandlerMPHelper; // add the EV MP
 
 	_ied setVariable ["code", call generateCode, false];
 	_ied call iedLoop;
@@ -69,7 +70,7 @@ disarmIED = {
 
 	_caller = _this select 1;
 	_ied = (_this select 3) select 0;
-	_code = call generateCode;
+	_code = _ied getVariable "code";
 	_index = 0;
 
 	//if !("ToolKit" in (items _caller)) exitWith { hint "need toolkit" };
