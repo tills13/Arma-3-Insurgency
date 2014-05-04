@@ -29,10 +29,11 @@ generateIED = { // call on server only
 	_type = ied_types call BIS_fnc_selectRandom;
 
 	_ied = createVehicle [_type, _position, [], 3, "None"];
-	[_ied, "Disarm IED", disarmIED, [_ied], true, true, "true"] call addActionMPHelper; // add the action MP
 	[_ied, "HandleDamage", "(position unit) call iedExplode;"] call addEventHandlerMPHelper; // add the EV MP
+	[_ied, "Disarm IED", disarmIED, [_ied], true, true, "_this distance _target < 2 and _target getVariable 'isActive'"] call addActionMPHelper;
 
 	_ied setVariable ["code", call generateCode, false];
+	_ied setVariable ["isActive", true, true];
 	_ied call iedLoop;
 };
 
@@ -48,16 +49,13 @@ iedLoop = {
 	_this spawn {
 		_ied = _this;
 
-		while { alive _ied } do {
-			_nearest = nearestObjects [_ied, ["Man","Car"], 5];
+		while { alive _ied and (_ied getVariable "isActive") } do {
+			_nearest = nearestObjects [_ied, ["Man","Car"], 10];
 			
 			if ((count _nearest) > 0) then {
 				_nearVel = velocity (_nearest select 0);
 				_nearSpeed = _nearVel call dl_fnc_velocityToSpeed;
-				if (((velocity (_nearest select 0)) call dl_fnc_velocityToSpeed) > 3) then {
-					(position _ied) call iedExplode;
-					deleteVehicle _ied;
-				};
+				if (((velocity (_nearest select 0)) call dl_fnc_velocityToSpeed) > 3) then { _ied call iedExplode; };
 			};
 
 			sleep 1;
@@ -74,12 +72,12 @@ disarmIED = {
 	_index = 0;
 
 	//if !("ToolKit" in (items _caller)) exitWith { hint "need toolkit" };
-	_KH = (findDisplay 46) displayAddEventHandler ["KeyDown", "pushedKey = ((_this select 1) - 1);"];
+	_KH = (findDisplay 46) displayAddEventHandler ["KeyDown", "_handled = true; pushedKey = ((_this select 1) - 1); _handled"];
 
 	_defuseTime = 3;
 	_isDefusing = true;
 	while { _isDefusing } do {
-		hint str (_code select _index);
+		[format["<t size='5'>%1</t>", _code select _index], 0, 0.2, 0.1, 0] spawn bis_fnc_dynamictext;
 		if (!isNil "pushedKey") then {
 			if (pushedKey == (_code select _index)) then {
 				_index = _index + 1;
@@ -88,30 +86,30 @@ disarmIED = {
 				pushedKey = nil;
 			} else {
 				_isDefusing = false;
-				(position _ied) call iedExplode;
-				deleteVehicle _ied;
-				// delete
+				_ied call iedExplode;
 				pushedKey = nil;
 			};
 		} else {
 			if (_defuseTime == 0) then {
-				(position _ied) call iedExplode;
-				deleteVehicle _ied;
+				_ied call iedExplode;
 				_isDefusing = false;
 			};
 
-			_defuseTime = _defuseTime - 1;
+			_defuseTime = _defuseTime - 0.1;
 		};
 
-		diag_log format ["%1 %2", _defuseTime, _code select _index];
-		sleep 1;
+		sleep 0.1;
 	};
+
+	_ied setVariable ["isActive", false, true];
+	(findDisplay 46) displayRemoveEventHandler ["KeyDown", _KH];
 };
 
 ied_explosion_types = ["Bo_GBU12_LGB"];
 iedExplode = {
 	_type = ied_explosion_types call BIS_fnc_selectRandom;
-	_type createVehicle _this;
+	_type createVehicle (position _this);
+	deleteVehicle _this;
 };
 
 if (isServer) then {
