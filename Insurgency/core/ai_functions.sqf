@@ -37,6 +37,13 @@ INS_fnc_spawnGroup = {
 		_unit = [nil, _group, _position, [], 4, "FORM"] call INS_fnc_spawnUnit;
 	};
 
+	if (debugMode == 1) then {
+        _m = createMarker [format ["box%1", random 1000], _position];
+        _m setMarkerShape "ICON"; 
+        _m setMarkerType "mil_dot";
+        _m setMarkerColor "ColorRed";
+	};
+
 	_group spawn INS_ai_patrol;
 	_group
 };
@@ -111,7 +118,7 @@ INS_fnc_genInfantryPositions = {
 
 		if (getMarkerColor str _spawnPos == "ColorRed") then {
 			_eCount = count nearestObjects[_spawnPos, ["Man", "Car"], 100];
-			if (_eCount < 5) then { _groups = _groups + [[(random 4) + 1, _spawnPos]]; };
+			if (_eCount < 5) then { _groups = _groups + [[round (random 4) + 1, _spawnPos]]; };
 		};
 	};
 

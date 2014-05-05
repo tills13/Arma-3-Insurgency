@@ -19,7 +19,7 @@ onCacheDestroyed = {
 			for "_i" from 0 to random 10 do { "M_Mo_82mm_AT_LG" createVehicle _pos; sleep 1.0; };
 			deleteVehicle cache;
 			
-			[(parseText format["<t color='#7ba151'>%1/%2</t> ammo caches have been destroyed"), INS_west_score, INS_numCaches], true, false] call dl_fnc_hintMP;
+			[(parseText format["<t color='#7ba151'>%1/%2</t> ammo caches have been destroyed", INS_west_score, INS_numCaches]), true, false] call dl_fnc_hintMP;
 
 			if (INS_west_score == INS_numCaches) then { // game over
 				["All ammo caches have been destroyed", true, true] call dl_fnc_hintMP;

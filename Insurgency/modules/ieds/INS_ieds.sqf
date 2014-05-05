@@ -11,17 +11,10 @@ if (isServer) then {
 		_areaRad = _area select 3;
 
 		_ieds = [];
-		for "_i" from 0 to 30 do {
+		for "_i" from 0 to random 10 do {
 			_pos = [_areaPos, _areaRad] call getSideOfRoadPosition;
 			_ied = [_pos] call generateIED;
 			_ieds = _ieds + [_ied];
-
-			if (debugMode == 1) then {
-		        _m = createMarker [format ["box%1", random 1000], _pos];
-		        _m setMarkerShape "ICON"; 
-		        _m setMarkerType "mil_dot";
-		        _m setMarkerColor "ColorRed";
-			};
 		};
 
 		_ieds

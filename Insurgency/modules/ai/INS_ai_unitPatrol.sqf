@@ -8,15 +8,14 @@ _group setSpeedMode "LIMITED";
 _group setCombatMode "YELLOW";
 _group setFormation (["STAG COLUMN", "WEDGE", "ECH LEFT", "ECH RIGHT", "VEE", "DIAMOND"] call BIS_fnc_selectRandom);
 
-_position = [getPos leader _group, 40, 100, 0, 0, 20, 0] call BIS_fnc_findSafePos;
+_position = [getPos leader _group, 100, 200, 0, 0, 20, 0] call BIS_fnc_findSafePos;
 _waypoint = _group addWaypoint [_position, 0, 0];
 _waypoint setWaypointType "MOVE";
 _waypoint setWaypointCompletionRadius 10;
 _waypoint setWaypointStatements ["true", "(group this) call INS_ai_patrol;"];
 
 if (debugMode == 1) then {
-	private "_m";
-	_m = createMarker [format["patrol_wp_%1%2", (floor(_current select 0)), (floor(_current select 1))], _current];
+	_m = createMarker ["patrol_wp", _position];
 	_m setMarkerShape "Ellipse";
 	_m setMarkerSize [20, 20];
 	_m setmarkerColor "ColorRed";

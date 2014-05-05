@@ -18,14 +18,14 @@ INS_prepareZones = {
 			if (isNil "_mpos") then {
 				if (debugMode == 1) then { diag_log format["error: %1 - %2", _areaName, _building]; };
 			} else {
-				_marker = [_mpos] call dl_fnc_addGridMarkerIfNotAlready;
-				if (!isNil "_marker") then { _markers = _markers + [_marker]; }; // if nil then already added
+				_marker = _mpos call dl_fnc_addGridMarkerIfNotAlready;
+				if (_marker != "") then { _markers = _markers + [_marker]; }; // if nil then already added
 			};
 		} forEach _buildings;
 
 		_m = createMarker [format ["box%1", random 1000], _areaPos];
         _m setMarkerShape "ELLIPSE";
-        _m setMarkerAlpha 0.1;
+        _m setMarkerAlpha 0.3;
         _m setMarkerSize [_areaRad + 300, _areaRad + 300];
         _m setMarkerColor "ColorRed";
 
@@ -367,8 +367,10 @@ INS_fnc_getRankModifier = {
 // ---------------------------------------
 
 dl_fnc_addGridMarkerForPosition = {
-	_pos = _this select 0;
+	private ["_mkr", "_pos"];
+	_pos = _this;
 
+	_mkr = str _pos;
 	_mkr = createMarkerLocal[_mkr, _pos];
 	_mkr setMarkerShapeLocal "RECTANGLE";
 	_mkr setMarkerTypeLocal "SOLID";
@@ -376,15 +378,15 @@ dl_fnc_addGridMarkerForPosition = {
 	_mkr setMarkerColor "ColorRed";
 	_mkr setMarkerAlphaLocal 0.5;
 
-	_marker
+	_mkr
 };
 
 dl_fnc_addGridMarkerIfNotAlready = {
-	_pos = _this;
-	_mpos = _pos call dl_fnc_gridPos;
+	private ["_mkr", "_pos"];
+	_pos = _this call dl_fnc_gridPos;
 
-	_mkr = str _mpos;
-	if (getMarkerPos _mkr select 0 == 0) then { _mkr = _mpos call dl_fnc_addGridMarkerForPosition } else { _mkr = nil };
+	_mkr = str _pos;
+	if (getMarkerPos _mkr select 0 == 0) then { _mkr = _pos call dl_fnc_addGridMarkerForPosition } else { _mkr = "" };
 
 	_mkr
 };

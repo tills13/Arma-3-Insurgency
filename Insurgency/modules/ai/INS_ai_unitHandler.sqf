@@ -1,3 +1,5 @@
+private ["_cache"];
+
 if (isServer) then {
 	_area = _this;
 	_trigger = (missionNamespace getVariable format["%1_trigger", (_area select 0)]);
@@ -7,13 +9,15 @@ if (isServer) then {
 		_trigger = _this select 0;
 		_area = _this select 1;
 		_cache = _this select 2;
-		_unspawnedinfantry = _this select 0;
 
+		_unspawnedinfantry = _cache select 0;
+		{ diag_log str _x } forEach _unspawnedinfantry;
 		_spawnedinfantry = _cache select 1;
+		{ diag_log str _x } forEach _spawnedinfantry;
 		_lightvehicles = _cache select 2;
 		_statics = _cache select 3;
 
-		_infcache = _patrols call INS_fnc_cacheInfantry;
+		_infcache = _spawnedinfantry call INS_fnc_cacheInfantry;
 		_lvcache = _lightvehicles call INS_fnc_cacheLightVehicles;
 		_spcache = _statics call INS_fnc_cacheStaticPlacements;
 
@@ -51,6 +55,7 @@ if (isServer) then {
 			_statics = [_areaClassName, _areaPos, _areaRad] call INS_fnc_spawnStaticUnits;
 		};
 
+		{ diag_log str _x } forEach _ipositions;
 		[_ipositions, [], _lightvehicles, _statics]
 	};
 
@@ -60,18 +65,21 @@ if (isServer) then {
 	if (debugMode == 1) then { diag_log format["%1 zone activated", _area select 0]; };
 	_cache = [_trigger, _area] call INS_ai_fnc_spawnUnits;
 	_infantry = _cache select 0;
+	diag_log str _cache;
 
 	while { triggerActivated _trigger } do {
+		private ["_x", "_pos", "_size"];
 		_playableUnits = playableUnits;
 
 		_index = 0;
-
-		{	
+		{
+			diag_log _x;
 			_size = _x select 0;
 			_pos = _x select 1;
 
 			{
-				if ((getPos _x distance _pos < 200) or (dl)) then {
+				private ["_x"];
+				if (getPos _x distance _pos < 200) then {
 					_patrol = [_size, _pos] call INS_fnc_spawnGroup;
 					_mpatrols = _cache select 1;
 					_mpatrols = _mpatrols + [_patrol];
@@ -79,9 +87,11 @@ if (isServer) then {
 
 					_infantry set [_index, 0];
 					_infantry = _infantry - [0];
+					_cache set [0, _infantry];
 				};
 			} forEach _playableUnits;
 
+			sleep 1;
 			_index = _index + 1;
 		} forEach _infantry;
 
