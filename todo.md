@@ -1,3 +1,6 @@
+Todo
+=============
+
 - [ ] check for water as position (ai_functions.sqf, 30)
 - [ ] figure this shit out... (ai_functions.sqf, 145)
 - [ ] spawn them out of the zone and have them drive in... (ai_functions.sqf, 146)
