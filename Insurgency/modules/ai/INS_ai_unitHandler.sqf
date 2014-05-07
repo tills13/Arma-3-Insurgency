@@ -11,9 +11,7 @@ if (isServer) then {
 		_cache = _this select 2;
 
 		_unspawnedinfantry = _cache select 0;
-		{ diag_log str _x } forEach _unspawnedinfantry;
 		_spawnedinfantry = _cache select 1;
-		{ diag_log str _x } forEach _spawnedinfantry;
 		_lightvehicles = _cache select 2;
 		_statics = _cache select 3;
 
@@ -72,6 +70,7 @@ if (isServer) then {
 		_playableUnits = playableUnits;
 
 		_index = 0;
+
 		{
 			diag_log _x;
 			_size = _x select 0;

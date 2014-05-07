@@ -50,55 +50,55 @@ while { true } do {
 	sleep 1;
 	if (count LV_ACS_activeGroups < _groupAmount) then {
 		if (count LV_ACS_activeGroups == (_groupAmount - 1)) then { sleep 1; };
-			if (_mp) then { _syncedUnit = call LV_GetPlayers; };
-			_spotValid = false;
-			while { !_spotValid } do {
-				_spotValid = true;
-				
-				if (((typeName _syncedUnit) == "ARRAY") || (_mp)) then { _centerPos = getPos (_syncedUnit call BIS_fnc_selectRandom); }
-				else { _centerPos = getPos _syncedUnit; };
-				
-				if (_maxRange == _minRange) then { _range = _maxRange; } 
-				else { _range = (random(_maxRange - _minRange)) + _minRange; };
+		if (_mp) then { _syncedUnit = call LV_GetPlayers; };
+		_spotValid = false;
+		while { !_spotValid } do {
+			_spotValid = true;
+			
+			if (((typeName _syncedUnit) == "ARRAY") || (_mp)) then { _centerPos = getPos (_syncedUnit call BIS_fnc_selectRandom); }
+			else { _centerPos = getPos _syncedUnit; };
+			
+			if (_maxRange == _minRange) then { _range = _maxRange; } 
+			else { _range = (random(_maxRange - _minRange)) + _minRange; };
 
-				_dir = random 360;
-				_spawnPos = [(_centerPos select 0) + (sin _dir) * _range, (_centerPos select 1) + (cos _dir) * _range, 0];
-				
-				if (surfaceIsWater _spawnPos) then {
-					_isFlat = []; 	
-					_d1 = 0;	
-					while { count _isFlat == 0 } do {
-						_tempPos = [(_centerPos select 0) + (sin _d1) * _maxRange, (_centerPos select 1) + (cos _d1) * _maxRange, 0];
-						_isFlat = _tempPos isflatempty [2, 0, 1, 2, 0, false];
-						_d1 = _d1 + 45;
-						hint format["%1",_isFlat];
-						if (_d1 == 360)exitWith{};
+			_dir = random 360;
+			_spawnPos = [(_centerPos select 0) + (sin _dir) * _range, (_centerPos select 1) + (cos _dir) * _range, 0];
+			
+			if (surfaceIsWater _spawnPos) then {
+				_isFlat = []; 	
+				_d1 = 0;	
+				while { count _isFlat == 0 } do {
+					_tempPos = [(_centerPos select 0) + (sin _d1) * _maxRange, (_centerPos select 1) + (cos _d1) * _maxRange, 0];
+					_isFlat = _tempPos isflatempty [2, 0, 1, 2, 0, false];
+					_d1 = _d1 + 45;
+					hint format["%1",_isFlat];
+					if (_d1 == 360)exitWith{};
+				};
+
+				if (count _isFlat > 0) then { //if land is found, spawn most groups as land / air groups
+					_waterUnitChance = floor(random 5);
+					if (_waterUnitChance > 3) then { //Water units chance 1/5
+						_spawnPos = _isFlat;
 					};
-
-					if (count _isFlat > 0) then { //if land is found, spawn most groups as land / air groups
-						_waterUnitChance = floor(random 5);
-						if (_waterUnitChance > 3) then { //Water units chance 1/5
-							_spawnPos = _isFlat;
-						};
-					};
 				};
-
-				if (((typeName _syncedUnit) == "ARRAY")||(_mp)) then {
-					{
-						if ((_x distance _spawnPos) < _minRange)exitWith{ _spotValid = false; };
-					} forEach _syncedUnit;
-				};
-				
-				_avoidArray = [];
-				for "_i" from 0 to 30 do {
-					if (_i == 0) then { _m = "ACavoid"; } else { _m = ("ACavoid_" + str _i); };
-					if (_m in allMapMarkers) then { _avoidArray = _avoidArray + [_m]; };
-				};
-
-				{
-					if ([_spawnPos,_x] call LV_IsInMarker) exitWith { _spotValid = false; };
-				} forEach _avoidArray;
 			};
+
+			if (((typeName _syncedUnit) == "ARRAY")||(_mp)) then {
+				{
+					if ((_x distance _spawnPos) < _minRange)exitWith{ _spotValid = false; };
+				} forEach _syncedUnit;
+			};
+			
+			_avoidArray = [];
+			for "_i" from 0 to 30 do {
+				if (_i == 0) then { _m = "ACavoid"; } else { _m = ("ACavoid_" + str _i); };
+				if (_m in allMapMarkers) then { _avoidArray = _avoidArray + [_m]; };
+			};
+
+			{
+				if ([_spawnPos,_x] call LV_IsInMarker) exitWith { _spotValid = false; };
+			} forEach _avoidArray;
+		};
 
 		//Handle side ratios -> decide side:
 		_fullRatio = (_sideRatios select 0) + (_sideRatios select 1) + (_sideRatios select 2);
