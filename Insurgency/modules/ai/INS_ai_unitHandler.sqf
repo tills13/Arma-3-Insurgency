@@ -77,6 +77,7 @@ if (isServer) then {
 
 			{
 				private ["_x"];
+				// todo: put into one function
 				if (position _x distance _pos < 500 or (([_x, _pos] call dl_fnc_canSee) and position _x distance _pos < 1000)) then {
 					_patrol = [_size, _pos] call INS_fnc_spawnGroup;
 					_mpatrols = _cache select 1;
