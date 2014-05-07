@@ -1,7 +1,7 @@
 private ["_cache"];
 
 if (isServer) then {
-	_area = _this;
+	_area = _this select 0;
 	_trigger = (missionNamespace getVariable format["%1_trigger", (_area select 0)]);
 
 	// args: [trigger, [spawned infantry, unspawned infantry, vehicles, static]]
@@ -52,8 +52,7 @@ if (isServer) then {
 			_lightvehicles = [_areaClassName, _areaPos, _areaRad] call INS_fnc_spawnLightVehicles;
 			_statics = [_areaClassName, _areaPos, _areaRad] call INS_fnc_spawnStaticUnits;
 		};
-
-		{ diag_log str _x } forEach _ipositions;
+		
 		[_ipositions, [], _lightvehicles, _statics]
 	};
 
@@ -63,7 +62,6 @@ if (isServer) then {
 	if (debugMode == 1) then { diag_log format["%1 zone activated", _area select 0]; };
 	_cache = [_trigger, _area] call INS_ai_fnc_spawnUnits;
 	_infantry = _cache select 0;
-	diag_log str _cache;
 
 	while { triggerActivated _trigger } do {
 		private ["_x", "_pos", "_size"];
@@ -72,13 +70,14 @@ if (isServer) then {
 		_index = 0;
 
 		{
-			diag_log _x;
-			_size = _x select 0;
-			_pos = _x select 1;
+			//diag_log _x;
+			_group = _x;
+			_size = _group select 0;
+			_pos = _group select 1;
 
 			{
 				private ["_x"];
-				if (getPos _x distance _pos < 200) then {
+				if (position _x distance _pos < 500 or (([_x, _pos] call dl_fnc_canSee) and position _x distance _pos < 1000)) then {
 					_patrol = [_size, _pos] call INS_fnc_spawnGroup;
 					_mpatrols = _cache select 1;
 					_mpatrols = _mpatrols + [_patrol];
@@ -90,7 +89,7 @@ if (isServer) then {
 				};
 			} forEach _playableUnits;
 
-			sleep 1;
+			sleep 0.1;
 			_index = _index + 1;
 		} forEach _infantry;
 
@@ -98,7 +97,7 @@ if (isServer) then {
 		if (time - _timeStart > 300) then {}; // five minutes
 		if (time - _timeStart > 600) then {}; // ten minutes 	
 
-		sleep 1;
+		if (not triggerActivated _trigger) then { sleep 10 } else { sleep 1 }; // give chance to leave/re-enter zone
 	};
 
 	if (debugMode == 1) then { diag_log format["%1 zone deactivated (%2)", _area select 0, time - _timeStart]; };

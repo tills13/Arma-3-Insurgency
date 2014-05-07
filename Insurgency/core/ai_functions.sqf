@@ -114,12 +114,11 @@ INS_fnc_genInfantryPositions = {
 
 	for "_i" from 0 to ((random 3) + 1) do {
 		_spawnPos = [_areaPos, 0, _areaRad, 0, 1, 20, 0] call BIS_fnc_findSafePos;
-		_spawnPos = _spawnPos call dl_fnc_gridPos;
 
-		if (getMarkerColor str _spawnPos == "ColorRed") then {
-			_eCount = count nearestObjects[_spawnPos, ["Man", "Car"], 100];
-			if (_eCount < 5) then { _groups = _groups + [[round (random 4) + 1, _spawnPos]]; };
-		};
+		_spawnPos call dl_fnc_addGridMarkerIfNotAlready;
+		_eCount = count nearestObjects[_spawnPos, ["Man", "Car"], 100];
+		if (_eCount < 5) then { _groups = _groups + [[round (random 4) + 1, _spawnPos]]; };
+
 	};
 
 	_groups
@@ -285,6 +284,19 @@ dl_fnc_dismissAIFromGroup = {
 	{
 		deleteVehicle _x;
 	} forEach (_group call dl_fnc_getAIinGroup);
+};
+
+// args: [unit, position]
+// returns true if the player has a clear line of sight to that position
+// false if not (duh)
+dl_fnc_canSee = {
+	_unit = _this select 0;
+	_position = _this select 1;
+
+	_intersect = [_unit, "VIEW"] intersect [position _unit, _position];
+	_result = count _intersect == 0; 
+	diag_log format ["%1, %2", _intersect, _result];
+	_result
 };
 
 INS_fnc_onDeathListener = {

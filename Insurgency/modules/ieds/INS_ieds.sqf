@@ -113,8 +113,8 @@ if (isServer) then {
 	};
 
 	waitUntil { triggerActivated _trigger };
-	_ieds = _area call generateIEDs; // spawn 'em
+	//_ieds = _area call generateIEDs; // spawn 'em
 
 	waitUntil { !triggerActivated _trigger };
-	{ deleteVehicle _x } foreach _ieds; // delete 'em
+	//{ deleteVehicle _x } foreach _ieds; // delete 'em
 };
