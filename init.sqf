@@ -23,13 +23,9 @@ call loadParams;
 //call compile preprocessFile "insurgency\modules\spawn\INS_fnc_spawn.sqf";
 //call compile preprocessFile "insurgency\modules\revive\init_revive.sqf";
 
-onMapSingleClick "
-	player setPos _pos;
-";
-
 //server only
 if (isServer) then {
-	[] execVM "insurgency\init_insurgency.sqf";
+	//[] execVM "insurgency\init_insurgency.sqf";
 	//[] execVM "insurgency\modules\vehicles\INS_veh_repair.sqf";
 	//[] execVM "insurgency\modules\vehicles\INS_veh_respawn.sqf"; // respawn loop
 	//[] execVM "LV\ambientCombat.sqf";

@@ -2,15 +2,14 @@ private ["_vehicle","_menu_lift_shown","_nearest","_id","_pos","_npos"];
 
 INS_cargo_loadIntoCargo = {
 	private ["_name"];
-	INS_cargo_attachPoints = [["ac_130X_desert", [0, 5, 5]], ["I_Heli_Transport_02_F", [0, 4, -1]], ["C130J_Cargo", [0, 4, -2.5]]];
+	
 	getAttachPoint = {
 		private["_veh", "_return"];
+		_cargo_attachPoints = [["ac_130X_desert", [0, 5, 5]], ["I_Heli_Transport_02_F", [0, 4, -1]], ["C130J_Cargo", [0, 4, -2.5]]];
 		_veh = typeOf _this;
 		_return = [0, 0, 0];
 
-		{
-			if (_x select 0 == _veh) then { _return = _x select 1; };
-		} forEach INS_cargo_attachPoints;
+		{ if (_x select 0 == _veh) then { _return = _x select 1; }; } forEach _cargo_attachPoints;
 
 		_return
 	};
@@ -29,12 +28,13 @@ INS_cargo_loadIntoCargo = {
 
 		sleep 0.3;
 		_veh attachTo [_carrier, _carrier call getAttachPoint];
+		_veh setVariable ["carrier", _carrier];
 		_veh addEventHandler ["GetOut", {
 		    _vehicle = _this select 0; 
 		    _position = _this select 1;
 		    _unit = _this select 2;
 
-		    //_unit moveInCargo _carrier;
+		    _unit moveInCargo (_vehicle getVariable "carrier");
 		}];
 
 		_cargo = _carrier getVariable "cargo";
@@ -50,16 +50,6 @@ INS_cargo_loadIntoCargo = {
 	} else {
 		hint parseText format["<t color='#7ba151'>%1</t> cargo full", vehicleVarName _carrier];
 	};
-};
-
-INS_cargo_unloadAllFromCargo = {
-	_carrier = _this select 0;
-	_cargo = _carrier getVariable "cargo";
-
-	{
-		[_carrier, "", "", 0] call INS_cargo_unloadFromCargo;
-		sleep 1;
-	} forEach _cargo;
 };
 
 INS_cargo_unloadFromCargo = {
@@ -101,6 +91,16 @@ INS_cargo_unloadFromCargo = {
 	_cargo = _cargo - [_veh];
 	_carrier setVariable ["cargo", _cargo, true];
 	call INS_cargo_showMenu;
+};
+
+INS_cargo_unloadAllFromCargo = {
+	_carrier = _this select 0;
+	_cargo = _carrier getVariable "cargo";
+
+	{
+		[_carrier, "", "", 0] call INS_cargo_unloadFromCargo;
+		sleep 1;
+	} forEach _cargo;
 };
 
 INS_cargo_getNearestObjects = {
@@ -180,10 +180,7 @@ INS_cargo_getCurrentCargoSize = {
 	_carrier = _this;
 	_cargoSize = 0;
 
-	{	
-		player sideChat str _x;
-		player sideChat typeOf _x;
-		//player sideChat (INS_cargo_vehicles select _i);
+	{
 		for "_i" from 0 to count INS_cargo_vehicles do {
 			if (typeOf _x == ((INS_cargo_vehicles select _i) select 0)) then { _cargoSize = _cargoSize + ((INS_cargo_vehicles select _i) select 1) };
 		};
