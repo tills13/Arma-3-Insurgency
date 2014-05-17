@@ -19,9 +19,8 @@ if (isServer) then {
 
 		_ieds
 	};
-
 	
-	generateIED = { // call on server only
+	generateIED = {
 		_ied_types = ["Land_GarbageBags_F", "Land_WoodPile_F", "Land_GarbagePallet_F", "Land_GarbageWashingMachine_F", "Land_JunkPile_F", "Land_Tyre_F", "Land_Tyres_F", "Land_CratesShabby_F", "Land_Sack_F" , "Land_Sacks_heap_F"];
 		_position = _this select 0;
 		_type = _ied_types call BIS_fnc_selectRandom;
@@ -81,7 +80,7 @@ if (isServer) then {
 			if (!isNil "pushedKey") then {
 				if (pushedKey == (_code select _index)) then {
 					_index = _index + 1;
-					if (_index == 4) then { _isDefusing = false; };
+					if (_index == (count _code)) then { _isDefusing = false; };
 					_defuseTime = 3;
 					pushedKey = nil;
 				} else {

@@ -54,13 +54,12 @@ generateNewCache = {
 	        _m setMarkerColor "ColorRed";
 		};
 
+		cache addEventHandler ["Killed", "call onCacheDestroyed;"];
 		cache addEventHandler ["HandleDamage", {
 			_source = _this select 4;
 			if ((_source == "SatchelCharge_Remote_Mag") or (_source == "DemoCharge_Remote_Mag")) then { cache setDamage 1 } 
 			else { cache setDamage 0 };
 		}];
-
-		cache addEventHandler ["Killed", "call onCacheDestroyed;"];
 
 		clearMagazineCargoGlobal cache;
 	    clearWeaponCargoGlobal cache;

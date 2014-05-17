@@ -30,10 +30,9 @@ if (INS_rev_medevac == 1) then {
 			INS_rev_GVAR_load_vehicle = nil;
 			if (count _objs > 0) then {
 				INS_rev_GVAR_load_vehicle = _objs select 0;
-				if (alive INS_rev_GVAR_load_vehicle) then {
-					_result = true;
-				};
+				if (alive INS_rev_GVAR_load_vehicle) then { _result = true; };
 			};
+
 			_result
 		};
 	};

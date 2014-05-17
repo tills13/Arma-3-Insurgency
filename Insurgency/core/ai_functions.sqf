@@ -295,17 +295,20 @@ dl_fnc_canSee = {
 
 	_intersect = [_unit, "VIEW"] intersect [position _unit, _position];
 	_result = count _intersect == 0; 
-	diag_log format ["%1, %2", _intersect, _result];
+	//diag_log format ["%1, %2", _intersect, _result];
 	_result
 };
 
+// args: [unit]
+// returns true if the player has a clear line of sight to that position
+// false if not (duh)
 INS_fnc_onDeathListener = {
 	_tempRandom = random 100;
 
 	if (_tempRandom > (100 - INS_probOfDrop) || debugMode == 1) then {
 		_unit = _this select 0;
 		_pos = position _unit;
-		_intel = "Land_Suitcase_F" createVehicle _pos;
+		_intel = createVehicle ["Land_Suitcase_F", _pos, [], 0, "CAN_COLLIDE"];
 		_intel setVariable ["INTEL_STRENGTH", (rank _unit) call INS_fnc_getRankModifier];
 
 		[_intel] spawn {

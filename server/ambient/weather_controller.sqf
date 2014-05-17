@@ -32,8 +32,8 @@ skiptime 1;
 _wasRaining = (_overcast > 0.7 && _rainIntensity > 0);
 
 while { True } do {
-	_timeInFuture = weatherChangeRate + random weatherChangeRate;
-	sleep (_timeInFuture / 2);	
+	//_timeInFuture = weatherChangeRate + random weatherChangeRate;
+	//sleep (_timeInFuture / 2);	
 	_overCast = random 1;
 
 	if (_overCast > 0.3) then {

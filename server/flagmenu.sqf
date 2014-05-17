@@ -6,11 +6,11 @@ Description:
 ---------------------------------------------------------------------------------------------------- */
 INS_fnc_recruitAI = {
 	private ["_unit"];
-	_caller = _this select 1;;
+	_caller = _this select 1;
 	_type = (_this select 3) select 1;
 
 	if (leader group _caller != _caller) then {
-	    hint "Only the group leader can acquire AI, you are not the group leader!";
+	    hint "Only the group leader can recruit AI, you are not the group leader.";
 	} else {
         diag_log format ["%1 recruiting %2", name _caller, _type];
         _unit = group _caller createUnit [_type, getPos _caller, [], 10, "FORM"];
