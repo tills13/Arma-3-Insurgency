@@ -1,25 +1,19 @@
+#include "insurgency\modules\ai\INS_ai_unitPools.sqf";
 INS_ai_patrol = compile preprocessfile "insurgency\modules\ai\INS_ai_unitPatrol.sqf";
 
-// unit pools
-infantryPool = ["O_SoldierU_SL_F", "O_soldierU_repair_F", "O_soldierU_medic_F", "O_sniper_F", "O_Soldier_A_F", "O_Soldier_AA_F", "O_Soldier_AAA_F", "O_Soldier_AAR_F", "O_Soldier_AAT_F", "O_Soldier_AR_F", "O_Soldier_AT_F", "O_soldier_exp_F", "O_Soldier_F", "O_engineer_F", "O_engineer_U_F", "O_medic_F", "O_recon_exp_F", "O_recon_F", "O_recon_JTAC_F", "O_recon_LAT_F", "O_recon_M_F", "O_recon_medic_F", "O_recon_TL_F"];	
-armoredPool = ["O_APC_Tracked_02_AA_F", "O_APC_Tracked_02_cannon_F", "O_APC_Wheeled_02_rcws_F", "O_MBT_02_arty_F", "O_MBT_02_cannon_F"];
-motorPool =	["O_Truck_02_covered_F", "O_Truck_02_transport_F", "O_MRAP_02_F", "O_MRAP_02_gmg_F", "O_MRAP_02_hmg_F", "O_Truck_02_medical_F"];
-attackChopperPool =	["O_Heli_Attack_02_black_F", "O_Heli_Attack_02_F"];
-transportChopperPool = ["O_Heli_Light_02_F", "O_Heli_Light_02_unarmed_F"];
-uavPool = ["O_UAV_01_F", "O_UAV_02_CAS_F", "O_UGV_01_rcws_F"];
-staticPool = ["O_Mortar_01_F", "O_static_AT_F", "O_static_AA_F"];
-shipPool = ["O_Boat_Armed_01_hmg_F", "O_Boat_Transport_01_F"];
-diverPool =	["O_diver_exp_F", "O_diver_F", "O_diver_TL_F"];
-crewPool = ["O_crew_F"];
-heliCrewPool =	["O_helicrew_F", "O_helipilot_F"];
-
+/* INS_fnc_spawnUnit
+ * args: [type, group, position, markers, special] */
 INS_fnc_spawnUnit = {
-	_type = if (isNil {_this select 0}) then { infantryPool call BIS_fnc_selectRandom; } else { _this select 0; };
+	_type = _this select 0;
 	_group = _this select 1;
 	_position = _this select 2;
 	_markers = _this select 3;
 	_placement = _this select 4;
 	_special = _this select 5;
+
+	if (isNil { _type }) then {
+		_type = if (surfaceIsWater _position) then { diverPool call BIS_fnc_selectRandom; } else { infantryPool call BIS_fnc_selectRandom };
+	};
 
 	_unit = _group createUnit [_type, _position, _markers, _placement, _special];
 	_position call dl_fnc_addGridMarkerIfNotAlready;
@@ -27,11 +21,13 @@ INS_fnc_spawnUnit = {
 	_unit	
 };
 
-// todo: check for water as position
+/* INS_fnc_spawnGroup
+ * args: [size, position, side] */
 INS_fnc_spawnGroup = {
 	_size = _this select 0;
 	_position = _this select 1;
-	_group = createGroup east;
+	_side = if (count _this > 2) then { _this select 2; } else { east; };
+	_group = createGroup _side;
 
 	for "_i" from 0 to (_size - 1) do {
 		_unit = [nil, _group, _position, [], 4, "FORM"] call INS_fnc_spawnUnit;
@@ -48,6 +44,10 @@ INS_fnc_spawnGroup = {
 	_group
 };
 
+// todo: steal from EOS
+/* INS_fnc_fillVehicleSeats 
+ * args: [vehicle object, crew size] 
+ * crew size -1 for random */
 INS_fnc_fillVehicleSeats = {
 	_vehicle = _this select 0;
 	_crew = _this select 1;
@@ -60,14 +60,48 @@ INS_fnc_fillVehicleSeats = {
 	{ _x moveincargo _vehicle } forEach (units _group);
 };
 
+/* INS_fnc_spawnHelicopter
+ * args: [type, subtype, position, markers, special, crew count]
+ * type: vehicle class (nil for random)
+ * subtype: 0 - transport, 1 - attack 
+ * crew: optional, not included means random*/
+INS_fnc_spawnHelicopter = {
+	private ["_crew"];
+	_type = _this select 0;
+	_subtype = _this select 1;
+
+	if (isNil { _type }) then { _type = if (_subtype == 0) then { transportChopperPool call BIS_fnc_selectRandom } else { attackChopperPool call BIS_fnc_selectRandom }; };
+
+	_position = _this select 2;
+	_markers = _this select 3;
+	_placement = _this select 4;
+	_special = _this select 5;
+	_crew = if ((count _this) > 6) then { _this select 6; } else { -1; };
+
+	_vehicle = createVehicle [_type, _position, _markers, _placement, _special];
+	_position call dl_fnc_addGridMarkerIfNotAlready;
+	[_vehicle, _crew] call INS_fnc_fillVehicleSeats;
+
+	_vehicle
+};
+
+/* INS_fnc_spawnVehicle
+ * args: [type, subtype, position, markers, special, crew count]
+ * type: vehicle class (nil for random)
+ * subtype: 0 - transport, 1 - attack */
 INS_fnc_spawnVehicle = {
 	private ["_crew"];
-	_type = if (isNil {_this select 0}) then { motorPool call BIS_fnc_selectRandom; } else { _this select 0; };
-	_position = _this select 1;
-	_markers = _this select 2;
-	_placement = _this select 3;
-	_special = _this select 4;
+	_type = _this select 0;
+	_group = _this select 1;
+	_position = _this select 2;
+	_markers = _this select 3;
+	_placement = _this select 4;
+	_special = _this select 5;
 	_crew = if ((count _this) > 5) then { _this select 5; } else { -1; };
+
+	if (isNil { _type }) then {
+		_type = if (surfaceIsWater _position) then { boatPool call BIS_fnc_selectRandom; } else { motorPool call BIS_fnc_selectRandom };
+	};
 
 	_vehicle = createVehicle [_type, _position, _markers, _placement, _special];
 	_position call dl_fnc_addGridMarkerIfNotAlready;
@@ -142,7 +176,6 @@ INS_fnc_cacheLightVehicles = {
 	_lvgroups
 };
 
-// todo: figure this shit out...
 // todo: spawn them out of the zone and have them drive in...
 // todo: make the vehicles patrol psuedo-randomly
 INS_fnc_spawnLightVehicles = {
@@ -180,7 +213,6 @@ INS_fnc_spawnLightVehiclesCached = {
 	_vehicles
 };
 
-// todo: figure this shit out
 // use _vehicle setVariable to store the units associated with this veh.
 INS_fnc_cacheStaticPlacements = {
 	_spatrols = _this;
@@ -256,24 +288,18 @@ INS_fnc_spawnWaterReinforcements = {
 
 dl_fnc_getAIArray = {
     _array = _this;
-
     _aiPlayerList = [];
 
-    { 
-    	if (!(isPlayer _x)) then { _aiPlayerList = _aiPlayerList + [_x]; };
-	} forEach _array;
+    { if (!(isPlayer _x)) then { _aiPlayerList = _aiPlayerList + [_x]; }; } forEach _array;
 
     _aiPlayerList;
 };
 
 dl_fnc_getAIinGroup = {
     _group = _this;
-
     _aiPlayerList = [];
 
-    { 
-    	if (!(isPlayer _x)) then { _aiPlayerList = _aiPlayerList + [_x]; };
-	} forEach units _group;
+    { if (!(isPlayer _x)) then { _aiPlayerList = _aiPlayerList + [_x]; }; } forEach units _group;
 
     _aiPlayerList;
 };
@@ -281,15 +307,13 @@ dl_fnc_getAIinGroup = {
 dl_fnc_dismissAIFromGroup = {
 	_group = _this;
 
-	{
-		deleteVehicle _x;
-	} forEach (_group call dl_fnc_getAIinGroup);
+	{ deleteVehicle _x; } forEach (_group call dl_fnc_getAIinGroup);
 };
 
 // args: [unit, position]
 // returns true if the player has a clear line of sight to that position
 // false if not (duh)
-dl_fnc_canSee = {
+dl_fnc_canSee = { // doesn't fucking work
 	_unit = _this select 0;
 	_position = _this select 1;
 
@@ -353,4 +377,5 @@ INS_fnc_initAIUnit = {
 	_unit setSkill ['general', 0.5];
 
 	if (side _unit == east) then { _unit addEventHandler ["Killed", INS_fnc_onDeathListener]; };
+	// 
 };

@@ -1,19 +1,4 @@
 if (isServer) then {
-	INS_ambient_cleanUp = {
-		{
-			{
-
-			} forEach 
-		} forEach playableUnits;
-	};
-
-	INS_ambient_spawn = {
-		_side = _this select 0;
-		_position = _this select 1;
-
-		
-	};
-
 	_updateTime = 60; // in seconds
 	_westRatio = 0.4;
 	_eastRatio = 0.4;
@@ -22,14 +7,30 @@ if (isServer) then {
 	//_spawnDistance = 1000;
 	_despawnDistance = 2000;
 
+	INS_ambient_cleanUp = {
+		while { true } do {
+			_centerPos = playableUnits call BIS_fnc_selectRandom;
+
+			{
+				_group = _x select 1;
+				switch { _x select 0 } do {
+					case "INFANTRY": { if ((leader _group) distance _centerPos > _despawnDistance) then { { deleteVehicle _x } forEach group _group; }; };
+					case "VEHICLE": { if (_group distance _centerPos > _despawnDistance) then { { deleteVehicle _group } forEach group (_group select 1); deleteVehicle _group; }; };
+					case "HELO": { if (_group distance _centerPos > _despawnDistance) then { { deleteVehicle _group } forEach group (_group select 1); deleteVehicle _group; }; };
+				};
+			} forEach INS_ambient_activeGroups;
+
+			sleep 5;
+		};
+	};
+
 	INS_ambient_activeGroups = [];
-	[_despawnDistance] spawn INS_ambient_cleanUp; 
+	[_despawnDistance] spawn INS_ambient_cleanUp; // clean up function 
 
 	while { true } then {
 		sleep _updateTime;
-		_playableUnits = playableUnits;
-		_centerPos = _playableUnits call BIS_fnc_selectRandom;
-		_position = [_centerPos, 1000, 1500, 0, 1, 20, 0] call BIS_fnc_findSafePos;
+		_centerPos = playableUnits call BIS_fnc_selectRandom;
+		_position = [_centerPos, _spawnDistance, (_spawnDistance * 1.5), 0, 1, 20, 0] call BIS_fnc_findSafePos;
 
 		_westGroups = {(side _x) == west} count INS_ambient_activeGroups;
 		_eastGroups = {(side _x) == east} count INS_ambient_activeGroups;
@@ -44,6 +45,25 @@ if (isServer) then {
 			};
 		};
 
-		[_side, _position] call INS_ambient_spawn;
+		if (random 10 > 3) then { _group = [random 10, _position, _side] call INS_fnc_spawnGroup; _type = "INFANTRY"; } // land
+		else {
+			if (random 10 > 3) then { _group = [nil, _position, [], 0, "None"] call INS_fnc_spawnVehicle; _type = "VEHICLE"; } // land/water vehicle
+			else {
+				_subtype = if (random 10 > 5) then { 1; } else { 0; };
+				_helo = [nil, _subtype, _position, [], "FLYING"] call INS_fnc_spawnHelicopter;
+				_helipadPos = [_centerPos, 1000, 1500, 0, 1, 20, 0] call BIS_fnc_findSafePos;
+				_helipad = createVehicle ["Land_HelipadEmpty_F", _helipadPos, [], 0, "None"];
+
+				_wp = _helo addWaypoint [_helipad, 0];
+				_wp setWaypointBehaviour "AWARE";
+				_wp setWaypointBehaviour "AWARE";
+				_wp setWaypointType "UNLOAD";
+
+				_group = _helo;
+				_type = "HELO";
+			};
+		};
+
+		INS_ambient_activeGroups = INS_ambient_activeGroups + [_type, _group];
 	};
 };
