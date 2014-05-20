@@ -106,10 +106,14 @@ INS_fnc_spawnVehicle = {
 	_vehicle = createVehicle [_type, _position, _markers, _placement, _special];
 	_position call dl_fnc_addGridMarkerIfNotAlready;
 	[_vehicle, _crew] call INS_fnc_fillVehicleSeats;
+	_vehicle call INS_fnc_initVehicle;
 
 	_vehicle
 };
 
+/* INS_fnc_cacheInfantry
+ * args: infantry array
+ * reformats infantry array to cache format */
 INS_fnc_cacheInfantry = {
 	_infantry = _this;
 	_incache = [];
@@ -125,6 +129,9 @@ INS_fnc_cacheInfantry = {
 	_incache
 };
 
+/* INS_fnc_genInfantryPositions
+ * args: [area name (not used), area position, area radius]
+ * generates all infantry positions but doesn't spawn them */
 INS_fnc_genInfantryPositions = {
 	private ["_group", "_units", "_areaClassName", "_areaPos", "_areaRad"];
 	_areaClassName = _this select 0;
@@ -158,6 +165,9 @@ INS_fnc_genInfantryPositions = {
 	_groups
 };
 
+/* INS_fnc_cacheInfantry
+ * args: lightvehicle array
+ * reformats lightvehicle array to cache format */
 INS_fnc_cacheLightVehicles = {
 	_lvatrols = _this;
 	_lvgroups = [];
@@ -178,6 +188,9 @@ INS_fnc_cacheLightVehicles = {
 
 // todo: spawn them out of the zone and have them drive in...
 // todo: make the vehicles patrol psuedo-randomly
+/* INS_fnc_spawnLightVehicles
+ * args: [area name (not used), area position, area radius]
+ * generates positions and spawns light vehicles */
 INS_fnc_spawnLightVehicles = {
 	private ["_group", "_units", "_areaClassName", "_areaPos", "_areaRad"];
 	_areaClassName = _this select 0;
@@ -196,6 +209,9 @@ INS_fnc_spawnLightVehicles = {
 };
 
 // todo: make them patrol
+/* INS_fnc_spawnLightVehiclesCached
+ * args: cached vehicle array
+ * spawns all cached vehicles from the array */
 INS_fnc_spawnLightVehiclesCached = {
 	private ["_group", "_units", "_areaClassName", "_areaPos", "_areaRad"];
 	_lvcache = _this select 0;
@@ -214,6 +230,9 @@ INS_fnc_spawnLightVehiclesCached = {
 };
 
 // use _vehicle setVariable to store the units associated with this veh.
+/* INS_fnc_cacheStaticPlacements
+ * args: static placement array
+ * reformats static placement array to cache format */
 INS_fnc_cacheStaticPlacements = {
 	_spatrols = _this;
 	_spgroups = [];
@@ -233,6 +252,9 @@ INS_fnc_cacheStaticPlacements = {
 };
 
 // todo: ... do units enter the static placement?  - no
+/* INS_fnc_spawnStaticUnits
+ * args: [area name (not used), area position, area radius]
+ * generates positions and spawns static positions */
 INS_fnc_spawnStaticUnits = {
 	private ["_group", "_units", "_areaClassName", "_areaPos", "_areaRad"];
 	_areaClassName = _this select 0;
@@ -250,6 +272,9 @@ INS_fnc_spawnStaticUnits = {
 	_statics
 };
 
+/* INS_fnc_spawnStaticUnitsCached
+ * args: cached static placement array
+ * spawns all cached static placement from the array */
 INS_fnc_spawnStaticUnitsCached = {
 	private ["_group", "_units", "_areaClassName", "_areaPos", "_areaRad"];
 	_spcache = _this select 0;
@@ -286,6 +311,9 @@ INS_fnc_spawnWaterReinforcements = {
 //	helper functions
 // ---------------------------------------
 
+/* dl_fnc_getAIArray
+ * args: array of units
+ * returns: an array of AI units */
 dl_fnc_getAIArray = {
     _array = _this;
     _aiPlayerList = [];
@@ -295,6 +323,9 @@ dl_fnc_getAIArray = {
     _aiPlayerList;
 };
 
+/* dl_fnc_getAIArray
+ * args: group
+ * returns: an array of AI units */
 dl_fnc_getAIinGroup = {
     _group = _this;
     _aiPlayerList = [];
@@ -304,15 +335,19 @@ dl_fnc_getAIinGroup = {
     _aiPlayerList;
 };
 
+/* dl_fnc_dismissAIFromGroup
+ * args: group
+ * dismisses all AI from a group */
 dl_fnc_dismissAIFromGroup = {
 	_group = _this;
 
 	{ deleteVehicle _x; } forEach (_group call dl_fnc_getAIinGroup);
 };
 
-// args: [unit, position]
-// returns true if the player has a clear line of sight to that position
-// false if not (duh)
+
+/* dl_fnc_canSee
+ * args: [unit, position]
+ * returns true if the player has a clear line of sight to that position */
 dl_fnc_canSee = { // doesn't fucking work
 	_unit = _this select 0;
 	_position = _this select 1;
@@ -323,9 +358,9 @@ dl_fnc_canSee = { // doesn't fucking work
 	_result
 };
 
-// args: [unit]
-// returns true if the player has a clear line of sight to that position
-// false if not (duh)
+/* INS_fnc_onDeathListener
+ * args: [unit]
+ * spawns an intel item at the unit's position INS_prodOfDrop% of the time */
 INS_fnc_onDeathListener = {
 	_tempRandom = random 100;
 
@@ -362,8 +397,17 @@ INS_fnc_onDeathListener = {
 	};
 };
 
+/* INS_fnc_initVehicle
+ * args: vehicle
+ * sets up a vehicle */
+INS_fnc_initVehicle = {
+	_unit = _this; // test if kind of group or unit
+};
+
+/* INS_fnc_initAIUnit
+ * args: unit
+ * sets up an AI unit */
 INS_fnc_initAIUnit = {
-	//if (isNil "INS_AI_onKilledListener") then { INS_AI_onKilledListener = compile preprocessFile "insurgency\modules\ai\INS_fnc_onDeathListener.sqf" };
 	_unit = _this; // test if kind of group or unit
 
 	_unit setSkill ['aimingAccuracy', 0.5];
@@ -377,5 +421,4 @@ INS_fnc_initAIUnit = {
 	_unit setSkill ['general', 0.5];
 
 	if (side _unit == east) then { _unit addEventHandler ["Killed", INS_fnc_onDeathListener]; };
-	// 
 };

@@ -1,3 +1,6 @@
+/* INS_CAS_trackAircraft
+ * args: aircraft
+ * tracks an aircraft on the map */
 INS_CAS_trackAircraft = {
 	private ["_plane"];
 	_plane = _this;
@@ -15,6 +18,9 @@ INS_CAS_trackAircraft = {
 	deleteMarker _marker;
 };
 
+/* INS_CAS_spawnPilot
+ * args: [position]
+ * spawns a pilot at the requested location, sets pilot behaviour, as well */
 INS_CAS_spawnPilot = {
 	private ["_pos", "_squadron", "_type", "_pilot"];
 	_pilotTypes = ["B_Pilot_F", "B_helicrew_F"];
@@ -22,7 +28,7 @@ INS_CAS_spawnPilot = {
 	_squadron = createGroup west;
 	_type = _pilotTypes call BIS_fnc_selectRandom;
 
-	_pilot = _squadron createUnit ["B_Pilot_F", _pos, [], 0, "FORM"];	
+	_pilot = _squadron createUnit ["B_Pilot_F", _pos, [], 0, "COLLIDE"];	
 
 	_squadron setBehaviour "STEALTH";
 	_squadron setSpeedMode "FULL";
@@ -31,6 +37,10 @@ INS_CAS_spawnPilot = {
 	_pilot	
 };
 
+/* INS_CAS_spawnAircraft
+ * args: [type, spawn position, target position]
+ * spawns an aircraft at the requested location pointed towards target location 
+ * if type equals "" then it will spawn a random aircraft */
 INS_CAS_spawnAircraft = {
 	private ["_type", "_position", "_target", "_vehicle"];
 	_airCraftTypes = ["B_Plane_CAS_01_F", "O_Plane_CAS_02_F", "I_Plane_Fighter_03_CAS_F", "I_Plane_Fighter_03_AA_F"];
@@ -48,6 +58,9 @@ INS_CAS_spawnAircraft = {
 	_vehicle
 };
 
+/* INS_CAS_initPlane
+ * args: [plane, pilot]
+ * puts the pilot in the plane and sets various parameters */
 INS_CAS_initPlane = {
 	private ["_plane", "_pilot"];
 	_plane = _this select 0;
@@ -57,6 +70,9 @@ INS_CAS_initPlane = {
 	_plane flyInheight 1000;
 };
 
+/* INS_CAS_notifyETA
+ * args: [plane, target location]
+ * notifies players of the ETA of the inbound CAS */
 INS_CAS_notifyETA = {
 	private ["_plane", "_targetLoc"];
 	_plane = _this select 0;
@@ -70,6 +86,9 @@ INS_CAS_notifyETA = {
 	(leader group driver _plane) sideChat format ["Cordinates recieved, CAS inbound - %1 seconds out", round (((getPos _plane) distance _targetLoc) / _speed)];	
 };
 
+/* INS_CAS_homeMissile
+ * args: [bomb object, target]
+ * helps guide the bomb towards a target */
 INS_CAS_homeMissile = {
 	private ["_velocityX", "_velocityY", "_velocityZ", "_target"];
 	_bomb = _this select 0;
@@ -94,6 +113,9 @@ INS_CAS_homeMissile = {
 	[_velocityX, _velocityY, _velocityZ]
 };
 
+/* INS_CAS_createOrdinance
+ * args: [plane, target location, type of ordinance, is CBU]
+ * creates the ordinance pointed towards a specific location */
 INS_CAS_createOrdinance = {
 	private ["_velocityZ", "_plane", "_targetLoc", "_isCBU", "_bomb", "_drop", "_target"];
 	_plane = _this select 0;
@@ -120,6 +142,9 @@ INS_CAS_createOrdinance = {
 	_bomb
 };
 
+/* INS_CAS_doCounterMeasure
+ * args: [plane]
+ * mostly for show */
 INS_CAS_doCounterMeasure = {
 	private ["_plane"];
 	_plane = _this select 0;
@@ -129,6 +154,9 @@ INS_CAS_doCounterMeasure = {
 	for "_i" from 1 to 4 do { _bool = _plane fireAtTarget [_plane, "CMFlareLauncher"]; sleep 0.3; };
 };
 
+/* INS_CAS_casTimeOut
+ * args: [time until next CAS]
+ * spawns a countdown - variable is broadcasted to all players */
 INS_CAS_casTimeOut = {
 	_timeout = _this select 0;
 	timeUntilNextCAS = _timeout;
@@ -140,6 +168,9 @@ INS_CAS_casTimeOut = {
 	};
 };
 
+/* INS_CAS_finishCAS
+ * args: none
+ * cleans up the map and removes all CAS actions (resets the menu) */
 INS_CAS_finishCAS = {
 	player removeAction INS_cancel_AID;
 	call INS_CAS_removeMenuItems;

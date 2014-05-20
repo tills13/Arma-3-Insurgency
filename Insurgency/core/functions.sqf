@@ -154,21 +154,10 @@ SL_fnc_findBuildings = {
 	private ["_center", "_radius", "_buildings"];
 	_center = _this select 0;
 	_radius = _this select 1;
+
 	_buildings = nearestObjects [_center, ["house"], _radius];
+
 	_buildings
-};
-
-SL_fnc_buildingPositions = {
-	private ["_cbpos"];
-	_house = _this select 0;
-	_cbpos = 0;
-	for "_x" from 1 to 100 do {
-		if (format ["%1",(_house buildingPos _x)] != "[0,0,0]") then {
-			_cbpos = _cbpos + 1;
-		};
-	};
-
-	_cbpos
 };
 
 // todo: make sure the condition works...
@@ -210,52 +199,13 @@ dl_fnc_gridPos = {
  	_mpos
 };
 
-getRandomRelativePositionLand = {		
-	private ["_target", "_distance", "_direction", "_position", "_bestPositions"];
-	
-	_target = _this select 0;
-	_distance = _this select 1;
-	
-	_direction = random 360;
-	_position = [_target, _distance, _direction] call BIS_fnc_relPos;
-		
-	if(surfaceIsWater [_position select 0,_position select 1]) then {
-		// handy! http://forums.bistudio.com/showthread.php?93897-selectBestPlaces-(do-it-yourself-documentation)
-		_bestPositions = selectbestplaces [[_position select 0,_position select 1],200, "(1 + houses)",10,1];
-		
-		_position = _bestPositions select 0;
-		_position = _position select 0;
-		_position set [count _position, 0];
-	};
-	
-	_position
-};
-
-getRandomRelativePositionWater = {		
-	private ["_target", "_distance", "_direction", "_position"];
-	
-	_target = _this select 0;
-	_distance = _this select 1;
-	
-	_direction = random 360;
-	_position = [_target, _distance, _direction] call BIS_fnc_relPos;
-	
-	while {!(surfaceIsWater [_position select 0,_position select 1])} do {
-		_direction = random 360;
-		_position = [_target, _distance, _direction] call BIS_fnc_relPos;
-	};
-	
-	_position
-};
-
 getCountBuildingPositions = {		
 	private ["_building", "_count"];
 	
 	_building = _this select 0;
 	_count = 0;
 	
-	while {str(_building buildingPos _count) != "[0,0,0]"} do 
-	{
+	while {str(_building buildingPos _count) != "[0,0,0]"} do {
 		_count = _count + 1;
 	};
 	
@@ -287,7 +237,6 @@ getSideOfRoadPosition = {
 	
 	_target = _this select 0;
 	_radius = if(count _this > 1) then { _this select 1 } else { 100 };
-	
 	_roads = _target nearRoads _radius;
 		
 	if(count _roads > 1) then {
@@ -353,11 +302,11 @@ INS_fnc_createIntel = {
 	INS_marker_array = INS_marker_array + [_mkr];
 };
 
-unitRanks = ["PRIVATE", "CORPORAL", "SERGEANT", "LIEUTENANT", "CAPTAIN", "MAJOR", "COLONEL"];
 INS_fnc_getRankModifier = {
 	_rank = _this;
+	_unitRanks = ["PRIVATE", "CORPORAL", "SERGEANT", "LIEUTENANT", "CAPTAIN", "MAJOR", "COLONEL"];
 
-	for "_i" from 0 to count unitRanks - 1 do { if (_rank == (unitRanks select _i)) exitWith { _rank = _i }; };
+	for "_i" from 0 to count _unitRanks - 1 do { if (_rank == (_unitRanks select _i)) exitWith { _rank = _i }; };
 
 	_rank
 };

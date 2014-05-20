@@ -4,10 +4,13 @@ if (isServer) then {
 	_eastRatio = 0.4;
 	_indRatio = 0.2;
 	_totalNumberOfGroups = 6;
-	//_spawnDistance = 1000;
+	_spawnDistance = 1000;
 	_despawnDistance = 2000;
 
+	// I don't think this works 
 	INS_ambient_cleanUp = {
+		_despawnDistance = _this select 0;
+
 		while { true } do {
 			_centerPos = playableUnits call BIS_fnc_selectRandom;
 
@@ -25,7 +28,7 @@ if (isServer) then {
 	};
 
 	INS_ambient_activeGroups = [];
-	[_despawnDistance] spawn INS_ambient_cleanUp; // clean up function 
+	[_despawnDistance] spawn INS_ambient_cleanUp; // clean up thread 
 
 	while { true } then {
 		sleep _updateTime;
@@ -56,14 +59,14 @@ if (isServer) then {
 
 				_wp = _helo addWaypoint [_helipad, 0];
 				_wp setWaypointBehaviour "AWARE";
-				_wp setWaypointBehaviour "AWARE";
 				_wp setWaypointType "UNLOAD";
+				_wp setWaypointStatements ["true", "this addWaypoint [_position, 0]; waitUntil { this distance _helipad > 2000 }; deleteVehicle this;"]
 
 				_group = _helo;
 				_type = "HELO";
 			};
 		};
 
-		INS_ambient_activeGroups = INS_ambient_activeGroups + [_type, _group];
+		if (!isNil {_group}) then { INS_ambient_activeGroups = INS_ambient_activeGroups + [_type, _group]; };
 	};
 };
