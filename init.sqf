@@ -2,6 +2,7 @@ if (!isServer && isNull player) then { isJIP = true; } else { isJIP = false; };
 if (!isDedicated) then { waitUntil {!isNull player && isPlayer player}; };
 enableSaving [false, false]; 
 
+#include "insurgency\core\ai_unitPools.sqf";
 #include "insurgency\core\functions.sqf"
 #include "insurgency\core\ai_functions.sqf"
 #include "insurgency\core\cas_functions.sqf"
@@ -18,6 +19,7 @@ loadParams = {
 	INS_params_doneInit = false;
 };
 
+onMapSingleClick "player setPos _pos;";
 // server and players
 call loadParams;
 //call compile preprocessFile "insurgency\modules\spawn\INS_fnc_spawn.sqf";
@@ -25,15 +27,15 @@ call loadParams;
 
 //server only
 if (isServer) then {
-	//[] execVM "insurgency\init_insurgency.sqf";
+	[] execVM "insurgency\init_insurgency.sqf";
 	//[] execVM "insurgency\modules\vehicles\INS_veh_repair.sqf";
 	//[] execVM "insurgency\modules\vehicles\INS_veh_respawn.sqf"; // respawn loop
-	//[] execVM "LV\ambientCombat.sqf";
+	
 };
 
 // players only
 if (!isDedicated) then 	{
-	[] execVM "insurgency\modules\players\INS_groups.sqf";
-	[] execVM "insurgency\modules\cas\init_cas.sqf";
-	[] execVM "insurgency\modules\vehicles\INS_heli_fastRope.sqf";
+	//[] execVM "insurgency\modules\players\INS_groups.sqf";
+	//[] execVM "insurgency\modules\cas\init_cas.sqf";
+	//[] execVM "insurgency\modules\vehicles\INS_heli_fastRope.sqf";
 };

@@ -70,7 +70,6 @@ if (isServer) then {
 		_index = 0;
 
 		{
-			//diag_log _x;
 			_group = _x;
 			_size = _group select 0;
 			_pos = _group select 1;
@@ -78,21 +77,22 @@ if (isServer) then {
 			{
 				private ["_x"];
 				// todo: put into one function
-				if (position _x distance _pos < 500 or (([_x, _pos] call dl_fnc_canSee) and position _x distance _pos < 1000)) then {
+				if (position _x distance _pos < 500) then { //or (([_x, _pos] call dl_fnc_canSee) and position _x distance _pos < 1000)) then {
 					_patrol = [_size, _pos] call INS_fnc_spawnGroup;
 					_mpatrols = _cache select 1;
 					_mpatrols = _mpatrols + [_patrol];
 					_cache set [1, _mpatrols];
 
 					_infantry set [_index, 0];
-					_infantry = _infantry - [0];
-					_cache set [0, _infantry];
 				};
 			} forEach _playableUnits;
 
 			sleep 0.1;
 			_index = _index + 1;
 		} forEach _infantry;
+
+		_infantry = _infantry - [0];
+		_cache set [0, _infantry];
 
 		if (time - _timeStart > 60) then {}; // one minute
 		if (time - _timeStart > 300) then {}; // five minutes

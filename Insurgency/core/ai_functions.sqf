@@ -1,4 +1,3 @@
-#include "insurgency\modules\ai\INS_ai_unitPools.sqf";
 INS_ai_patrol = compile preprocessfile "insurgency\modules\ai\INS_ai_unitPatrol.sqf";
 
 /* INS_fnc_spawnUnit
@@ -12,13 +11,16 @@ INS_fnc_spawnUnit = {
 	_special = _this select 5;
 
 	if (isNil { _type }) then {
-		_type = if (surfaceIsWater _position) then { diverPool call BIS_fnc_selectRandom; } else { infantryPool call BIS_fnc_selectRandom };
+		_isWater = surfaceIsWater _position;
+		_pool = call compile format["%1_%2", side _group, if (_isWater) then {"divers"} else {"infantry"}];
+		_type = _pool call BIS_fnc_selectRandom;
 	};
 
 	_unit = _group createUnit [_type, _position, _markers, _placement, _special];
 	_position call dl_fnc_addGridMarkerIfNotAlready;
 	_unit call INS_fnc_initAIUnit;
-	_unit	
+
+	_unit
 };
 
 /* INS_fnc_spawnGroup
@@ -26,7 +28,7 @@ INS_fnc_spawnUnit = {
 INS_fnc_spawnGroup = {
 	_size = _this select 0;
 	_position = _this select 1;
-	_side = if (count _this > 2) then { _this select 2; } else { east; };
+	_side = _this select 2;
 	_group = createGroup _side;
 
 	for "_i" from 0 to (_size - 1) do {
@@ -44,24 +46,44 @@ INS_fnc_spawnGroup = {
 	_group
 };
 
-// todo: steal from EOS
 /* INS_fnc_fillVehicleSeats 
  * args: [vehicle object, crew size] 
  * crew size -1 for random */
 INS_fnc_fillVehicleSeats = {
 	_vehicle = _this select 0;
-	_crew = _this select 1;
+	_size = if ((_this select 1) == -1) then { (random 10) max 5 } else { _this select 1 };
+	_side = _this select 2;
 
-	_emptySeats = _vehicle emptyPositions "cargo";
-	_seatsToFill = if (_crew == -1) then { ((random _emptySeats) + 2) } else { _crew };
+	_vehPositions = [typeOf _vehicle] call BIS_fnc_vehicleRoles;
+	_group = createGroup _side;
 
-	_group = [_seatsToFill, getPos _vehicle] call INS_fnc_spawnGroup;
+	diag_log str _vehPositions;
+	{
+		if (count units _group > _size) exitWith {};
+
+		_currentPosition = _x;
+		_pool = call compile format["%1_crews", toLower (str _side)];
+		_type = _pool call BIS_fnc_selectRandom;
+		_unit = [_type, _group, position _vehicle, [], 5, "CAN_COLLIDE"] call INS_fnc_spawnUnit;	
+
+		if (_currentPosition select 0 == "driver") then {					
+			_unit assignAsDriver _vehicle;
+			_unit moveInDriver _vehicle;
+		} else {
+			if (_currentPosition select 0 == "turret") then {
+				_unit assignAsGunner _vehicle;
+				_unit moveInTurret [_vehicle, _currentPosition select 1];
+			} else {
+				_unit moveInCargo _vehicle;
+			};
+		};
+	} forEach _vehPositions;
+
 	_vehicle setVariable ["group", _group];
-	{ _x moveincargo _vehicle } forEach (units _group);
 };
 
 /* INS_fnc_spawnHelicopter
- * args: [type, subtype, position, markers, special, crew count]
+ * args: [type, subtype, side, position, special, crew]
  * type: vehicle class (nil for random)
  * subtype: 0 - transport, 1 - attack 
  * crew: optional, not included means random*/
@@ -69,43 +91,60 @@ INS_fnc_spawnHelicopter = {
 	private ["_crew"];
 	_type = _this select 0;
 	_subtype = _this select 1;
+	_side = _this select 2;
+	_position = _this select 3;
+	_special = _this select 4;
+	_crew = if ((count _this) > 5) then { _this select 5 } else { -1 };
 
-	if (isNil { _type }) then { _type = if (_subtype == 0) then { transportChopperPool call BIS_fnc_selectRandom } else { attackChopperPool call BIS_fnc_selectRandom }; };
+	if (isNil { _type }) then {
+		_pool = call compile format["%1_%2Choppers", toLower (str _side), if (_subtype == 0) then {"transport"} else {"attack"}];
+		_type = _pool call BIS_fnc_selectRandom;
+	};
 
-	_position = _this select 2;
-	_markers = _this select 3;
-	_placement = _this select 4;
-	_special = _this select 5;
-	_crew = if ((count _this) > 6) then { _this select 6; } else { -1; };
+	if (debugMode == 1) then {
+        _m = createMarker [format ["box%1", random 1000], _position];
+        _m setMarkerShape "ICON"; 
+        _m setMarkerType "mil_dot";
+        _m setMarkerColor "ColorOrange";
+	};
 
-	_vehicle = createVehicle [_type, _position, _markers, _placement, _special];
+	_vehicle = createVehicle [_type, _position, [], 5, _special];
 	_position call dl_fnc_addGridMarkerIfNotAlready;
-	[_vehicle, _crew] call INS_fnc_fillVehicleSeats;
+	[_vehicle, _crew, _side] call INS_fnc_fillVehicleSeats;
+	_vehicle call INS_fnc_initVehicle;
 
 	_vehicle
 };
 
 /* INS_fnc_spawnVehicle
- * args: [type, subtype, position, markers, special, crew count]
+ * args: [type, subtype, group, position, special, crew]
  * type: vehicle class (nil for random)
- * subtype: 0 - transport, 1 - attack */
+ * subtype: 0 - normal, 1 - armored */
 INS_fnc_spawnVehicle = {
 	private ["_crew"];
 	_type = _this select 0;
-	_group = _this select 1;
-	_position = _this select 2;
-	_markers = _this select 3;
-	_placement = _this select 4;
-	_special = _this select 5;
-	_crew = if ((count _this) > 5) then { _this select 5; } else { -1; };
+	_subtype = _this select 1;
+	_side = _this select 2;
+	_position = _this select 3;
+	_special = _this select 4;
+	_crew = if ((count _this) > 5) then { _this select 5 } else { -1 };
 
 	if (isNil { _type }) then {
-		_type = if (surfaceIsWater _position) then { boatPool call BIS_fnc_selectRandom; } else { motorPool call BIS_fnc_selectRandom };
+		_isWater = surfaceIsWater _position;
+		_pool = call compile format["%1_%2", toLower (str _side), if (_isWater) then { "boats" } else { if (_subtype == 0) then { "vehicles" } else { "armored" } }];
+		_type = _pool call BIS_fnc_selectRandom;
 	};
 
-	_vehicle = createVehicle [_type, _position, _markers, _placement, _special];
+	if (debugMode == 1) then {
+        _m = createMarker [format ["box%1", random 1000], _position];
+        _m setMarkerShape "ICON"; 
+        _m setMarkerType "mil_dot";
+        _m setMarkerColor "ColorBlue";
+	};
+
+	_vehicle = createVehicle [_type, _position, [], 0, _special];
 	_position call dl_fnc_addGridMarkerIfNotAlready;
-	[_vehicle, _crew] call INS_fnc_fillVehicleSeats;
+	[_vehicle, _crew, _side] call INS_fnc_fillVehicleSeats;
 	_vehicle call INS_fnc_initVehicle;
 
 	_vehicle
@@ -150,6 +189,13 @@ INS_fnc_genInfantryPositions = {
 		if (getMarkerColor str _gridPos == "ColorRed") then {
 			_eCount = count nearestObjects[_pos, ["Man", "Car"], 100];
 			if (_eCount < 5) then { _groups = _groups + [[2, _pos]]; };
+
+				if (debugMode == 1) then {
+			        _m = createMarker [format ["box%1", random 1000], _pos];
+			        _m setMarkerShape "ICON"; 
+			        _m setMarkerType "mil_dot";
+			        _m setMarkerColor "ColorBlue";
+				};
 		};
 	};
 
@@ -158,7 +204,15 @@ INS_fnc_genInfantryPositions = {
 
 		_spawnPos call dl_fnc_addGridMarkerIfNotAlready;
 		_eCount = count nearestObjects[_spawnPos, ["Man", "Car"], 100];
-		if (_eCount < 5) then { _groups = _groups + [[round (random 4) + 1, _spawnPos]]; };
+		if (_eCount < 5) then { 
+			_groups = _groups + [[round (random 4) + 1, _spawnPos]];
+			if (debugMode == 1) then {
+		        _m = createMarker [format ["box%1", random 1000], _spawnPos];
+		        _m setMarkerShape "ICON"; 
+		        _m setMarkerType "mil_dot";
+		        _m setMarkerColor "ColorBlue";
+			};
+		};
 
 	};
 
@@ -201,7 +255,8 @@ INS_fnc_spawnLightVehicles = {
 
 	for "_i" from 0 to (random 1) do {
 		_spawnPos = [_areaPos, 0, _areaRad, 0, 1, 20, 0] call BIS_fnc_findSafePos;
-		_vehicle = [nil, _spawnPos, [], 0, "None"] call INS_fnc_spawnVehicle;
+		_subtype = if (random 10 > 6) then { 1 } else { 0 };
+		_vehicle = [nil, _subtype, east, "None"] call INS_fnc_spawnVehicle;
 		_vehicles = _vehicles + [_vehicle]; // match cached format
 	};
 
@@ -222,7 +277,7 @@ INS_fnc_spawnLightVehiclesCached = {
 		_type = _x select 1;
 		_pos = _x select 2;
 
-		_vehicle = [_type, _pos, [], 5, "None", _crew] call INS_fnc_spawnVehicle;
+		_vehicle = [_type, 0, east, _pos, "None", _crew] call INS_fnc_spawnVehicle;
 		_vehicles = _vehicles + [_vehicle];
 	} forEach _lvcache;
 
@@ -263,9 +318,10 @@ INS_fnc_spawnStaticUnits = {
 
 	_statics = [];
 
+	// todo: change staticPool
 	for "_i" from 0 to (random 1) do {
 		_spawnPos = [_areaPos, 0, _areaRad, 0, 1, 20, 0] call BIS_fnc_findSafePos;
-		_static = [(staticPool call BIS_fnc_selectRandom), _spawnPos, [], 5, "None"] call INS_fnc_spawnVehicle;
+		_static = [(staticPool call BIS_fnc_selectRandom), 0, east, _spawnPos, "None"] call INS_fnc_spawnVehicle;
 		_statics = _statics + [_static];
 	};
 
@@ -285,7 +341,7 @@ INS_fnc_spawnStaticUnitsCached = {
 		_type = _x select 1;
 		_pos = _x select 2;
 
-		_static = [_type, _pos, [], 5, "None", _crew] call INS_fnc_spawnVehicle;
+		_static = [_type, 0, east, _pos, "None", _crew] call INS_fnc_spawnVehicle;
 		_statics = _statics + [_static];
 	} forEach _spcache;
 
@@ -401,7 +457,7 @@ INS_fnc_onDeathListener = {
  * args: vehicle
  * sets up a vehicle */
 INS_fnc_initVehicle = {
-	_unit = _this; // test if kind of group or unit
+	_unit = _this;
 };
 
 /* INS_fnc_initAIUnit

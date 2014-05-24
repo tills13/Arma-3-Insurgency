@@ -35,8 +35,9 @@ class Mission
 	};
 	addOnsAuto[]=
 	{
-		"A3_Air_F_Heli_Light_01",
+		"A3_Characters_F_BLUFOR",
 		"A3_Air_F_EPB_Heli_Light_03",
+		"A3_Air_F_Heli_Light_01",
 		"A3_Soft_F_EPC_Truck_03",
 		"A3_Structures_F_Mil_Flags",
 		"A3_Air_F_Heli_Light_02",
@@ -53,7 +54,6 @@ class Mission
 		"A3_Air_F_Beta_Heli_Transport_02",
 		"Air_C130J",
 		"A3_Soft_F_HEMTT",
-		"jdg_carrier",
 		"a3_map_altis"
 	};
 	randomSeed=9788479;
@@ -106,14 +106,16 @@ class Mission
 				items=1;
 				class Item0
 				{
-					position[]={24492.449,-31.204533,17038.594};
-					special="FLY";
+					position[]={3090.5835,12.049413,18073.943};
+					special="CARGO";
 					id=1;
 					side="WEST";
-					vehicle="B_Heli_Light_01_F";
+					vehicle="B_Soldier_F";
 					player="PLAYER COMMANDER";
 					leader=1;
 					skill=0.60000002;
+					syncId=0;
+					synchronizations[]={1};
 				};
 			};
 		};
@@ -168,7 +170,7 @@ class Mission
 			vehicle="Flag_US_F";
 			skill=0.40000001;
 			text="FLAG";
-			init="null = this execVM ""scripts\flagMenu.sqf"";";
+			init="null = this execVM ""server\flagMenu.sqf"";";
 		};
 		class Item5
 		{
@@ -399,12 +401,14 @@ class Mission
 		};
 		class Item26
 		{
-			position[]={26621.898,0,16944.438};
-			azimut=40.995716;
+			position[]={3085.8438,11.940085,18074.262};
+			special="NONE";
 			id=28;
 			side="EMPTY";
-			vehicle="JDG_carrier_Spawner";
+			vehicle="B_Heli_Light_01_armed_F";
 			skill=0.60000002;
+			syncId=1;
+			synchronizations[]={0};
 		};
 	};
 	class Markers
