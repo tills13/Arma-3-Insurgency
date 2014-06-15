@@ -4,7 +4,7 @@ if (isServer) then {
 	_eastRatio = 0.4;
 	_indRatio = 0.2;
 	_totalNumberOfGroups = 1;
-	_spawnDistance = 500;
+	_spawnDistance = 500; // helos spawn at + 1000 and fly in
 	_despawnDistance = 1000;
 	INS_ambient_cleanUpMutex = true;
 
@@ -76,16 +76,21 @@ if (isServer) then {
 		};
 	};
 
-	fnc_helo_waypoint_complete = {
-		_helo = missionNamespace getVariable str (_this select 0);
-		_position = _this select 1;
+	INS_ambient_vehicleToGroup = {
+		_vehicle = _this select 0;
+		_group = _this select 1;
 
-		_heloGroup = createGroup (side driver _helo);
-		crew _helo join _heloGroup;
+		waitUntil { INS_ambient_cleanUpMutex };
+		INS_ambient_cleanUpMutex = false;
 
-		_m = _heloGroup addWaypoint [_position, 0];
-		_m setWaypointType "MOVE";
-		_m setWaypointStatements ['true', format['deleteVehicle %1', _helo]];
+		for "_i" from 0 to (count INS_ambient_activeGroups - 1) do {
+			_index = INS_ambient_activeGroups select _i;
+			_type = _index select 1;
+
+			if (_type == "HELO" and (_index select 0) == _vehicle) exitWith { INS_ambient_activeGroups set [_i, [_group, "INFANTRY"]] };
+		};
+
+		INS_ambient_cleanUpMutex = false;
 	};
 
 	INS_ambient_activeGroups = [];
@@ -136,16 +141,27 @@ if (isServer) then {
 					_helo doMove _desination;
 
 					if (_subtype == 0) then {
-						[_helo, _desination] spawn {
+						[_helo, _desination, _position] spawn {
 							_helo = _this select 0;
 							_desination = _this select 1;
-							waitUntil {  _helo distance _desination > 260 };
+							_originalPos = _this select 2;
+							_helo_group = _helo getVariable "group";
+
+							waitUntil { _helo distance _desination > 260 };
 
 							doStop _helo;
 							_helo land "GET OUT";
 
-							while { (position _helo) select 2 > 3 } do { sleep 2; };
-							{ unassignVehicle _x } forEach crew _helo;
+							waitUntil { sleep 2; (position _helo) select 2 > 3 };
+							{ unassignVehicle _x } forEach _helo_group;
+
+							[_helo, _helo_group] call INS_ambient_vehicleToGroup;
+
+							_helo doMove _originalPos;
+
+							waitUntil { sleep 1; _helo distance _desination > 1000 };
+							{ deleteVehicle _x } forEach crew _helo;
+							deleteVehicle _helo;
 						};
 
 				        _m = createMarker [format ["box%1", random 1000], _desination];

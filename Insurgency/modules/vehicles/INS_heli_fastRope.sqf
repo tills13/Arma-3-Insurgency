@@ -203,15 +203,6 @@ INS_heli_fnc_createropes = {
 	INS_heli_mutexAction = false;
 };
 
-/*[] spawn {
-	while { true } do {
-		sleep 1;
-		player sideChat str random 5;
-		player sideChat str call compile "(player != driver vehicle player)";
-		player sideChat str call compile "(call INS_heli_fnc_pilotCanFastRope)";
-	};
-};*/
-
 player addAction[STR_TOSS_ROPES, INS_heli_fnc_createropes, [], 1.5, false, false, '','[] call INS_heli_fnc_ropes_cond'];
 player addAction[STR_CUT_ROPES, INS_heli_fnc_removeropes, [], 1.5, false, false, '','not INS_heli_mutexAction and count ((vehicle player) getVariable ["INS_heli_ropes", []]) != 0'];
 player addAction[STR_FAST_ROPE, INS_heli_fnc_fastRope, [], 1.5, false, false, '','not INS_heli_mutexAction and count ((vehicle player) getVariable ["INS_heli_ropes", []]) != 0 and ((player != driver vehicle player) or (call INS_heli_fnc_pilotCanFastRope))'];

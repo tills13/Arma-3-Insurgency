@@ -55,18 +55,20 @@ INS_fnc_fillVehicleSeats = {
 	_side = _this select 2;
 
 	_vehPositions = [typeOf _vehicle] call BIS_fnc_vehicleRoles;
-	_group = createGroup _side;
+	_helo_group = createGroup _side;
+	_helo_crew = createGroup _side;
 
 	diag_log str _vehPositions;
+
 	{
-		if (count units _group > _size) exitWith {};
+		if (count units _helo_group > _size) exitWith {};
 
 		_currentPosition = _x;
 		_pool = call compile format["%1_crews", toLower (str _side)];
 		_type = _pool call BIS_fnc_selectRandom;
-		_unit = [_type, _group, position _vehicle, [], 5, "CAN_COLLIDE"] call INS_fnc_spawnUnit;	
+		_unit = [_type, if (_currentPosition select 0 in ["driver", "turret"]) then { _helo_crew } else { _helo_group }, position _vehicle, [], 5, "CAN_COLLIDE"] call INS_fnc_spawnUnit;	
 
-		if (_currentPosition select 0 == "driver") then {					
+		if (_currentPosition select 0 == "driver") then {				
 			_unit assignAsDriver _vehicle;
 			_unit moveInDriver _vehicle;
 		} else {
@@ -79,7 +81,7 @@ INS_fnc_fillVehicleSeats = {
 		};
 	} forEach _vehPositions;
 
-	_vehicle setVariable ["group", _group];
+	_vehicle setVariable ["group", _helo_group];
 };
 
 /* INS_fnc_spawnHelicopter
