@@ -23,12 +23,6 @@ INS_prepareZones = {
 			};
 		} forEach _buildings;
 
-		_m = createMarker [format ["box%1", random 1000], _areaPos];
-        _m setMarkerShape "ELLIPSE";
-        _m setMarkerAlpha 0.3;
-        _m setMarkerSize [_areaRad + 300, _areaRad + 300];
-        _m setMarkerColor "ColorRed";
-
 		_trigger = createTrigger ["EmptyDetector", _areaPos];
 		_trigger setTriggerActivation ["west", "present", true];
 		_trigger setTriggerArea [_areaRad + 300, _areaRad + 300, 0, false];
@@ -95,7 +89,7 @@ dl_fnc_hintMP = {
 };
 
 dl_fnc_hintMPHelper = {
-	hint _this;
+	hint parseText _this;
 };
 
 dl_fnc_getCityNameFromPath = {

@@ -59,7 +59,7 @@ if (isServer) then {
 	waitUntil { triggerActivated _trigger };
 	_timeStart = time;
 
-	if (debugMode == 1) then { diag_log format["%1 zone activated", _area select 0]; };
+	if (true) then { diag_log format["%1 zone activated", _area select 0]; };
 	_cache = [_trigger, _area] call INS_ai_fnc_spawnUnits;
 	_infantry = _cache select 0;
 
@@ -78,7 +78,7 @@ if (isServer) then {
 				private ["_x"];
 				// todo: put into one function
 				if (position _x distance _pos < 500) then { //or (([_x, _pos] call dl_fnc_canSee) and position _x distance _pos < 1000)) then {
-					_patrol = [_size, _pos] call INS_fnc_spawnGroup;
+					_patrol = [_size, _pos, east] call INS_fnc_spawnGroup;
 					_mpatrols = _cache select 1;
 					_mpatrols = _mpatrols + [_patrol];
 					_cache set [1, _mpatrols];

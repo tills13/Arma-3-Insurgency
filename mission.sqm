@@ -31,13 +31,13 @@ class Mission
 		"ttt_nimitzelevator",
 		"TTT_NimitzCatapult",
 		"JS_JC_FA18",
-		"A3_Air_F_EPC_Plane_CAS_02"
+		"A3_Air_F_EPC_Plane_CAS_02",
+		"a3_characters_f"
 	};
 	addOnsAuto[]=
 	{
-		"A3_Characters_F_BLUFOR",
-		"A3_Air_F_EPB_Heli_Light_03",
 		"A3_Air_F_Heli_Light_01",
+		"A3_Air_F_EPB_Heli_Light_03",
 		"A3_Soft_F_EPC_Truck_03",
 		"A3_Structures_F_Mil_Flags",
 		"A3_Air_F_Heli_Light_02",
@@ -106,23 +106,21 @@ class Mission
 				items=1;
 				class Item0
 				{
-					position[]={3090.5835,12.049413,18073.943};
-					special="CARGO";
+					position[]={3091.2334,12.158819,18073.063};
+					special="NONE";
 					id=1;
 					side="WEST";
-					vehicle="B_Soldier_F";
+					vehicle="B_Heli_Light_01_armed_F";
 					player="PLAYER COMMANDER";
 					leader=1;
 					skill=0.60000002;
-					syncId=0;
-					synchronizations[]={1};
 				};
 			};
 		};
 	};
 	class Vehicles
 	{
-		items=27;
+		items=26;
 		class Item0
 		{
 			position[]={26778.732,22.136076,24614.938};
@@ -398,17 +396,6 @@ class Mission
 			side="EMPTY";
 			vehicle="B_Truck_01_transport_F";
 			skill=0.60000002;
-		};
-		class Item26
-		{
-			position[]={3085.8438,11.940085,18074.262};
-			special="NONE";
-			id=28;
-			side="EMPTY";
-			vehicle="B_Heli_Light_01_armed_F";
-			skill=0.60000002;
-			syncId=1;
-			synchronizations[]={0};
 		};
 	};
 	class Markers

@@ -256,7 +256,7 @@ INS_fnc_spawnLightVehicles = {
 	for "_i" from 0 to (random 1) do {
 		_spawnPos = [_areaPos, 0, _areaRad, 0, 1, 20, 0] call BIS_fnc_findSafePos;
 		_subtype = if (random 10 > 6) then { 1 } else { 0 };
-		_vehicle = [nil, _subtype, east, "None"] call INS_fnc_spawnVehicle;
+		_vehicle = [nil, _subtype, east, _spawnPos, "None"] call INS_fnc_spawnVehicle;
 		_vehicles = _vehicles + [_vehicle]; // match cached format
 	};
 
@@ -307,6 +307,7 @@ INS_fnc_cacheStaticPlacements = {
 };
 
 // todo: ... do units enter the static placement?  - no
+// todo: add _side param
 /* INS_fnc_spawnStaticUnits
  * args: [area name (not used), area position, area radius]
  * generates positions and spawns static positions */
@@ -318,10 +319,9 @@ INS_fnc_spawnStaticUnits = {
 
 	_statics = [];
 
-	// todo: change staticPool
 	for "_i" from 0 to (random 1) do {
 		_spawnPos = [_areaPos, 0, _areaRad, 0, 1, 20, 0] call BIS_fnc_findSafePos;
-		_static = [(staticPool call BIS_fnc_selectRandom), 0, east, _spawnPos, "None"] call INS_fnc_spawnVehicle;
+		_static = [(east_statics call BIS_fnc_selectRandom), 0, east, _spawnPos, "None"] call INS_fnc_spawnVehicle;
 		_statics = _statics + [_static];
 	};
 
@@ -341,7 +341,7 @@ INS_fnc_spawnStaticUnitsCached = {
 		_type = _x select 1;
 		_pos = _x select 2;
 
-		_static = [_type, 0, east, _pos, "None", _crew] call INS_fnc_spawnVehicle;
+		_static = [_type, 0, east, _pos, "None", _pos, _crew] call INS_fnc_spawnVehicle;
 		_statics = _statics + [_static];
 	} forEach _spcache;
 
