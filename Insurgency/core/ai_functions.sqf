@@ -47,26 +47,29 @@ INS_fnc_spawnGroup = {
 };
 
 /* INS_fnc_fillVehicleSeats 
- * args: [vehicle object, crew size] 
+ * args: [vehicle object, crew size, side] 
  * crew size -1 for random */
 INS_fnc_fillVehicleSeats = {
 	_vehicle = _this select 0;
-	_size = if ((_this select 1) == -1) then { (random 10) max 5 } else { _this select 1 };
+	diag_log (typeName  (_this select 1));
+	_size = if (typeName  (_this select 1) == "Array") then { (random 9) max 5 } else { // gonna leave this in just to make sure
+		if ((_this select 1) == -1) then { (random 10) max 5 } else { _this select 1 } // should always be this
+	};
+
+	//_size = if ((_this select 1) == -1) then { (random 10) max 5 } else { _this select 1 };
 	_side = _this select 2;
 
 	_vehPositions = [typeOf _vehicle] call BIS_fnc_vehicleRoles;
-	_helo_group = createGroup _side;
-	_helo_crew = createGroup _side;
-
-	diag_log str _vehPositions;
+	_veh_group = createGroup _side;
+	_veh_crew = createGroup _side;
 
 	{
-		if (count units _helo_group > _size) exitWith {};
+		if (count units _veh_group > _size) exitWith {};
 
 		_currentPosition = _x;
 		_pool = call compile format["%1_crews", toLower (str _side)];
 		_type = _pool call BIS_fnc_selectRandom;
-		_unit = [_type, if (_currentPosition select 0 in ["driver", "turret"]) then { _helo_crew } else { _helo_group }, position _vehicle, [], 5, "CAN_COLLIDE"] call INS_fnc_spawnUnit;	
+		_unit = [_type, if (_currentPosition select 0 in ["driver", "turret"]) then { _veh_crew } else { _veh_group }, position _vehicle, [], 5, "CAN_COLLIDE"] call INS_fnc_spawnUnit;	
 
 		if (_currentPosition select 0 == "driver") then {				
 			_unit assignAsDriver _vehicle;
@@ -81,7 +84,7 @@ INS_fnc_fillVehicleSeats = {
 		};
 	} forEach _vehPositions;
 
-	_vehicle setVariable ["group", _helo_group];
+	_vehicle setVariable ["group", _veh_group];
 };
 
 /* INS_fnc_spawnHelicopter
@@ -224,7 +227,7 @@ INS_fnc_genInfantryPositions = {
 /* INS_fnc_cacheInfantry
  * args: lightvehicle array
  * reformats lightvehicle array to cache format */
-INS_fnc_cacheLightVehicles = {
+INS_fnc_cacheAllVehicles = {
 	_lvatrols = _this;
 	_lvgroups = [];
 
@@ -244,10 +247,10 @@ INS_fnc_cacheLightVehicles = {
 
 // todo: spawn them out of the zone and have them drive in...
 // todo: make the vehicles patrol psuedo-randomly
-/* INS_fnc_spawnLightVehicles
+/* INS_fnc_spawnAllVehicles
  * args: [area name (not used), area position, area radius]
  * generates positions and spawns light vehicles */
-INS_fnc_spawnLightVehicles = {
+INS_fnc_spawnAllVehicles = {
 	private ["_group", "_units", "_areaClassName", "_areaPos", "_areaRad"];
 	_areaClassName = _this select 0;
 	_areaPos = _this select 1;
@@ -269,10 +272,10 @@ INS_fnc_spawnLightVehicles = {
 };
 
 // todo: make them patrol
-/* INS_fnc_spawnLightVehiclesCached
+/* INS_fnc_spawnAllVehiclesCached
  * args: cached vehicle array
  * spawns all cached vehicles from the array */
-INS_fnc_spawnLightVehiclesCached = {
+INS_fnc_spawnAllVehiclesCached = {
 	private ["_group", "_units", "_areaClassName", "_areaPos", "_areaRad"];
 	_lvcache = _this select 0;
 	_vehicles = [];
@@ -282,6 +285,7 @@ INS_fnc_spawnLightVehiclesCached = {
 		_type = _x select 1;
 		_pos = _x select 2;
 
+		diag_log ("INS_fnc_spawnAllVehiclesCached " + str _crew);
 		_vehicle = [_type, 0, east, _pos, "None", _crew] call INS_fnc_spawnVehicle;
 		_vehicles = _vehicles + [_vehicle];
 	} forEach _lvcache;
@@ -346,7 +350,8 @@ INS_fnc_spawnStaticUnitsCached = {
 		_type = _x select 1;
 		_pos = _x select 2;
 
-		_static = [_type, 0, east, _pos, "None", _pos, _crew] call INS_fnc_spawnVehicle;
+		diag_log ("INS_fnc_spawnStaticUnitsCached " + str _crew);
+		_static = [_type, 0, east, _pos, "None", _crew] call INS_fnc_spawnVehicle;
 		_statics = _statics + [_static];
 	} forEach _spcache;
 
