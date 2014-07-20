@@ -256,9 +256,12 @@ INS_fnc_spawnLightVehicles = {
 	_vehicles = [];
 
 	for "_i" from 0 to (random 1) do {
-		_spawnPos = [_areaPos, 0, _areaRad, 0, 1, 20, 0] call BIS_fnc_findSafePos;
+		_spawnPos = [_areaPos, _areaRad, _areaRad + 100, 0, 1, 20, 0] call BIS_fnc_findSafePos; // spawn outside
+		_destination = [_areaPos, 0, _areaRad / 2, 0, 1, 20, 0] call BIS_fnc_findSafePos;
+
 		_subtype = if (random 10 > 6) then { 1 } else { 0 };
 		_vehicle = [nil, _subtype, east, _spawnPos, "None"] call INS_fnc_spawnVehicle;
+		
 		_vehicles = _vehicles + [_vehicle]; // match cached format
 	};
 

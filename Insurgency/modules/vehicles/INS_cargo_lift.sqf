@@ -110,9 +110,7 @@ INS_cargo_getNearestObjects = {
 	_cargo = _carrier getVariable "cargo";
 
 	_objs = [];
-	{
-		if !(_x in _cargo) then { _objs = _objs + [_x] };
-	} forEach _nearObjs;
+	{ if !(_x in _cargo) then { _objs = _objs + [_x] }; } forEach _nearObjs;
 
 	_objs
 };

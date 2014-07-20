@@ -7,6 +7,7 @@ enableSaving [false, false];
 #include "insurgency\core\ai_functions.sqf"
 #include "insurgency\core\cas_functions.sqf"
 #include "insurgency\core\cache_functions.sqf"
+#include "insurgency\core\task_functions.sqf";
 
 loadParams = {
 	diag_log "Params : ------------------";
@@ -19,7 +20,6 @@ loadParams = {
 	INS_params_doneInit = false;
 };
 
-//onMapSingleClick "player setPos _pos;";
 // server and players
 call loadParams;
 //call compile preprocessFile "insurgency\modules\spawn\INS_fnc_spawn.sqf";
@@ -29,8 +29,7 @@ call compile preprocessFile "insurgency\modules\revive\init_revive.sqf";
 if (isServer) then {
 	[] execVM "insurgency\init_insurgency.sqf";
 	[] execVM "insurgency\modules\vehicles\INS_veh_repair.sqf";
-	[] execVM "insurgency\modules\vehicles\INS_veh_respawn.sqf"; // respawn loop
-	
+	[] execVM "insurgency\modules\vehicles\INS_veh_respawn.sqf";
 };
 
 // players only

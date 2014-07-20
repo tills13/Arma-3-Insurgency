@@ -7,13 +7,9 @@ if (isServer) then {
 			_cityClassName = _x select 0;
 			_cityName = _x select 1;
 			_cityPos = _x select 2;
-			_cityRadA = _x select 3;
-			_cityRadB = _x select 4;
-			_cityType = _x select 5;
-			_cityAngle = _x select 6;
+			_cityRadius = (_x select 3) max (_x select 4);
 
-			if(_cityRadB > _cityRadA) then { _cityRadA = _cityRadB; };
-			_cacheBuildings = [_cityPos, _cityRadA] call SL_fnc_findBuildings;
+			_cacheBuildings = [_cityPos, _cityRadius] call SL_fnc_findBuildings;
 
 			for "_i" from 1 to INS_intelItems step 1 do {
 				if (count _cacheBuildings > 0) then {
@@ -24,13 +20,6 @@ if (isServer) then {
 					_laptop = createVehicle [_selectedItem, _intelPosition, [], 0, "None"];
 					[_laptop, "Gather Intel", INS_fnc_intelPickup, [], true, true, "true"] call dl_fnc_addActionMP; // might not work - test pls
 					_laptop setPos _intelPosition; // Move the intel to the above select position
-
-					if (debugMode == 1) then {
-						_m = createMarker [format ["intel%1", random 1000], _intelPosition];
-			            _m setMarkerShape "ICON"; 
-			            _m setMarkerType "mil_dot";
-			            _m setMarkerColor "ColorRed";
-					};
 				};
 			};
 		} forEach _cities;

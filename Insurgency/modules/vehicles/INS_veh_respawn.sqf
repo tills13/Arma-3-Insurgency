@@ -1,9 +1,10 @@
 INS_veh_updateLocation = {
 	private ["_vehicle"];
 
-	_vehicle = _this select 0;
-	_newPos = _this select 1;
-	_newDir = _this select 2;
+	_vehicle = (_this select 0);
+	_newPos = (_this select 1);
+	_newDir = (_this select 2);
+
 	_vehicle setVariable ["RES_ORIG_LOC", _newPos];
 	_vehicle setVariable ["RES_ORIG_DIR", _newDir];
 	if (debugMode == 1) then { diag_log format ["updated %1's location to %2 (%3)", vehicleVarName _vehicle, _newPos, _newDir]; };
@@ -11,6 +12,7 @@ INS_veh_updateLocation = {
 
 INS_veh_initParams = { // should be executed on every client
 	private ["_vehicle"];
+
 	_vehicle = (_this select 0);
 	_name = (_this select 1);
 	_init = (_this select 2);
@@ -47,7 +49,7 @@ INS_veh_addVehtoArray = {
 };
 
 waitUntil { !isNil "INS_params_doneInit"; };
-if (isNil "vehicleArray") then { vehicleArray = []; publicVariable "vehicleArray"; };
+if (isNil "vehicleArray") then { vehicleArray = []; /*publicVariable "vehicleArray";*/ };
 if (isServer) then { // server loop
 	if (count _this == 0) then { // called script to loop
 		if (debugMode == 1) then { diag_log format["INS_VEH_RESPAWN: starting respawn loop"]; };
@@ -55,7 +57,6 @@ if (isServer) then { // server loop
 			{
 				_veh = _x;
 
-				_name = _veh getVariable "RES_NAME";
 				_destroyedRespawnDelay = _veh getVariable "RES_DESTROY_RESPAWN_DELAY";
 				_abandonedRespawnDelay = _veh getVariable "RES_ABANDON_RESPAWN_DELAY";
 				_abandon = _veh getVariable "RES_ABANDON";
@@ -79,22 +80,30 @@ if (isServer) then { // server loop
 
 				if (!alive _veh) then { _respawn = true; sleep _destroyedRespawnDelay; };
 				if (_respawn) then {
-					_init = _veh getVariable "RES_INIT";
-					_type = _veh getVariable "RES_ORIG_TYPE";
-					_origLoc = _veh getVariable "RES_ORIG_LOC";
-					_origDir = _veh getVariable "RES_ORIG_DIR";
+					[_veh, _abandoned] spawn {
+						_veh = _this select 0; 
+						_abandoned = _this select 1; 
 
-					_reason = if (_abandoned) then {"abandoned"} else {"destroyed"};
-					[format["respawning %1 vehicle <t color = '#ff6347'>%2</t>", _reason, _name], true, true] call dl_fnc_hintMP;
+						_name = _veh getVariable "RES_NAME";
+						_init = _veh getVariable "RES_INIT";
+						_type = _veh getVariable "RES_ORIG_TYPE";
+						_origLoc = _veh getVariable "RES_ORIG_LOC";
+						_origDir = _veh getVariable "RES_ORIG_DIR";
+						_destroyedRespawnDelay = _veh getVariable "RES_DESTROY_RESPAWN_DELAY";
+						_abandonedRespawnDelay = _veh getVariable "RES_ABANDON_RESPAWN_DELAY";
 
-					vehicleArray = vehicleArray - [_veh];
-					deleteVehicle _veh;
-					
-					sleep 3;
+						_reason = if (_abandoned) then {"abandoned"} else {"destroyed"};
+						[format["respawning %1 vehicle: <t color = '#ff6347'>%2</t>", _reason, _name], true, true] call dl_fnc_hintMP;
 
-					_veh = _type createVehicle _origLoc;
-					_veh setDir _origDir;
-					[_veh, _name, _destroyedRespawnDelay, _abandonedRespawnDelay, _init] call INS_veh_addVehtoArray;
+						vehicleArray = vehicleArray - [_veh];
+						deleteVehicle _veh;
+						
+						sleep 3;
+
+						_veh = _type createVehicle _origLoc;
+						_veh setDir _origDir;
+						[_veh, _name, _destroyedRespawnDelay, _abandonedRespawnDelay, _init] call INS_veh_addVehtoArray;
+					};
 				};
 			} forEach vehicleArray;
 
