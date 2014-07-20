@@ -26,7 +26,7 @@ INS_prepareZones = {
 		_trigger = createTrigger ["EmptyDetector", _areaPos];
 		_trigger setTriggerActivation ["west", "present", true];
 		_trigger setTriggerArea [_areaRad + 300, _areaRad + 300, 0, false];
-		_trigger setTriggerStatements ["this", format["%1 call SL_fnc_createTriggers; [%2, thisList] execVM 'insurgency\modules\ai\INS_ai_unitHandler.sqf'; %2 execVM 'insurgency\modules\ieds\INS_ieds.sqf';", _markers, _area], ""];
+		_trigger setTriggerStatements ["this", format["%1 call dl_fnc_createTriggers; [%2, thisList] execVM 'insurgency\modules\ai\INS_ai_unitHandler.sqf'; %2 execVM 'insurgency\modules\ieds\INS_ieds.sqf';", _markers, _area], ""];
 
 		missionNamespace setVariable [format["%1_trigger", _areaClassName], _trigger];
 	} forEach (call SL_fnc_urbanAreas);
@@ -155,25 +155,15 @@ SL_fnc_findBuildings = {
 };
 
 // todo: make sure the condition works...
-SL_fnc_createTriggers = {
+dl_fnc_createTriggers = {
 	private ["_markers", "_pos", "_trigger"];
 
 	{
-		pos = getMarkerPos _x;
-		_trigger = createTrigger ["EmptyDetector", pos];
+		_pos = getMarkerPos _x;
+		_trigger = createTrigger ["EmptyDetector", _pos];
 		_trigger setTriggerActivation ["ANY", "PRESENT", false];
 		_trigger setTriggerArea [50, 50, 0, true];
-		_trigger setTriggerStatements ["", format["
-			_curColor = getMarkerColor '%1';
-
-			if ({(side _x) == east} count thisList == 0 and {(side _x) == west } count thisList >= 1) then {
-				if (_curColor == 'ColorRed' || _curColor == 'ColorYellow') then { '%1' setMarkerColor 'ColorGreen' };
-			};
-
-			if ({(side _x) == east} count thisList >= 1 and {(side _x) == west } count thisList == 0) then {
-				if (_curColor == 'ColorGreen') then { '%1' setMarkerColor 'ColorYellow' };
-			};
-		", _x], ""];
+		_trigger setTriggerStatements ["{(side _x) == east} count thisList == 0 AND {(side _x) == west } count thisList >= 1", format["""%1"" setMarkerColor ""ColorGreen"";",_x], ""];
 	} foreach _this;
 };
 
@@ -320,6 +310,7 @@ dl_fnc_addGridMarkerForPosition = {
 	_mkr setMarkerSizeLocal [50, 50];
 	_mkr setMarkerColor "ColorRed";
 	_mkr setMarkerAlphaLocal 0.5;
+	[_mkr] call dl_fnc_createTriggers;
 
 	_mkr
 };
