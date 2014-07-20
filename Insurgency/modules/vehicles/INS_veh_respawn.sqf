@@ -43,7 +43,7 @@ INS_veh_addVehtoArray = {
 	_vehicle setVariable ["RES_ORIG_DIR", getDir _vehicle];
 
 	[[_vehicle, _name, _init], "INS_veh_initParams", true, true] spawn BIS_fnc_MP; // init parameters
-	if (debugMode == 1) then { diag_log format["INS_VEH_RESPAWN: adding %1 to respawn array", _name]; };
+	if (debugMode == 1) then { diag_log format["INS_VEH_RESPAWN: adding %1 to respawn array [%2, %3]", _name, _destroyedRespawnDelay, _abandonedRespawnDelay]; };
 
 	vehicleArray = vehicleArray + [_vehicle];
 };
@@ -57,6 +57,7 @@ if (isServer) then { // server loop
 			{
 				_veh = _x;
 
+				_name = _veh getVariable "RES_NAME";
 				_destroyedRespawnDelay = _veh getVariable "RES_DESTROY_RESPAWN_DELAY";
 				_abandonedRespawnDelay = _veh getVariable "RES_ABANDON_RESPAWN_DELAY";
 				_abandon = _veh getVariable "RES_ABANDON";
