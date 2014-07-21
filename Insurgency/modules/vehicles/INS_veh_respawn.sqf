@@ -10,7 +10,7 @@ INS_veh_updateLocation = {
 	if (debugMode == 1) then { diag_log format ["updated %1's location to %2 (%3)", vehicleVarName _vehicle, _newPos, _newDir]; };
 };
 
-INS_veh_initParams = { // should be executed on every client
+INS_veh_initParams = {
 	private ["_vehicle"];
 
 	_vehicle = (_this select 0);
@@ -64,6 +64,7 @@ if (isServer) then { // server loop
 				_abandonedTime = _veh getVariable "RES_ABANDON_TIME";
 				_respawn = false;
 				_abandoned = false;
+				_delay = 0;
 
 				_abandonedListen = _veh getVariable ["RES_ABANDON_LISTEN", false];
 				_abandonWarn = _veh getVariable ["RES_ABANDON_WARN", true];
@@ -79,9 +80,11 @@ if (isServer) then { // server loop
 				if (_abandonedListen and _abandonedTime > (_abandonedRespawnDelay - 60) and _abandonWarn and (count crew _veh == 0)) then { [format["<t color='#ff6347'>%1</t> will respawn in %2 seconds", _name, _abandonedRespawnDelay - _abandonedTime], true, true] call dl_fnc_hintMP; _abandonWarn = false; };
 				_veh setVariable ["RES_ABANDON_WARN", _abandonWarn];
 
-				if (!alive _veh) then { _respawn = true; sleep _destroyedRespawnDelay; };
+				if (!alive _veh) then { _respawn = true; _delay = _destroyedRespawnDelay; };
 				if (_respawn) then {
-					[_veh, _abandoned] spawn {
+					[_veh, _abandoned, _delay] spawn {
+						if (_delay != 0) then { sleep _delay; }
+
 						_veh = _this select 0; 
 						_abandoned = _this select 1; 
 
@@ -97,8 +100,6 @@ if (isServer) then { // server loop
 						[format["respawning %1 vehicle: <t color = '#ff6347'>%2</t>", _reason, _name], true, true] call dl_fnc_hintMP;
 
 						vehicleArray = vehicleArray - [_veh];
-						deleteVehicle _veh;
-						
 						sleep 3;
 
 						_veh = _type createVehicle _origLoc;
