@@ -37,4 +37,33 @@ if (!isDedicated) then 	{
 	[] execVM "insurgency\modules\players\INS_groups.sqf";
 	[] execVM "insurgency\modules\cas\init_cas.sqf";
 	[] execVM "insurgency\modules\vehicles\INS_heli_fastRope.sqf";
+
+	player addEventHandler ["Respawn", {
+		_unit = _this select 0;
+		_corpse = _this select 1;
+
+		//Strip the unit down
+		removeAllWeapons _unit;
+		{ _unit removeMagazine _x; } forEach (magazines _unit);
+
+		removeUniform _unit;
+		removeVest _unit;
+		removeBackpack _unit;
+		removeGoggles _unit;
+		removeHeadGear _unit;
+		removeWeapon _unit;
+		removeMagazines _unit;
+		{ _unit unassignItem _x; _unit removeItem _x; } forEach (assignedItems _unit);
+
+		// appearance + items
+		_unit addHeadgear headgear _corpse;
+		_unit addGoggles goggles _corpse;
+		_unit addUniform uniform _corpse;
+		_unit addVest vest _corpse;
+		_unit addBackpack backpack _corpse;
+
+		{ _unit LinkItem _x; } forEach (assignedItems _corpse);
+		{ _unit addMagazine _x; } forEach (magazines _corpse);
+		{ _unit addWeapon _x; } forEach (weapons _corpse);
+	}];
 };
