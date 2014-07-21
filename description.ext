@@ -5,8 +5,6 @@ respawndelay = 0;
 disabledAI = true;
 enableDebugConsole = 2;
 
-#include "VAS\menu.hpp"
-
 class Header {
 	gameType = COOP; 
 	minPlayers = 1; //min # of players the mission supports
@@ -26,8 +24,4 @@ class Params {
 
 class RscTitles {
 	#include "insurgency\rsctitles.hpp"
-};
-
-class CfgFunctions {
-	#include "VAS\cfgfunctions.hpp"
 };

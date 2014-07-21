@@ -154,7 +154,7 @@ SL_fnc_findBuildings = {
 	_buildings
 };
 
-// todo: make sure the condition works...
+// todo: figure out a better way to do "reclaims"
 dl_fnc_createTriggers = {
 	private ["_markers", "_pos", "_trigger"];
 
@@ -163,7 +163,7 @@ dl_fnc_createTriggers = {
 		_trigger = createTrigger ["EmptyDetector", _pos];
 		_trigger setTriggerActivation ["ANY", "PRESENT", false];
 		_trigger setTriggerArea [50, 50, 0, true];
-		_trigger setTriggerStatements ["{(side _x) == east} count thisList == 0 AND {(side _x) == west } count thisList >= 1", format["""%1"" setMarkerColor ""ColorGreen"";",_x], ""];
+		_trigger setTriggerStatements ["{(side _x) == east} count thisList == 0 AND {(side _x) == west } count thisList >= 1", format["""%1"" setMarkerColor ""ColorGreen"";", _x], ""];
 	} foreach _this;
 };
 
