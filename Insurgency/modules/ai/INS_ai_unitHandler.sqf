@@ -12,16 +12,16 @@ if (isServer) then {
 
 		_unspawnedinfantry = _cache select 0;
 		_spawnedinfantry = _cache select 1;
-		_lightvehicles = _cache select 2;
+		_vehicles = _cache select 2;
 		_statics = _cache select 3;
 
 		_infcache = _spawnedinfantry call INS_fnc_cacheInfantry;
-		_lvcache = _lightvehicles call INS_fnc_cacheLightVehicles;
+		_vcache = _vehicles call INS_fnc_cacheAllVehicles;
 		_spcache = _statics call INS_fnc_cacheStaticPlacements;
 
 		_trigger setVariable [format["%1_cache", (_area select 0)], true];
 		_trigger setVariable [format["%1_cache_in", (_area select 0)], (_infcache + _unspawnedinfantry)];
-		_trigger setVariable [format["%1_cache_lv", (_area select 0)], _lvcache];
+		_trigger setVariable [format["%1_cache_v", (_area select 0)], _vcache];
 		_trigger setVariable [format["%1_cache_sp", (_area select 0)], _spcache];
 	};
 
@@ -38,28 +38,28 @@ if (isServer) then {
 		_areaRad = _area select 3;
 
 		_ipositions = [];
-		_lightvehicles = [];
+		_vehicles = [];
 		_statics = [];
 		if (!isNil "_areacache") then {  // load from cache
 			_ipositions = _trigger getVariable format["%1_cache_in", (_area select 0)];
-			_lightvehicles = _trigger getVariable format["%1_cache_lv", (_area select 0)];
+			_vehicles = _trigger getVariable format["%1_cache_v", (_area select 0)];
 			_statics = _trigger getVariable format["%1_cache_sp", (_area select 0)];
 
-			_lightvehicles = [_lightvehicles] call INS_fnc_spawnLightVehiclesCached;
+			_vehicles = [_vehicles] call INS_fnc_spawnAllVehiclesCached;
 			_statics = [_statics] call INS_fnc_spawnStaticUnitsCached;
 		} else {
 			_ipositions = [_areaClassName, _areaPos, _areaRad] call INS_fnc_genInfantryPositions;	
-			_lightvehicles = [_areaClassName, _areaPos, _areaRad] call INS_fnc_spawnLightVehicles;
+			_vehicles = [_areaClassName, _areaPos, _areaRad] call INS_fnc_spawnAllVehicles;
 			_statics = [_areaClassName, _areaPos, _areaRad] call INS_fnc_spawnStaticUnits;
 		};
 		
-		[_ipositions, [], _lightvehicles, _statics]
+		[_ipositions, [], _vehicles, _statics]
 	};
 
 	waitUntil { triggerActivated _trigger };
 	_timeStart = time;
 
-	if (true) then { diag_log format["%1 zone activated", _area select 0]; };
+	if (debugMode == 1) then { diag_log format["%1 zone activated", _area select 0]; };
 	_cache = [_trigger, _area] call INS_ai_fnc_spawnUnits;
 	_infantry = _cache select 0;
 
@@ -98,7 +98,7 @@ if (isServer) then {
 		if (time - _timeStart > 300) then {}; // five minutes
 		if (time - _timeStart > 600) then {}; // ten minutes 	
 
-		if (not triggerActivated _trigger) then { sleep 10 } else { sleep 1 }; // give chance to leave/re-enter zone
+		if (not triggerActivated _trigger) then { sleep 20 } else { sleep 1 }; // give chance to leave/re-enter zone
 	};
 
 	if (debugMode == 1) then { diag_log format["%1 zone deactivated (%2)", _area select 0, time - _timeStart]; };
