@@ -1126,11 +1126,6 @@ INS_rev_fnct_onKeyPress = {
 	};
 	
 	switch _key do {
-		case 14: { // backspace
-			vasOpen = true;
-			[] execVM "vas\open.sqf";
-		};
-
 		case 17: { //W key
 			if (speed player == 0 && lifeState player != "UNCONSCIOUS") then { detach player; };
 		};
@@ -1195,8 +1190,6 @@ INS_rev_fnct_onMouseMove = {
 	
 	// If not exist dead camera, exit
 	if (isNull INS_rev_GVAR_dead_camera ) exitWith {};	
-	if (isNil "vasOpen") then { vasOpen = false; };
-	if (vasOpen) exitWith {};
 
 	_yS = (_this select 1);	
 	_xS = (_this select 2);
