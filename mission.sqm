@@ -157,7 +157,7 @@ class Mission
 			vehicle="Flag_US_F";
 			skill=0.40000001;
 			text="FLAG";
-			init="null = this execVM ""server\flagMenu.sqf"";";
+			init="null = this execVM ""Insurgency\modules\spawn\flagMenu.sqf"";";
 		};
 		class Item5
 		{
