@@ -3,9 +3,10 @@ class Mission
 {
 	addOns[]=
 	{
-		"a3_map_altis",
+		"A3_Modules_F",
+		"A3_Characters_F_BLUFOR",
+		"a3_characters_f",
 		"A3_Air_F_EPB_Heli_Light_03",
-		"A3_Characters_F_OPFOR",
 		"A3_Air_F_Heli_Light_01",
 		"A3_Soft_F_EPC_Truck_03",
 		"A3_Structures_F_Mil_Flags",
@@ -13,31 +14,22 @@ class Mission
 		"A3_Soft_F_Gamma_HEMTT",
 		"A3_Air_F_Beta_Heli_Attack_01",
 		"A3_Air_F_Gamma_Plane_Fighter_03",
-		"ac_130X_a3",
 		"A3_Soft_F_MRAP_01",
 		"A3_Air_F_EPC_Plane_CAS_01",
 		"A3_Air_F_Beta_Heli_Attack_02",
 		"A3_Armor_F_Marid",
 		"A3_Armor_F_T100K",
-		"A3_Characters_F_BLUFOR",
 		"A3_Air_F_Beta_Heli_Transport_02",
-		"a3_characters_f_beta",
-		"jsrs2_mse3_marid",
-		"globemaster_c17",
-		"Air_C130J",
 		"A3_Soft_F_HEMTT",
-		"jdg_carrier",
-		"TTT_NimitzFlightDeck",
-		"ttt_nimitzelevator",
-		"TTT_NimitzCatapult",
-		"JS_JC_FA18",
-		"A3_Air_F_EPC_Plane_CAS_02",
-		"a3_characters_f"
+		"a3_map_altis"
 	};
 	addOnsAuto[]=
 	{
-		"A3_Air_F_Heli_Light_01",
+		"A3_Modules_F",
+		"A3_Characters_F_BLUFOR",
+		"a3_characters_f",
 		"A3_Air_F_EPB_Heli_Light_03",
+		"A3_Air_F_Heli_Light_01",
 		"A3_Soft_F_EPC_Truck_03",
 		"A3_Structures_F_Mil_Flags",
 		"A3_Air_F_Heli_Light_02",
@@ -48,11 +40,8 @@ class Mission
 		"A3_Air_F_EPC_Plane_CAS_01",
 		"A3_Air_F_Beta_Heli_Attack_02",
 		"A3_Armor_F_Marid",
-		"jsrs2_mse3_marid",
 		"A3_Armor_F_T100K",
-		"ac_130X_a3",
 		"A3_Air_F_Beta_Heli_Transport_02",
-		"Air_C130J",
 		"A3_Soft_F_HEMTT",
 		"a3_map_altis"
 	};
@@ -106,11 +95,11 @@ class Mission
 				items=1;
 				class Item0
 				{
-					position[]={3091.2334,12.158819,18073.063};
-					special="NONE";
+					position[]={11592.58,15.327175,9677.8047};
+					azimut=-76.079315;
 					id=1;
 					side="WEST";
-					vehicle="B_Heli_Light_01_armed_F";
+					vehicle="B_Soldier_F";
 					player="PLAYER COMMANDER";
 					leader=1;
 					skill=0.60000002;
@@ -120,7 +109,7 @@ class Mission
 	};
 	class Vehicles
 	{
-		items=26;
+		items=25;
 		class Item0
 		{
 			position[]={26778.732,22.136076,24614.938};
@@ -144,25 +133,25 @@ class Mission
 		};
 		class Item2
 		{
-			position[]={3087.3589,10.439077,18278.031};
+			position[]={11588.186,15.543602,9676.9258};
 			id=4;
 			side="EMPTY";
 			vehicle="B_Heli_Light_01_F";
 			skill=0.60000002;
-			init="null = [this, ""AHQ"", 10, 0, ""_this addAction ['Virtual Ammobox', 'vas\open.sqf', nil, 1.5, false]; [_this] execVM 'insurgency\modules\vehicles\INS_heli_lift.sqf';""] execVM ""insurgency\modules\vehicles\INS_veh_respawn.sqf"";";
+			init="null = [this, ""AHQ"", 10, 0, ""_this addAction ['Virtual Ammobox', { ['Open', true] call BIS_fnc_arsenal; }, nil, 1.5, false]; [_this] execVM 'insurgency\modules\vehicles\INS_heli_lift.sqf';""] execVM ""insurgency\modules\vehicles\INS_veh_respawn.sqf"";";
 		};
 		class Item3
 		{
-			position[]={3073.8982,10.491521,18280.916};
+			position[]={11574.725,16.184124,9679.8105};
 			id=5;
 			side="EMPTY";
 			vehicle="O_Truck_03_covered_F";
 			skill=0.60000002;
-			init="null = [this, ""MHQ"", 10, 10, ""_this addAction ['Virtual Ammobox', 'vas\open.sqf', nil, 1.5, false];""] execVM ""insurgency\modules\vehicles\INS_veh_respawn.sqf"";";
+			init="null = [this, ""MHQ"", 10, 10, ""_this addAction ['Virtual Ammobox', { ['Open', true] call BIS_fnc_arsenal; }, nil, 1.5, false];""] execVM ""insurgency\modules\vehicles\INS_veh_respawn.sqf"";";
 		};
 		class Item4
 		{
-			position[]={3080.6509,10.393884,18281.969};
+			position[]={11581.477,15.876298,9680.8633};
 			id=6;
 			side="EMPTY";
 			vehicle="Flag_US_F";
@@ -379,20 +368,9 @@ class Mission
 		};
 		class Item24
 		{
-			position[]={15200.134,17.91,16770.506};
-			azimut=-134.03799;
-			id=26;
-			side="EMPTY";
-			vehicle="C130J_Cargo";
-			skill=0.60000002;
-			text="C130J";
-			init="null = [this] execVM ""insurgency\modules\vehicles\INS_cargo_lift.sqf"";";
-		};
-		class Item25
-		{
 			position[]={14630.14,17.91,16669.027};
 			azimut=141.16148;
-			id=27;
+			id=26;
 			side="EMPTY";
 			vehicle="B_Truck_01_transport_F";
 			skill=0.60000002;
@@ -766,7 +744,7 @@ class Mission
 		};
 		class Item33
 		{
-			position[]={3081.606,10.742856,18273.594};
+			position[]={11582.432,15.919206,9672.4883};
 			name="start";
 			type="Empty";
 		};
