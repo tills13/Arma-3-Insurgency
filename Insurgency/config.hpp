@@ -2,6 +2,11 @@
 #define INS_DEF_intelItems 3
 #define INS_DEF_probOfDrop 10
 #define INS_DEF_intelTimeout 120
+#define INS_DEF_difficulty 1
+#define INS_DEF_enemyDespawnTime 60
+#define INS_DEF_enemySpawnDistance 600
+#define INS_DEF_enemyDespawnDistance 400
+#define INS_DEF_enemySafetyRadius 200
 
 // CAS
 #define CAS_DEF_casPlayerTimeout 30

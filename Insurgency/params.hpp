@@ -26,6 +26,37 @@ class INS_intelTimeout {
 	default = INS_DEF_intelTimeout;
 };
 
+class INS_difficulty {
+	title = "		Controls number of enemies that can spawn per player";
+	texts[] = {"Easy", "Medium", "Hard", "Fuck This"};
+	values[] = {1, 2, 3, 4};
+	default = INS_DEF_difficulty;
+};
+
+class INS_enemyDespawnTime {
+	title = "		Time until distant enemies despawn (in seconds)";
+	values[] = {60, 120, 180, 240, 300, 360};
+	default = INS_DEF_enemyDespawnTime;
+};
+
+class INS_enemySpawnDistance {
+	title = "		Distance at which enemies will start spawning (in meters)";
+	values[] = {600, 700, 800, 900, 1000, 1100};
+	default = INS_DEF_enemySpawnDistance;
+};
+
+class INS_enemyDespawnDistance {
+	title = "		Distance at which enemies will start despawning (in meters)";
+	values[] = {400, 500, 600, 700, 800, 900};
+	default = INS_DEF_enemyDespawnDistance;
+};
+
+class INS_enemySafetyRadius {
+	title = "		Distance around player where enemies will not spawn (in meters)";
+	values[] = {50, 100, 200, 300, 400};
+	default = INS_DEF_enemySafetyRadius;
+};
+
 class TitleLineCAS { title = "Close Air Support ---------"; values[] = {0, 0}; texts[] = {"", ""}; default = 0; };
 
 class casPlayerTimeout {
