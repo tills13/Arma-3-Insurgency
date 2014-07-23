@@ -21,21 +21,35 @@ loadParams = {
 
 // server and players
 call loadParams;
+
 //call compile preprocessFile "insurgency\modules\spawn\INS_fnc_spawn.sqf";
-call compile preprocessFile "insurgency\modules\revive\init_revive.sqf";
+//call compile preprocessFile "insurgency\modules\revive\init_revive.sqf";
+
 
 //server only
 if (isServer) then {
 	[] execVM "insurgency\init_insurgency.sqf";
-	[] execVM "insurgency\modules\vehicles\INS_veh_repair.sqf";
-	[] execVM "insurgency\modules\vehicles\INS_veh_respawn.sqf";
+	//[] execVM "insurgency\modules\vehicles\INS_veh_repair.sqf";
+	//[] execVM "insurgency\modules\vehicles\INS_veh_respawn.sqf";
+
+	[] spawn {
+		while {isNil "INS_DONE_LOADING"} do { ["mission is loading...", true, false] call dl_fnc_titleTextMP; sleep 5; };
+		["mission loaded", true, false] call dl_fnc_titleTextMP;
+	};
 };
 
 // players only
 if (!isDedicated) then 	{
-	[] execVM "insurgency\modules\players\INS_groups.sqf";
-	[] execVM "insurgency\modules\cas\init_cas.sqf";
-	[] execVM "insurgency\modules\vehicles\INS_heli_fastRope.sqf";
+	//[] execVM "insurgency\modules\players\INS_groups.sqf";
+	//[] execVM "insurgency\modules\cas\init_cas.sqf";
+	//[] execVM "insurgency\modules\vehicles\INS_heli_fastRope.sqf";
 
-	player addEventHandler ["Respawn", "insurgency\modules\players\onPlayerRespawn.sqf"];
+	player addEventHandler ["Respawn", { _this execVM "insurgency\modules\players\onPlayerRespawn.sqf"; }];
+	[] spawn {
+		while { true } do { // player loop
+			waitUntil { !isNil "INS_DONE_LOADING" };
+			call INS_fnc_spawnAI;
+			//call INS_fnc_despawnAI;
+		};
+	};
 };
