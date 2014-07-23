@@ -83,10 +83,11 @@ if (isServer) then { // server loop
 				if (!alive _veh) then { _respawn = true; _delay = _destroyedRespawnDelay; };
 				if (_respawn) then {
 					[_veh, _abandoned, _delay] spawn {
-						if (_delay != 0) then { sleep _delay; }
-
 						_veh = _this select 0; 
 						_abandoned = _this select 1; 
+						_delay = _this select 2;
+
+						if (_delay != 0) then { sleep _delay; };
 
 						_name = _veh getVariable "RES_NAME";
 						_init = _veh getVariable "RES_INIT";
@@ -100,6 +101,7 @@ if (isServer) then { // server loop
 						[format["respawning %1 vehicle: <t color = '#ff6347'>%2</t>", _reason, _name], true, true] call dl_fnc_hintMP;
 
 						vehicleArray = vehicleArray - [_veh];
+						deleteVehicle _veh;
 						sleep 3;
 
 						_veh = _type createVehicle _origLoc;
