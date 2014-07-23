@@ -16,34 +16,28 @@ removeUniform _unit;
 removeVest _unit;
 removeBackpack _unit;
 removeGoggles _unit;
-removeHeadGear _unit;
-removeWeapon _unit;
-removeMagazines _unit;
+removeHeadgear _unit;
+removeAllWeapons _unit;
 { _unit unassignItem _x; _unit removeItem _x; } forEach (assignedItems _unit);
 
 // appearance + items
-_unit addHeadgear headgear _corpse;
-_unit addGoggles goggles _corpse;
-_unit addUniform uniform _corpse;
-_unit addVest vest _corpse;
-_unit addBackpack backpack _corpse;
+_unit addHeadgear (headgear _corpse);
+_unit addGoggles (goggles _corpse);
+_unit addUniform (uniform _corpse);
+if (uniform _unit != uniform _corpse) then { _unit forceAddUniform (uniform _corpse); };
+_unit addVest (vest _corpse);
+_unit addBackpack (backpack _corpse);
 
-// inventory and weapons
-{ _unit addItemToBackpack _x } forEach backpackItems _corpse; // backpack
-{ _unit addItemToVest _x } forEach vestItems _corpse; // vest
-{ _unit addItemToUniform _x } forEach uniformItems _corpse; // uniform
-
-// not sure if I need this block
+// inventory
+{ _unit addItemToBackpack _x } forEach (backpackItems _corpse); // backpack
+{ _unit addItemToVest _x } forEach (vestItems _corpse); // vest
+{ _unit addItemToUniform _x } forEach (uniformItems _corpse); // uniform
 { _unit LinkItem _x; } forEach (assignedItems _corpse);
-{ _unit addMagazine _x; } forEach (magazines _corpse);
+
+//load guns
 { _unit addWeapon _x; } forEach (weapons _corpse);
 
-//load the guns
-_unit addPrimaryWeaponItem (primaryWeaponMagazine _corpse);
-_unit addPrimaryWeaponItem (primaryWeaponMagazine _corpse);
-_unit addPrimaryWeaponItem (primaryWeaponMagazine _corpse);
-
 // weapon accessories
-{ _unit addPrimaryWeaponItem _x } forEach _corpse weaponAccessories (primaryWeapon _corpse); // primary weapon attachments
-{ _unit addSecondaryWeaponItem _x } forEach _corpse weaponAccessories (secondaryWeapon _corpse); // secondary weapon attachments
-{ _unit addHandgunItem _x } forEach _corpse weaponAccessories (handgunWeapon _corpse); // sidearm weapon attachments
+{ _unit addPrimaryWeaponItem _x } forEach (_corpse weaponAccessories (primaryWeapon _corpse)); // primary weapon attachments
+{ _unit addSecondaryWeaponItem _x } forEach (_corpse weaponAccessories (secondaryWeapon _corpse)); // secondary weapon attachments
+{ _unit addHandgunItem _x } forEach (_corpse weaponAccessories (handgunWeapon _corpse)); // sidearm weapon attachments
