@@ -49,7 +49,7 @@ if (!isDedicated) then 	{
 		while { true } do { // player loop
 			waitUntil { !isNil "INS_DONE_LOADING" };
 			call INS_fnc_spawnAI;
-			//call INS_fnc_despawnAI;
+			call INS_fnc_despawnAI;
 		};
 	};
 };
