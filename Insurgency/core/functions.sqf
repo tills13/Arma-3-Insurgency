@@ -70,6 +70,8 @@ dl_fnc_titleTextMPHelper = {
 	[parseText _this, 0, 1, 5, 0, 0, 301] spawn bis_fnc_dynamicText;
 };
 
+
+
 dl_fnc_getCityNameFromPath = {
 	_path = _this;
     _array = toArray _path;
@@ -114,6 +116,17 @@ dl_fnc_canSee = {
 
 	if (abs(_dirTo - _uDir) > 180) then { _uDir = -1 * (360 - _uDir); };
 	abs(_dirTo - _uDir) <= _arc
+};
+
+dl_fnc_canBeSeen = {
+	private ["_arc","_pos","_arr","_rng","_unit","_canSee"];
+	_unit = _this select 0;
+	_arc = _this select 1;
+    
+	_canSee = false;
+	{ if (alive _x and {[_x, _unit, _arc] call dl_fnc_canSee}) exitWith { _canSee = true; }; } forEach playableUnits;
+
+	_canSee
 };
 
 dl_fnc_dirTo = {
@@ -194,7 +207,7 @@ dl_fnc_createTriggers = {
 	{
 		_pos = getMarkerPos _x;
 		_trigger = createTrigger ["EmptyDetector", _pos];
-		_trigger setTriggerActivation ["ANY", "PRESENT", false];
+		_trigger setTriggerActivation ["ANY", "PRESENT", true];
 		_trigger setTriggerArea [50, 50, 0, true];
 		_trigger setTriggerStatements ["{(side _x) == east} count thisList == 0 AND {(((side _x) == west) and (isPlayer _x)) } count thisList >= 1", format["""%1"" setMarkerColor ""ColorGreen"";", _x], ""];
 	} foreach _this;

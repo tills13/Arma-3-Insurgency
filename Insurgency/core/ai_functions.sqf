@@ -3,7 +3,7 @@ INS_ai_patrol = compile preprocessfile "insurgency\modules\ai\INS_ai_unitPatrol.
 INS_fnc_spawnAI = {
 	private ["_inc","_pos","_eCount","_wUnits","_wCount","_house","_clear","_gMkr","_houses"];
 
-    if (count (player call dl_fnc_getAIForPlayer) > 25) exitWith {}; 
+	if (count (player call dl_fnc_getAIForPlayer) > 25) exitWith {}; 
 
 	_houses = nearestObjects [player, ["HOUSE"], INS_enemySpawnDistance]; // find available houses for spawn posits
 	{ if (!([player, _x, 80] call dl_fnc_canSee)) then { _houses = _houses - [_x]; }; } forEach _houses;
@@ -14,14 +14,15 @@ INS_fnc_spawnAI = {
 			_house = _x;
 			_mkr = (position _house) call dl_fnc_gridPos;
 
-			if ((getMarkerColor str _mkr == "ColorRed")) then {
+			if (true or {getMarkerColor str _mkr == "ColorRed"}) then {
 				_pos   = getPosATL _house;	
 				_eCount = count nearestObjects [_pos, ["Man"], 15];									
 				_wUnits = [_pos, INS_enemySafetyRadius] call dl_fnc_countNearestPlayers; 
 
 				if (_eCount == 0 && _wUnits == 0) then { 
 					_spawnPos = [_pos, 0, 15, 0, 1, 20, 0] call BIS_fnc_findSafePos; 
-					[nil, createGroup east, _spawnPos, [], 0, "NONE"] call INS_fnc_spawnUnit;
+					_unit = [nil, call dl_fnc_getAIGroup, _spawnPos, [], 0, "NONE"] call INS_fnc_spawnUnit;
+					//diag_log str _unit;
 				};
 			};
 		} forEach _houses;
@@ -32,22 +33,31 @@ INS_fnc_despawnAI = {
 	_aiInGroup = player call dl_fnc_getAIForPlayer;
 
 	for "_i" from 0 to 25 do {
-    	_unitName = format["%1_ai_%2", name player, _i];
-    	if (!isNil _unitName) then {
-    		_unit = call compile _unitName;
-    		if (!isNull _unit) then {
-    			if (({isPlayer _x} count (nearestObjects [_unit, ["MAN"], INS_enemyDespawnDistance])) == 0) then {
-		    		_timeToDespawn = missionNamespace getVariable format["%1_despawn_time", _unitName];
-		    		if (isNil "_timeToDespawn") then { missionNamespace setVariable [format["%1_despawn_time", _unitName], time + INS_enemyDespawnTime]; }
-		    		else {
-		    			if (_timeToDespawn > time) then {
-			    			diag_log format["despawning %1 in %2 seconds", _unitName, round (_timeToDespawn - time)];
-			    		} else { deleteVehicle _unit; };
-			    	};
-	    		};
-    		};
-    	};
-    };
+		_unitName = format["%1_ai_%2", name player, _i];
+		if (!isNil _unitName) then {
+			_unit = call compile _unitName;
+			if (!isNull _unit) then {
+				if (!alive _unit) then {
+					if ([position _unit, INS_enemyDespawnDistance] call dl_fnc_countNearestPlayers == 0) then { diag_log (group _unit); deleteGroup (group _unit); deleteVehicle _unit; };
+				} else {
+					if (!([_unit, 100] call dl_fnc_canBeSeen)) then {
+						diag_log (group _unit); deleteGroup (group _unit); deleteVehicle _unit;
+					} else {
+						if (([position _unit, INS_enemyDespawnDistance] call dl_fnc_countNearestPlayers) == 0) then {
+							_timeToDespawn = missionNamespace getVariable format["%1_despawn_time", _unitName];
+							if (isNil "_timeToDespawn") then { missionNamespace setVariable [format["%1_despawn_time", _unitName], time + INS_enemyDespawnTime]; }
+							else {
+								if (_timeToDespawn > time) then {
+									if (debugMode == 1) then { diag_log format["despawning %1 in %2 seconds", _unitName, round (_timeToDespawn - time)]; };
+									if (([position _unit, INS_enemyDespawnDistance + 400] call dl_fnc_countNearestPlayers) == 0) then { deleteGroup group _unit; deleteVehicle _unit; };
+								} else { diag_log (group _unit); deleteGroup (group _unit); deleteVehicle _unit; };
+							};
+						};
+					};
+				};
+			};
+		};
+	};
 };
 
 /* INS_fnc_spawnUnit
@@ -59,6 +69,8 @@ INS_fnc_spawnUnit = {
 	_markers = _this select 3;
 	_placement = _this select 4;
 	_special = _this select 5;
+
+	//diag_log str _group;
 
 	if (isNil { _type }) then {
 		_isWater = surfaceIsWater _position;
@@ -82,13 +94,6 @@ INS_fnc_spawnGroup = {
 
 	for "_i" from 0 to (_size - 1) do {
 		_unit = [nil, _group, _position, [], 4, "FORM"] call INS_fnc_spawnUnit;
-	};
-
-	if (debugMode == 1) then {
-        _m = createMarker [format ["box%1", random 1000], _position];
-        _m setMarkerShape "ICON"; 
-        _m setMarkerType "mil_dot";
-        _m setMarkerColor "ColorRed";
 	};
 
 	//_group spawn INS_ai_patrol;
@@ -358,61 +363,94 @@ INS_fnc_spawnWaterReinforcements = {
 //	helper functions
 // ---------------------------------------
 
+dl_fnc_trackPlayerAI = {
+	_player = _this;
+
+	while { true } do {
+		diag_log "tracking";
+		for "_i" from 0 to 25 do {
+			_string = format["%1_ai_%2", name _player, _i];
+			deleteMarker _string;
+
+			if (!isNil _string) then {
+				_unit = call compile _string;
+				if (!isNull _unit and {alive _unit}) then { 
+				 	_m = createMarker [format ["%1", _string], position _unit];
+			        _m setMarkerShape "ICON"; 
+			        _m setMarkerType "mil_dot";
+			        _m setMarkerColor "ColorRed";
+				};
+			};
+		};
+
+		sleep 1;
+	};
+};
+
 /* dl_fnc_getAIArray
  * args: array of units
  * returns: an array of AI units */
 dl_fnc_getAIForPlayer = {
-    _player = _this;
-    _aiPlayerList = [];
+	_player = _this;
+	_aiPlayerList = [];
 
-    for "_i" from 0 to 25 do {
-    	_string = format["%1_ai_%2", name _player, _i];
-    	if (!isNil _string) then {
-    		_unit = call compile _string;
-    		if (!isNull _unit) then { _aiPlayerList = _aiPlayerList + [_unit]; };
-    	};
-    };
+	for "_i" from 0 to 25 do {
+		_string = format["%1_ai_%2", name _player, _i];
+		if (!isNil _string) then {
+			_unit = call compile _string;
+			if (!isNull _unit and {alive _unit}) then { _aiPlayerList = _aiPlayerList + [_unit]; };
+		};
+	};
 
-    _aiPlayerList;
+	_aiPlayerList;
 };
 
 dl_fnc_getNextAINameForPlayer = {
+	private ["_unit"];
 	_player = _this;
 	_result = "";
 
-    for "_i" from 0 to 25 do {
-    	_string = format["%1_ai_%2", name _player, _i];
-    	if (isNil _string) exitWith { _result = _string };
+	for "_i" from 0 to 25 do {
+		_string = format["%1_ai_%2", name _player, _i];
+		if (isNil _string) exitWith { _result = _string };
 
-    	_unit = call compile _string;
-    	if (isNull _unit) exitWith { _result = _string };
-    };
+		_unit = call compile _string;
+		if (isNull _unit) exitWith { _result = _string };
+		if (!alive _unit) exitWith { _result = _string };
+	};
 
-    _result
+	_result
+};
+
+dl_fnc_getAIGroup = {
+	_group = group ((player call dl_fnc_getAIForPlayer) call BIS_fnc_selectRandom);
+	if (isNil "_group") then { _group = createGroup east; };
+
+	_group
 };
 
 /* dl_fnc_getAIArray
  * args: array of units
  * returns: an array of AI units */
 dl_fnc_getAIArray = {
-    _array = _this;
-    _aiPlayerList = [];
+	_array = _this;
+	_aiPlayerList = [];
 
-    { if (!(isPlayer _x)) then { _aiPlayerList = _aiPlayerList + [_x]; }; } forEach _array;
+	{ if (!(isPlayer _x)) then { _aiPlayerList = _aiPlayerList + [_x]; }; } forEach _array;
 
-    _aiPlayerList;
+	_aiPlayerList;
 };
 
 /* dl_fnc_getAIArray
  * args: group
  * returns: an array of AI units */
 dl_fnc_getAIinGroup = {
-    _group = _this;
-    _aiPlayerList = [];
+	_group = _this;
+	_aiPlayerList = [];
 
-    { if (!(isPlayer _x)) then { _aiPlayerList = _aiPlayerList + [_x]; }; } forEach units _group;
+	{ if (!(isPlayer _x)) then { _aiPlayerList = _aiPlayerList + [_x]; }; } forEach units _group;
 
-    _aiPlayerList;
+	_aiPlayerList;
 };
 
 /* dl_fnc_dismissAIFromGroup
@@ -467,19 +505,20 @@ INS_fnc_onDeathListener = {
  * args: unit
  * sets up an AI unit */
 INS_fnc_initAIUnit = {
+	private ["_unit"];
 	_unit = _this;
-
-	_unit setSkill ['aimingAccuracy', 0.5];
+	
+	_unit setSkill ['aimingAccuracy', 0.2];
 	_unit setSkill ['aimingShake', 0.5];
-	_unit setSkill ['aimingSpeed', 0.5];
-	_unit setSkill ['spotDistance', 0.5];
-	_unit setSkill ['spotTime', 0.5];
+	_unit setSkill ['aimingSpeed', 0.2];
+	_unit setSkill ['spotDistance', 0.4];
+	_unit setSkill ['spotTime', 0.4];
 	_unit setSkill ['courage', 0.5];
 	_unit setSkill ['reloadSpeed', 0.5];
 	_unit setSkill ['commanding', 0.5];
 	_unit setSkill ['general', 0.5];
 
-	diag_log format["spawning %1", player call dl_fnc_getNextAINameForPlayer];
-	call compile format ["%1 = _unit; publicVariable '%1';", player call dl_fnc_getNextAINameForPlayer];
+	//diag_log format["spawning %1 %2", player call dl_fnc_getNextAINameForPlayer, _unit];
+	call compile format ["%1 = _unit;", player call dl_fnc_getNextAINameForPlayer];
 	if (side _unit == east) then { _unit addEventHandler ["Killed", INS_fnc_onDeathListener]; };
 };
