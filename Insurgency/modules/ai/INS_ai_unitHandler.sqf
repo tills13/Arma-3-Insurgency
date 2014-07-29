@@ -59,7 +59,7 @@ if (isServer) then {
 	waitUntil { triggerActivated _trigger };
 	_timeStart = time;
 
-	if (debugMode == 1) then { diag_log format["%1 zone activated", _area select 0]; };
+	if (true) then { diag_log format["%1 zone activated", _area select 0]; };
 	_cache = [_trigger, _area] call INS_ai_fnc_spawnUnits;
 	_infantry = _cache select 0;
 
@@ -68,6 +68,8 @@ if (isServer) then {
 		_playableUnits = playableUnits;
 
 		_index = 0;
+
+		_timeStart = time;
 
 		{
 			_group = _x;
@@ -79,6 +81,7 @@ if (isServer) then {
 				// todo: put into one function
 				if (position _x distance _pos < 500) then { //or (([_x, _pos] call dl_fnc_canSee) and position _x distance _pos < 1000)) then {
 					_patrol = [_size, _pos, east] call INS_fnc_spawnGroup;
+					diag_log format ["spawning group size: %1", _size];
 					_mpatrols = _cache select 1;
 					_mpatrols = _mpatrols + [_patrol];
 					_cache set [1, _mpatrols];
@@ -87,21 +90,17 @@ if (isServer) then {
 				};
 			} forEach _playableUnits;
 
-			sleep 0.1;
 			_index = _index + 1;
 		} forEach _infantry;
 
-		_infantry = _infantry - [0];
-		_cache set [0, _infantry];
+		diag_log format ["checked %1 groups in %2 seconds", _index, time - _timeStart];
 
-		if (time - _timeStart > 60) then {}; // one minute
-		if (time - _timeStart > 300) then {}; // five minutes
-		if (time - _timeStart > 600) then {}; // ten minutes 	
+		_infantry = _infantry - [0];
+		_cache set [0, _infantry];	
 
 		if (not triggerActivated _trigger) then { sleep 20 } else { sleep 1 }; // give chance to leave/re-enter zone
 	};
 
 	if (debugMode == 1) then { diag_log format["%1 zone deactivated (%2)", _area select 0, time - _timeStart]; };
-
 	[_trigger, _area, _cache] call INS_ai_fnc_cacheUnits;
 };

@@ -7,6 +7,7 @@ enableSaving [false, false];
 #include "insurgency\core\ai_functions.sqf";
 #include "insurgency\core\cas_functions.sqf";
 #include "insurgency\core\cache_functions.sqf";
+#include "insurgency\core\ied_functions.sqf";
 
 loadParams = {
 	diag_log "Params : ------------------";
@@ -21,7 +22,7 @@ loadParams = {
 
 // server and players
 call loadParams;
-
+onMapSingleClick "player setPos _pos";
 //call compile preprocessFile "insurgency\modules\spawn\INS_fnc_spawn.sqf";
 //call compile preprocessFile "insurgency\modules\revive\init_revive.sqf";
 
@@ -45,11 +46,13 @@ if (!isDedicated) then 	{
 	//[] execVM "insurgency\modules\vehicles\INS_heli_fastRope.sqf";
 
 	player addEventHandler ["Respawn", { _this execVM "insurgency\modules\players\onPlayerRespawn.sqf"; }];
+	player spawn dl_fnc_trackPlayerAI;
 	[] spawn {
 		while { true } do { // player loop
 			waitUntil { !isNil "INS_DONE_LOADING" };
-			call INS_fnc_spawnAI;
-			call INS_fnc_despawnAI;
+			//call INS_fnc_spawnAI;
+			//call INS_fnc_despawnAI;
+			call INS_fnc_spawnIEDs;
 		};
 	};
 };
