@@ -36,6 +36,7 @@ INS_fnc_generateIED = {
 
 	_ied setVariable ["code", call generateCode, false];
 	_ied setVariable ["isActive", true, true];
+
 	call compile format ["%1 = _ied; publicVariable '%1';", call dl_fnc_getNextIEDID];
 	_ied spawn iedLoop;
 
@@ -103,6 +104,7 @@ disarmIED = {
 
 		_defuseTime = _defuseTime - 0.1;
 		if (_defuseTime == 0) exitWith { _ied call iedExplode };
+
 		sleep 0.1;
 	};
 

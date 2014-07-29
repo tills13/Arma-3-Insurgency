@@ -5,5 +5,5 @@ if (isServer || isDedicated) then {
 	publicVariable "INS_marker_array";
 	publicVariable "INS_west_score";
 	
-	call generateNewCache;
+	call INS_fnc_generateNewCache;
 };

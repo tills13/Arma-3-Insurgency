@@ -95,8 +95,8 @@ class Mission
 				items=1;
 				class Item0
 				{
-					position[]={11592.58,15.327175,9677.8047};
-					azimut=-76.079315;
+					position[]={25728.414,25.030985,23180.102};
+					azimut=-314.98712;
 					id=1;
 					side="WEST";
 					vehicle="B_Soldier_F";
@@ -133,7 +133,7 @@ class Mission
 		};
 		class Item2
 		{
-			position[]={11588.186,15.543602,9676.9258};
+			position[]={25735.355,24.790331,23179.379};
 			id=4;
 			side="EMPTY";
 			vehicle="B_Heli_Light_01_F";
@@ -142,7 +142,7 @@ class Mission
 		};
 		class Item3
 		{
-			position[]={11574.725,16.184124,9679.8105};
+			position[]={25721.895,25.364941,23182.264};
 			id=5;
 			side="EMPTY";
 			vehicle="O_Truck_03_covered_F";
@@ -151,7 +151,7 @@ class Mission
 		};
 		class Item4
 		{
-			position[]={11581.477,15.876298,9680.8633};
+			position[]={25728.648,25.202921,23183.316};
 			id=6;
 			side="EMPTY";
 			vehicle="Flag_US_F";
@@ -744,7 +744,7 @@ class Mission
 		};
 		class Item33
 		{
-			position[]={11582.432,15.919206,9672.4883};
+			position[]={25729.602,24.675579,23174.941};
 			name="start";
 			type="Empty";
 		};
@@ -786,7 +786,7 @@ class Mission
 		};
 		class Item40
 		{
-			position[]={12092.029,3.2241821,10461.031};
+			position[]={25736.434,24.481033,23174.885};
 			name="random_spawn_6";
 			type="Empty";
 		};

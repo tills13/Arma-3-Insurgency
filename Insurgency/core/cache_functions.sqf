@@ -7,7 +7,7 @@ onCacheDestroyed = {
 		case west: { INS_west_score = INS_west_score + 1; };
 		case east: { INS_west_score = INS_west_score + 1; };
 		case resistance: { INS_west_score = INS_west_score + 1; };
-		default { _legit = false; call generateNewCache; };
+		default { _legit = false; call INS_fnc_generateNewCache; };
 	};
 
 	_pos = getPos cache;
@@ -19,10 +19,10 @@ onCacheDestroyed = {
 			for "_i" from 0 to random 10 do { "M_Mo_82mm_AT_LG" createVehicle _pos; sleep 1.0; };
 			deleteVehicle cache;
 			
-			[(parseText format["<t color='#7ba151'>%1/%2</t> ammo caches have been destroyed", INS_west_score, INS_numCaches]), true, false] call dl_fnc_hintMP;
+			["Mission Progress", (parseText format["<t color='#7ba151'>%1/%2</t> ammo caches have been destroyed", INS_west_score, INS_numCaches]), true, false] call dl_fnc_hintMP;
 
 			if (INS_west_score == INS_numCaches) then { // game over
-				["All ammo caches have been destroyed", true, true] call dl_fnc_hintMP;
+				["Game Over", "All ammo caches have been destroyed", true, true] call dl_fnc_hintMP;
 				sleep 20;
 
 				endMission "END1";
@@ -31,20 +31,23 @@ onCacheDestroyed = {
 				INS_marker_array = [];
 				publicVariable "INS_marker_array";
 
-				call generateNewCache;
+				call INS_fnc_generateNewCache;
 			};
 		};
 	};	
 };
 
-generateNewCache = {
+INS_fnc_generateNewCache = {
 	[] spawn {
 		_city = (call SL_fnc_urbanAreas) call BIS_fnc_selectRandom;
-		_building = ([_city select 2, _city select 3] call SL_fnc_findBuildings) call BIS_fnc_selectRandom;
+		_building = ([_city select 2, _city select 3] call dl_fnc_findBuildings) call BIS_fnc_selectRandom;
+		if (isNil "_building") exitWith { call INS_fnc_generateNewCache; };
+
 		_pos = [_building] call getRandomBuildingPosition;
 
 		cache = createVehicle ["Box_East_WpsSpecial_F", _pos, [], 0, "None"];
 		cache setPos _pos;
+		if (isNil "cache") exitWith { call INS_fnc_generateNewCache; };
 
 		if (debugMode == 1) then {
 			diag_log format ["spawning cache at %1", _pos];

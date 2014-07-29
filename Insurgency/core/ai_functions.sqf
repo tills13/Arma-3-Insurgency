@@ -367,7 +367,10 @@ dl_fnc_trackPlayerAI = {
 	_player = _this;
 
 	while { true } do {
+<<<<<<< HEAD
 		diag_log "tracking";
+=======
+>>>>>>> ai_changes
 		for "_i" from 0 to 25 do {
 			_string = format["%1_ai_%2", name _player, _i];
 			deleteMarker _string;
@@ -490,7 +493,7 @@ INS_fnc_onDeathListener = {
 
 				{ 
 					if (side _x == west) then {
-						["New intel received on the location of an ammo cache. A marker has been added to the map.", true, true] call dl_fnc_hintMP;
+						["New Intel", "New intel received on the location of an ammo cache. A marker has been added to the map.", true, true] call dl_fnc_hintMP;
 						[_intel, "INS_fnc_createIntel", false, false] spawn BIS_fnc_MP;
 						deleteVehicle _intel;
 						_listen = false;
