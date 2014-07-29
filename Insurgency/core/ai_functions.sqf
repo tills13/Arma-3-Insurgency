@@ -1,5 +1,65 @@
 INS_ai_patrol = compile preprocessfile "insurgency\modules\ai\INS_ai_unitPatrol.sqf";
 
+INS_fnc_spawnAI = {
+	private ["_inc","_pos","_eCount","_wUnits","_wCount","_house","_clear","_gMkr","_houses"];
+
+	if (count (player call dl_fnc_getAIForPlayer) > 25) exitWith {}; 
+
+	_houses = nearestObjects [player, ["HOUSE"], INS_enemySpawnDistance]; // find available houses for spawn posits
+	{ if (!([player, _x, 80] call dl_fnc_canSee)) then { _houses = _houses - [_x]; }; } forEach _houses;
+	if (count _houses != 0) then {
+		{
+			if (count (player call dl_fnc_getAIForPlayer) > 25) exitWith {}; 
+
+			_house = _x;
+			_mkr = (position _house) call dl_fnc_gridPos;
+
+			if (true or {getMarkerColor str _mkr == "ColorRed"}) then {
+				_pos   = getPosATL _house;	
+				_eCount = count nearestObjects [_pos, ["Man"], 15];									
+				_wUnits = [_pos, INS_enemySafetyRadius] call dl_fnc_countNearestPlayers; 
+
+				if (_eCount == 0 && _wUnits == 0) then { 
+					_spawnPos = [_pos, 0, 15, 0, 1, 20, 0] call BIS_fnc_findSafePos; 
+					_unit = [nil, call dl_fnc_getAIGroup, _spawnPos, [], 0, "NONE"] call INS_fnc_spawnUnit;
+					//diag_log str _unit;
+				};
+			};
+		} forEach _houses;
+	};
+};
+
+INS_fnc_despawnAI = {
+	_aiInGroup = player call dl_fnc_getAIForPlayer;
+
+	for "_i" from 0 to 25 do {
+		_unitName = format["%1_ai_%2", name player, _i];
+		if (!isNil _unitName) then {
+			_unit = call compile _unitName;
+			if (!isNull _unit) then {
+				if (!alive _unit) then {
+					if ([position _unit, INS_enemyDespawnDistance] call dl_fnc_countNearestPlayers == 0) then { diag_log (group _unit); deleteGroup (group _unit); deleteVehicle _unit; };
+				} else {
+					if (!([_unit, 100] call dl_fnc_canBeSeen)) then {
+						diag_log (group _unit); deleteGroup (group _unit); deleteVehicle _unit;
+					} else {
+						if (([position _unit, INS_enemyDespawnDistance] call dl_fnc_countNearestPlayers) == 0) then {
+							_timeToDespawn = missionNamespace getVariable format["%1_despawn_time", _unitName];
+							if (isNil "_timeToDespawn") then { missionNamespace setVariable [format["%1_despawn_time", _unitName], time + INS_enemyDespawnTime]; }
+							else {
+								if (_timeToDespawn > time) then {
+									if (debugMode == 1) then { diag_log format["despawning %1 in %2 seconds", _unitName, round (_timeToDespawn - time)]; };
+									if (([position _unit, INS_enemyDespawnDistance + 400] call dl_fnc_countNearestPlayers) == 0) then { deleteGroup group _unit; deleteVehicle _unit; };
+								} else { diag_log (group _unit); deleteGroup (group _unit); deleteVehicle _unit; };
+							};
+						};
+					};
+				};
+			};
+		};
+	};
+};
+
 /* INS_fnc_spawnUnit
  * args: [type, group, position, markers, special] */
 INS_fnc_spawnUnit = {
@@ -10,6 +70,8 @@ INS_fnc_spawnUnit = {
 	_placement = _this select 4;
 	_special = _this select 5;
 
+	//diag_log str _group;
+
 	if (isNil { _type }) then {
 		_isWater = surfaceIsWater _position;
 		_pool = call compile format["%1_%2", side _group, if (_isWater) then {"divers"} else {"infantry"}];
@@ -17,7 +79,6 @@ INS_fnc_spawnUnit = {
 	};
 
 	_unit = _group createUnit [_type, _position, _markers, _placement, _special];
-	_position call dl_fnc_addGridMarkerIfNotAlready;
 	_unit call INS_fnc_initAIUnit;
 
 	_unit
@@ -35,14 +96,7 @@ INS_fnc_spawnGroup = {
 		_unit = [nil, _group, _position, [], 4, "FORM"] call INS_fnc_spawnUnit;
 	};
 
-	if (debugMode == 1) then {
-        _m = createMarker [format ["box%1", random 1000], _position];
-        _m setMarkerShape "ICON"; 
-        _m setMarkerType "mil_dot";
-        _m setMarkerColor "ColorRed";
-	};
-
-	_group spawn INS_ai_patrol;
+	//_group spawn INS_ai_patrol;
 	_group
 };
 
@@ -51,7 +105,6 @@ INS_fnc_spawnGroup = {
  * crew size -1 for random */
 INS_fnc_fillVehicleSeats = {
 	_vehicle = _this select 0;
-	diag_log (typeName  (_this select 1));
 	_size = if (typeName  (_this select 1) == "Array") then { (random 9) max 5 } else { // gonna leave this in just to make sure
 		if ((_this select 1) == -1) then { (random 10) max 5 } else { _this select 1 } // should always be this
 	};
@@ -106,13 +159,6 @@ INS_fnc_spawnHelicopter = {
 		_type = _pool call BIS_fnc_selectRandom;
 	};
 
-	if (debugMode == 1) then {
-        _m = createMarker [format ["box%1", random 1000], _position];
-        _m setMarkerShape "ICON"; 
-        _m setMarkerType "mil_dot";
-        _m setMarkerColor "ColorOrange";
-	};
-
 	_vehicle = createVehicle [_type, _position, [], 5, _special];
 	_position call dl_fnc_addGridMarkerIfNotAlready;
 	[_vehicle, _crew, _side] call INS_fnc_fillVehicleSeats;
@@ -140,13 +186,6 @@ INS_fnc_spawnVehicle = {
 		_type = _pool call BIS_fnc_selectRandom;
 	};
 
-	if (debugMode == 1) then {
-        _m = createMarker [format ["box%1", random 1000], _position];
-        _m setMarkerShape "ICON"; 
-        _m setMarkerType "mil_dot";
-        _m setMarkerColor "ColorBlue";
-	};
-
 	_vehicle = createVehicle [_type, _position, [], 0, _special];
 	_position call dl_fnc_addGridMarkerIfNotAlready;
 	[_vehicle, _crew, _side] call INS_fnc_fillVehicleSeats;
@@ -171,57 +210,6 @@ INS_fnc_cacheInfantry = {
 	} forEach _infantry;
 
 	_incache
-};
-
-/* INS_fnc_genInfantryPositions
- * args: [area name (not used), area position, area radius]
- * generates all infantry positions but doesn't spawn them */
-INS_fnc_genInfantryPositions = {
-	private ["_group", "_units", "_areaClassName", "_areaPos", "_areaRad"];
-	_areaClassName = _this select 0;
-	_areaPos = _this select 1;
-	_areaRad = _this select 2;
-
-	_groups = [];
-	_buildings = [_areaPos, _areaRad] call SL_fnc_findBuildings;
-	for "_i" from 0 to (round ((count _buildings) * 0.50)) do {
-		_building = _buildings call BIS_fnc_selectRandom;
-
-		_buildingPositions = [_building] call getRandomBuildingPosition;
-		_pos = _buildingPositions select (floor(random count _buildingPositions));
-		_gridPos = (getPos _building) call dl_fnc_gridPos;
-
-		if (getMarkerColor str _gridPos == "ColorRed") then {
-			_eCount = count nearestObjects[_pos, ["Man", "Car"], 100];
-			if (_eCount < 5) then { _groups = _groups + [[2, _pos]]; };
-
-				if (debugMode == 1) then {
-			        _m = createMarker [format ["box%1", random 1000], _pos];
-			        _m setMarkerShape "ICON"; 
-			        _m setMarkerType "mil_dot";
-			        _m setMarkerColor "ColorBlue";
-				};
-		};
-	};
-
-	for "_i" from 0 to ((random 3) + 1) do {
-		_spawnPos = [_areaPos, 0, _areaRad, 0, 1, 20, 0] call BIS_fnc_findSafePos;
-
-		_spawnPos call dl_fnc_addGridMarkerIfNotAlready;
-		_eCount = count nearestObjects[_spawnPos, ["Man", "Car"], 100];
-		if (_eCount < 5) then { 
-			_groups = _groups + [[round (random 4) + 1, _spawnPos]];
-			if (debugMode == 1) then {
-		        _m = createMarker [format ["box%1", random 1000], _spawnPos];
-		        _m setMarkerShape "ICON"; 
-		        _m setMarkerType "mil_dot";
-		        _m setMarkerColor "ColorBlue";
-			};
-		};
-
-	};
-
-	_groups
 };
 
 /* INS_fnc_cacheInfantry
@@ -285,7 +273,6 @@ INS_fnc_spawnAllVehiclesCached = {
 		_type = _x select 1;
 		_pos = _x select 2;
 
-		diag_log ("INS_fnc_spawnAllVehiclesCached " + str _crew);
 		_vehicle = [_type, 0, east, _pos, "None", _crew] call INS_fnc_spawnVehicle;
 		_vehicles = _vehicles + [_vehicle];
 	} forEach _lvcache;
@@ -350,7 +337,6 @@ INS_fnc_spawnStaticUnitsCached = {
 		_type = _x select 1;
 		_pos = _x select 2;
 
-		diag_log ("INS_fnc_spawnStaticUnitsCached " + str _crew);
 		_static = [_type, 0, east, _pos, "None", _crew] call INS_fnc_spawnVehicle;
 		_statics = _statics + [_static];
 	} forEach _spcache;
@@ -377,28 +363,94 @@ INS_fnc_spawnWaterReinforcements = {
 //	helper functions
 // ---------------------------------------
 
+dl_fnc_trackPlayerAI = {
+	_player = _this;
+
+	while { true } do {
+		diag_log "tracking";
+		for "_i" from 0 to 25 do {
+			_string = format["%1_ai_%2", name _player, _i];
+			deleteMarker _string;
+
+			if (!isNil _string) then {
+				_unit = call compile _string;
+				if (!isNull _unit and {alive _unit}) then { 
+				 	_m = createMarker [format ["%1", _string], position _unit];
+			        _m setMarkerShape "ICON"; 
+			        _m setMarkerType "mil_dot";
+			        _m setMarkerColor "ColorRed";
+				};
+			};
+		};
+
+		sleep 1;
+	};
+};
+
+/* dl_fnc_getAIArray
+ * args: array of units
+ * returns: an array of AI units */
+dl_fnc_getAIForPlayer = {
+	_player = _this;
+	_aiPlayerList = [];
+
+	for "_i" from 0 to 25 do {
+		_string = format["%1_ai_%2", name _player, _i];
+		if (!isNil _string) then {
+			_unit = call compile _string;
+			if (!isNull _unit and {alive _unit}) then { _aiPlayerList = _aiPlayerList + [_unit]; };
+		};
+	};
+
+	_aiPlayerList;
+};
+
+dl_fnc_getNextAINameForPlayer = {
+	private ["_unit"];
+	_player = _this;
+	_result = "";
+
+	for "_i" from 0 to 25 do {
+		_string = format["%1_ai_%2", name _player, _i];
+		if (isNil _string) exitWith { _result = _string };
+
+		_unit = call compile _string;
+		if (isNull _unit) exitWith { _result = _string };
+		if (!alive _unit) exitWith { _result = _string };
+	};
+
+	_result
+};
+
+dl_fnc_getAIGroup = {
+	_group = group ((player call dl_fnc_getAIForPlayer) call BIS_fnc_selectRandom);
+	if (isNil "_group") then { _group = createGroup east; };
+
+	_group
+};
+
 /* dl_fnc_getAIArray
  * args: array of units
  * returns: an array of AI units */
 dl_fnc_getAIArray = {
-    _array = _this;
-    _aiPlayerList = [];
+	_array = _this;
+	_aiPlayerList = [];
 
-    { if (!(isPlayer _x)) then { _aiPlayerList = _aiPlayerList + [_x]; }; } forEach _array;
+	{ if (!(isPlayer _x)) then { _aiPlayerList = _aiPlayerList + [_x]; }; } forEach _array;
 
-    _aiPlayerList;
+	_aiPlayerList;
 };
 
 /* dl_fnc_getAIArray
  * args: group
  * returns: an array of AI units */
 dl_fnc_getAIinGroup = {
-    _group = _this;
-    _aiPlayerList = [];
+	_group = _this;
+	_aiPlayerList = [];
 
-    { if (!(isPlayer _x)) then { _aiPlayerList = _aiPlayerList + [_x]; }; } forEach units _group;
+	{ if (!(isPlayer _x)) then { _aiPlayerList = _aiPlayerList + [_x]; }; } forEach units _group;
 
-    _aiPlayerList;
+	_aiPlayerList;
 };
 
 /* dl_fnc_dismissAIFromGroup
@@ -408,20 +460,6 @@ dl_fnc_dismissAIFromGroup = {
 	_group = _this;
 
 	{ deleteVehicle _x; } forEach (_group call dl_fnc_getAIinGroup);
-};
-
-
-/* dl_fnc_canSee
- * args: [unit, position]
- * returns true if the player has a clear line of sight to that position */
-dl_fnc_canSee = { // doesn't fucking work
-	_unit = _this select 0;
-	_position = _this select 1;
-
-	_intersect = [_unit, "VIEW"] intersect [position _unit, _position];
-	_result = count _intersect == 0; 
-	//diag_log format ["%1, %2", _intersect, _result];
-	_result
 };
 
 /* INS_fnc_onDeathListener
@@ -463,28 +501,24 @@ INS_fnc_onDeathListener = {
 	};
 };
 
-/* INS_fnc_initVehicle
- * args: vehicle
- * sets up a vehicle */
-INS_fnc_initVehicle = {
-	_unit = _this;
-};
-
 /* INS_fnc_initAIUnit
  * args: unit
  * sets up an AI unit */
 INS_fnc_initAIUnit = {
-	_unit = _this; // test if kind of group or unit
-
-	_unit setSkill ['aimingAccuracy', 0.5];
+	private ["_unit"];
+	_unit = _this;
+	
+	_unit setSkill ['aimingAccuracy', 0.2];
 	_unit setSkill ['aimingShake', 0.5];
-	_unit setSkill ['aimingSpeed', 0.5];
-	_unit setSkill ['spotDistance', 0.5];
-	_unit setSkill ['spotTime', 0.5];
+	_unit setSkill ['aimingSpeed', 0.2];
+	_unit setSkill ['spotDistance', 0.4];
+	_unit setSkill ['spotTime', 0.4];
 	_unit setSkill ['courage', 0.5];
 	_unit setSkill ['reloadSpeed', 0.5];
 	_unit setSkill ['commanding', 0.5];
 	_unit setSkill ['general', 0.5];
 
+	//diag_log format["spawning %1 %2", player call dl_fnc_getNextAINameForPlayer, _unit];
+	call compile format ["%1 = _unit;", player call dl_fnc_getNextAINameForPlayer];
 	if (side _unit == east) then { _unit addEventHandler ["Killed", INS_fnc_onDeathListener]; };
 };

@@ -1,38 +1,4 @@
 // ---------------------------------------
-//	core functions
-// ---------------------------------------
-
-INS_prepareZones = {
-	{
-		_markers = [];
-		_area = _x;
-		_areaClassName = _area select 0;
-		_areaName = _area select 1;
-		_areaPos = _area select 2;
-		_areaRad = (_area select 3) max (_area select 4);
-		_buildings = [_areaPos, _areaRad] call SL_fnc_findBuildings;
-
-		{
-			_building = _x;
-			_mpos = (getPos _building) call dl_fnc_gridPos;
-			if (isNil "_mpos") then {
-				if (debugMode == 1) then { diag_log format["error: %1 - %2", _areaName, _building]; };
-			} else {
-				_marker = _mpos call dl_fnc_addGridMarkerIfNotAlready;
-				if (_marker != "") then { _markers = _markers + [_marker]; }; // if nil then already added
-			};
-		} forEach _buildings;
-
-		_trigger = createTrigger ["EmptyDetector", _areaPos];
-		_trigger setTriggerActivation ["west", "present", true];
-		_trigger setTriggerArea [_areaRad + 300, _areaRad + 300, 0, false];
-		_trigger setTriggerStatements ["this", format["%1 call dl_fnc_createTriggers; [%2, thisList] execVM 'insurgency\modules\ai\INS_ai_unitHandler.sqf'; %2 execVM 'insurgency\modules\ieds\INS_ieds.sqf';", _markers, _area], ""];
-
-		missionNamespace setVariable [format["%1_trigger", _areaClassName], _trigger];
-	} forEach (call SL_fnc_urbanAreas);
-};
-
-// ---------------------------------------
 //	helper functions
 // ---------------------------------------
 
@@ -92,6 +58,18 @@ dl_fnc_hintMPHelper = {
 	hint parseText _this;
 };
 
+dl_fnc_titleTextMP = {
+	_message = _this select 0;
+	_obj = _this select 1;
+	_jip = _this select 2;
+
+	[_message, "dl_fnc_titleTextMPHelper", _obj, _jip] spawn BIS_fnc_MP;
+};
+
+dl_fnc_titleTextMPHelper = {
+	[parseText _this, 0, 1, 5, 0, 0, 301] spawn bis_fnc_dynamicText;
+};
+
 dl_fnc_getCityNameFromPath = {
 	_path = _this;
     _array = toArray _path;
@@ -116,6 +94,53 @@ dl_fnc_velocityToSpeed = {
 
 	_speed = sqrt (_dx * _dx + _dy * _dy + _dz * _dz);
 	_speed
+};
+
+dl_fnc_canSee = {
+	private ["_unit","_obj","_dirTo","_uDir","_vcl","_arc"];
+	_unit  = _this select 0;
+	_obj   = _this select 1;
+	_arc   = _this select 2;
+	
+	_dirTo = [_unit, _obj] call dl_fnc_dirTo; // vector from _unit to _obj
+	_uDir  = direction (vehicle _unit); // heading of _unit
+	if (vehicle _unit != _unit) then {
+		_vcl = vehicle _unit;
+		if (_vcl turretUnit [0] == _unit) then {
+			_uDir = _vcl weaponDirection (_vcl weaponsTurret [0] select 0);
+			_uDir = (_uDir select 0) atan2 (_uDir select 1);
+		};
+	};
+
+	if (abs(_dirTo - _uDir) > 180) then { _uDir = -1 * (360 - _uDir); };
+	abs(_dirTo - _uDir) <= _arc
+};
+
+dl_fnc_canBeSeen = {
+	private ["_arc","_pos","_arr","_rng","_unit","_canSee"];
+	_unit = _this select 0;
+	_arc = _this select 1;
+    
+	_canSee = false;
+	{ if (alive _x and {[_x, _unit, _arc] call dl_fnc_canSee}) exitWith { _canSee = true; }; } forEach playableUnits;
+
+	_canSee
+};
+
+dl_fnc_dirTo = {
+	_to = _this select 0;
+	_from = _this select 1;
+
+	_dirTo = ((getPosATL _from select 0) - (getPosATL _to select 0)) atan2 ((getPosATL _from select 1) - (getPosATL _to select 1));
+	_dirTo
+};
+
+dl_fnc_countNearestPlayers = {
+	_pos = _this select 0; 
+	_range = _this select 1; 
+
+	_count = { _x distance _pos < _range; } count playableUnits;
+	_count
 };
 
 SL_fnc_urbanAreas = {
@@ -144,14 +169,33 @@ SL_fnc_urbanAreas = {
 	_cities
 };
 
-SL_fnc_findBuildings = {
+dl_houses_illegal = ["Land_HighVoltageColumn_F", 
+					 "Land_HighVoltageColumnWire_F", 
+					 "Land_LampDecor_F", 
+					 "Land_spp_Transformer_F", 
+					 "Land_LampShabby_F", 
+					 "Land_LampHarbour_F",
+					 "Land_LampHalogen_F", 
+					 "Land_Kiosk_blueking_F", 
+					 "Land_Carousel_01_F", 
+					 "Land_TBox_F", 
+					 "Land_Crane_F", 
+					 "Land_Kiosk_redburger_F", 
+					 "Land_Pier_addon", 
+					 "Land_nav_pier_m_F", 
+					 "Land_Pier_Box_F"];
+
+// todo: make faster
+dl_fnc_createMarkers = {
 	private ["_center", "_radius", "_buildings"];
-	_center = _this select 0;
-	_radius = _this select 1;
+	_timeStart = time;
+	_buildings = nearestObjects [[15000, 15000, 0] , ["house"], 15000];
 
-	_buildings = nearestObjects [_center, ["house"], _radius];
+	{
+		if (!(typeOf _x in dl_houses_illegal)) then { (position _x) call dl_fnc_addGridMarkerIfNotAlready;  }; 
+	} forEach _buildings;
 
-	_buildings
+	diag_log format["done creating markers in %1 seconds", time - _timeStart];
 };
 
 // todo: figure out a better way to do "reclaims"
@@ -161,7 +205,7 @@ dl_fnc_createTriggers = {
 	{
 		_pos = getMarkerPos _x;
 		_trigger = createTrigger ["EmptyDetector", _pos];
-		_trigger setTriggerActivation ["ANY", "PRESENT", false];
+		_trigger setTriggerActivation ["ANY", "PRESENT", true];
 		_trigger setTriggerArea [50, 50, 0, true];
 		_trigger setTriggerStatements ["{(side _x) == east} count thisList == 0 AND {(((side _x) == west) and (isPlayer _x)) } count thisList >= 1", format["""%1"" setMarkerColor ""ColorGreen"";", _x], ""];
 	} foreach _this;
