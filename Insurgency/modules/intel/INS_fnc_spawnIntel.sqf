@@ -9,7 +9,7 @@ if (isServer) then {
 			_cityPos = _x select 2;
 			_cityRadius = (_x select 3) max (_x select 4);
 
-			_cacheBuildings = [_cityPos, _cityRadius] call SL_fnc_findBuildings;
+			_cacheBuildings = [_cityPos, _cityRadius] call dl_fnc_findBuildings;
 
 			for "_i" from 1 to INS_intelItems step 1 do {
 				if (count _cacheBuildings > 0) then {

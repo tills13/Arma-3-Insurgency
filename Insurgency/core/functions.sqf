@@ -47,10 +47,12 @@ dl_fnc_addActionMP = {
 };
 
 dl_fnc_hintMP = {
-	_message = _this select 0;
-	_obj = _this select 1;
-	_jip = _this select 2;
+	_title = _this select 0; 
+	_body = _this select 1;
+	_obj = _this select 2;
+	_jip = _this select 3;
 
+	_message = if (!isNil "_title") then { format["<t align='center' color='#ff6347' shadow='2' size='1.75'>%1</t><br/><t align='center' color='#ff6347'>------------------------------</t><br/><t size='1.0'>%2</t>", _title, _body] } else { _body };
 	[_message, "dl_fnc_hintMPHelper", _obj, _jip] spawn BIS_fnc_MP;
 };
 
@@ -187,6 +189,7 @@ dl_houses_illegal = ["Land_HighVoltageColumn_F",
 					 "Land_nav_pier_m_F", 
 					 "Land_Pier_Box_F"];
 
+
 // todo: make faster
 dl_fnc_createMarkers = {
 	private ["_center", "_radius", "_buildings"];
@@ -227,6 +230,14 @@ dl_fnc_gridPos = {
  	_mpos = [_x + 50, _y + 50, 0];
 
  	_mpos
+};
+
+dl_fnc_findBuildings = {
+	_center = _this select 0; 
+	_radius = _this select 1; 
+
+	_buildings = nearestObjects [_center , ["house"], _radius];
+	_buildings
 };
 
 getCountBuildingPositions = {		

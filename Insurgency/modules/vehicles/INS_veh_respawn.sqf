@@ -98,7 +98,7 @@ if (isServer) then { // server loop
 						_abandonedRespawnDelay = _veh getVariable "RES_ABANDON_RESPAWN_DELAY";
 
 						_reason = if (_abandoned) then {"abandoned"} else {"destroyed"};
-						[format["respawning %1 vehicle: <t color = '#ff6347'>%2</t>", _reason, _name], true, true] call dl_fnc_hintMP;
+						[nil, format["respawning %1 vehicle: <t color = '#ff6347'>%2</t>", _reason, _name], true, true] call dl_fnc_hintMP;
 
 						vehicleArray = vehicleArray - [_veh];
 						deleteVehicle _veh;
