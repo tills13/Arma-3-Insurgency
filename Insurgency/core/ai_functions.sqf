@@ -367,10 +367,6 @@ dl_fnc_trackPlayerAI = {
 	_player = _this;
 
 	while { true } do {
-<<<<<<< HEAD
-		diag_log "tracking";
-=======
->>>>>>> ai_changes
 		for "_i" from 0 to 25 do {
 			_string = format["%1_ai_%2", name _player, _i];
 			deleteMarker _string;
