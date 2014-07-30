@@ -1,14 +1,13 @@
 // todo use trigger to run loops.
 
-
+INS_num_ieds = 25;
 INS_fnc_spawnIEDs = {
-	private ["_inc","_pos","_eCount","_wUnits","_wCount","_house","_clear","_gMkr","_houses"];
+	private ["_spawnPos","_position"];
 
-	for "_i" from 0 to (25 - (count (call dl_fnc_getAllIEDs))) do {
+	for "_i" from 0 to (INS_num_ieds - (count (call dl_fnc_getAllIEDs))) do {
 		_position = [position player, 300, 400, 0, 1, 20, 0] call BIS_fnc_findSafePos;
 		_spawnPos = [_position, 20] call getSideOfRoadPosition;
-		diag_log str _spawnPos;
-		_ied = [_spawnPos] call INS_fnc_generateIED;
+		_spawnPos call INS_fnc_generateIED;
 	};
 };
 
@@ -30,29 +29,32 @@ ied_types = ["Land_GarbageBags_F",
 INS_fnc_generateIED = {
 	private ["_ied"];
 
-	_ied = createVehicle [(ied_types call BIS_fnc_selectRandom), (_this select 0), [], 3, "NONE"];
-	//[_ied, "HandleDamage", "(position unit) call iedExplode;"] call dl_fnc_addEventHandlerMP; // add the EV MP DOESN'T WORK YET
+	_ied = createVehicle [(ied_types call BIS_fnc_selectRandom), _this, [], 3, "NONE"];
+	
+	[_ied, "HitPart", "(position _ied) call iedExplode;"] call dl_fnc_addEventHandlerMP; // add the EV MP DOESN'T WORK YET
+	//_ied addEventHandler ["HitPart", { player sideChat "HitPart"; }]; 
 	[_ied, "Disarm IED", disarmIED, [_ied], true, true, "_this distance _target < 2 and _target getVariable 'isActive'"] call dl_fnc_addActionMP;
 
 	_ied setVariable ["code", call generateCode, false];
 	_ied setVariable ["isActive", true, true];
 
-	call compile format ["%1 = _ied; publicVariable '%1';", call dl_fnc_getNextIEDID];
-	_ied spawn iedLoop;
+	
+	call compile format ["%1 = _ied;", call dl_fnc_getNextIEDID];
+	diag_log str _ied;
+	diag_log (call dl_fnc_getNextIEDID);
+	//_ied spawn iedLoop;
 
-	//_m = createMarker [format ["%1", _name], position _ied];
-	//_m setMarkerText _name;
-    //_m setMarkerShape "ICON"; 
-    //_m setMarkerType "mil_dot";
-    //_m setMarkerColor "ColorRed";
-
-	_ied
+	_m = createMarker [format ["%1", random 10000], position _ied];
+ 	_m setMarkerText str (random 10000);
+    _m setMarkerShape "ICON"; 
+    _m setMarkerType "mil_dot";
+    _m setMarkerColor "ColorRed";
 };
 
 generateCode = {
 	_code = [];
 
-	for "_i" from 0 to 3 do { _code = _code + [round(random 10)] };
+	for "_i" from 0 to 3 do { _code = _code + [1 max round(random 9)] };
 
 	_code	
 };
@@ -60,13 +62,16 @@ generateCode = {
 iedLoop = {
 	_ied = _this;
 
-	while { alive _ied and {_ied getVariable "isActive"} } do {
+	while { !isNull _ied and {_ied getVariable "isActive"} } do {
 		_nearest = nearestObjects [_ied, ["Man", "Car"], 10];
 		
 		if ((count _nearest) > 0) then {
-			_nearVel = velocity (_nearest select 0);
-			_nearSpeed = _nearVel call dl_fnc_velocityToSpeed;
-			if (((velocity (_nearest select 0)) call dl_fnc_velocityToSpeed) > 3) then { _ied call iedExplode; };
+			{
+				_vel = velocity (_x);
+				_speed = _vel call dl_fnc_velocityToSpeed;
+
+				if (_speed > 3) then { _ied call iedExplode; };
+			} forEach _nearest;
 		};
 
 		sleep 1;
@@ -74,30 +79,41 @@ iedLoop = {
 };
 
 disarmIED = {
-	private ["_index", "_defuseTime", "_isDefusing", "_ied"];
+	private ["_index", "_defuseTime", "_isDefusing"];
 
 	_caller = _this select 1;
-	_ied = (_this select 3) select 0;
-	_code = _ied getVariable "code";
-	_index = 0;
+	ied = (_this select 3) select 0;
+	code = ied getVariable "code";
+	index = 0;
 
 	//if !("ToolKit" in (items _caller)) exitWith { hint "need toolkit" };
 	_KH = (findDisplay 46) displayAddEventHandler ["KeyDown", "_handled = true; pushedKey = ((_this select 1) - 1); _handled"];
-	0 = [((count _code) * 3.4), _KH] spawn { sleep (_this select 0); (findDisplay 46) displayRemoveEventHandler ["KeyDown", (_this select 1)]; }; // just incase something goes wrong we give control back to the user after the max time
+	0 = [((count code) * 3.4), _KH] spawn { sleep (_this select 0); (findDisplay 46) displayRemoveEventHandler ["KeyDown", (_this select 1)]; }; // just incase something goes wrong we give control back to the user after the max time
 
-	_defuseTime = 3; // seconds
+	onEachFrame {
+		if (!isNil "pushedKey") then {
+			if (pushedKey == (code select index)) then {
+				index = index + 1;
+				//_defuseTime = 3.4;
+				//_nextIndex = true;
+			} else { ied call iedExplode };
+
+			pushedKey = nil;
+		}; 
+	};
+	/*_defuseTime = 3; // seconds
 	_nextIndex = true;
 	while { !isNull _ied and {_index != (count _code)} } do {
 		// should give a nice "scramble" effect
-		if (_nextIndex) then { for "_i" from 0 to 5 do { _nextIndex = false; [format["<t size='4'>%1</t>", random 10], 0, 0.2, 0.1, 0] spawn bis_fnc_dynamictext; }; }
-		else { [format["<t size='4'>%1</t>", _code select _index], 0, 0.2, 0.1, 0] spawn bis_fnc_dynamictext; };
+		if (_nextIndex) then { _nextIndex = false; for "_i" from 0 to 6 do { [format["<t size='3'>%1</t>", round random 10], 0, 0.2, 0.1, 0] spawn bis_fnc_dynamictext; sleep 0.1; }; }
+		else { [format["<t color='#ff6347' size='3'>%1</t>", _code select _index], 0, 0.2, 0.1, 0] spawn bis_fnc_dynamictext; };
 
 		if (!isNil "pushedKey") then {
 			if (pushedKey == (_code select _index)) then {
 				_index = _index + 1;
 				_defuseTime = 3.4;
 				_nextIndex = true;
-			} else exitWith { _ied call iedExplode };
+			} else { _ied call iedExplode };
 
 			pushedKey = nil;
 		};
@@ -106,9 +122,10 @@ disarmIED = {
 		if (_defuseTime == 0) exitWith { _ied call iedExplode };
 
 		sleep 0.1;
-	};
+	};*/
 
 	_ied setVariable ["isActive", false, true];
+	if (!isNull _ied) then { ["<t color='#80FF80' size='3'>success</t>", 0, 0.2, 0.1, 0] spawn bis_fnc_dynamictext; };
 	(findDisplay 46) displayRemoveEventHandler ["KeyDown", _KH];
 };
 
@@ -128,11 +145,11 @@ dl_fnc_getAllIEDs = {
 	private ["_ied"];
 	_iedList = [];
 
-	for "_i" from 0 to 25 do {
+	for "_i" from 0 to INS_num_ieds do {
 		_string = format["ied_%1", _i];
 		if (!isNil _string) then {
 			_ied = call compile _string;
-			if (!isNull _ied and {alive _ied}) then { _iedList = _iedList + [_ied]; };
+			if (!isNull _ied and {_ied getVariable "isActive"}) then { _iedList = _iedList + [_ied]; };
 		};
 	};
 
@@ -140,16 +157,16 @@ dl_fnc_getAllIEDs = {
 };
 
 dl_fnc_getNextIEDID = {
-	private ["_unit"];
+	private ["_ied"];
 	_result = "";
 
-	for "_i" from 0 to 25 do {
+	for "_i" from 0 to INS_num_ieds do {
 		_string = format["ied_%1", _i];
 		if (isNil _string) exitWith { _result = _string };
 
 		_ied = call compile _string;
 		if (isNull _ied) exitWith { _result = _string };
-		if (!alive _ied) exitWith { _result = _string };
+		if (!(_ied getVariable "isActive")) exitWith { _result = _string };
 	};
 
 	_result
